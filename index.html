@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tur House - спа-баня та котеджі через паркан від заповідника Беремицьке</title>
+<meta name="description" content="Номери від 2000 грн, котеджі від 5000 грн, банний ретрит з чаном. 55 хвилин від Києва, приватний відпочинок біля заповідника Беремицьке. Бронювання онлайн.">
+<link rel="canonical" href="https://turhouse.com.ua/">
+<meta property="og:title" content="Tur House - спа-баня та котеджі через паркан від заповідника Беремицьке">
+<meta property="og:description" content="Номери від 2000 грн, котеджі від 5000 грн, банний ретрит з чаном. 55 хвилин від Києва, приватний відпочинок біля заповідника Беремицьке.">
+<meta property="og:image" content="https://turhouse.com.ua/img/photo_4_2026-07-29_07-37-59.jpg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="uk_UA">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="img/favicon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arsenal:wght@400;700&family=Philosopher:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-overlay: rgba(205, 212, 185, 0.65); /* Светлый, теплый природный фильтр */
+    --fg: #2C3527;
+    --muted: #53644B;
+    --accent: #5C8C69;
+    --accent-deep: #2F4D38;
+    --accent-soft: rgba(92, 140, 105, 0.15);
+    --marigold: #B88A44;
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --glass-shadow: 0 12px 40px rgba(47, 77, 56, 0.08);
+    --warn: #b7472a;
+    --radius: 20px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Arsenal', system-ui, sans-serif;
+    color: var(--fg);
+    line-height: 1.5;
+    background-image: url('img/photo_8_2026-07-29_07-37-59.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before { content: ""; position: fixed; inset: 0; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: -1; }
+  h1, h2, h3 { font-family: 'Philosopher', Georgia, serif; line-height: 1.18; margin: 0; text-shadow: 0 0 15px rgba(255,255,255,0.9), 0 0 30px #fff; }
+  p { margin: 0; }
+  img { max-width: 100%; display: block; border-radius: var(--radius); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  a { color: inherit; }
+  
+  .glass-panel, .card, .trust, .gallery figure, details, .hero-copy, .footer-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    box-shadow: var(--glass-shadow);
+  }
+  
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13.5px; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: rgba(47, 77, 56, 0.85); padding: 6px 14px; border-radius: 20px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--marigold); }
+  
+  .cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent); color: #fff; font-weight: 700; padding: 16px 30px; border-radius: 999px; text-decoration: none; text-align: center; border: none; font-size: 17px; box-shadow: 0 10px 24px rgba(92, 140, 105, 0.3); transition: transform 0.2s, box-shadow 0.2s; }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(92, 140, 105, 0.4); }
+  .cta.ghost { background: transparent; color: var(--accent-deep); border: 1.5px solid var(--accent-deep); box-shadow: none; }
+  .cta.ghost:hover { background: var(--accent-soft); }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  
+  section { padding: 42px 0; }
+  
+  /* TOP BAR */
+  .top-bar {
+    position: sticky; top: 10px; z-index: 100;
+    margin: 10px auto; max-width: 1040px; width: calc(100% - 40px);
+    padding: 10px 24px; border-radius: 99px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .top-bar .eyebrow { margin: 0; background: transparent; color: var(--accent-deep); padding: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .top-bar .eyebrow::before { display: none; }
+  .top-bar-actions { display: flex; gap: 10px; }
+  .top-bar .cta { padding: 8px 16px; font-size: 14px; }
+  @media (max-width: 768px) {
+    .top-bar { flex-direction: column; border-radius: 20px; padding: 12px; }
+    .top-bar-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+    .top-bar .cta { width: 100%; text-align: center; }
+  }
+  
+  /* HERO */
+  header.hero { padding: 50px 0 0; }
+  .hero-copy { padding: 34px; margin-bottom: 30px; text-align: center; }
+  .hero-copy h1 { font-size: clamp(30px, 5vw, 46px); font-weight: 700; color: var(--accent-deep); }
+  .hero-copy .lead { font-size: 18px; color: var(--muted); margin-top: 14px; max-width: 100%; }
+  @media (min-width: 768px) { .hero-copy .lead { white-space: nowrap; } }
+  .price-line { margin-top: 18px; font-weight: 700; font-size: 16.5px; color: var(--accent-deep); }
+  .hero-img { display: flex; flex-direction: column; gap: 16px; margin-top: 10px; }
+  .price-overlay { padding: 16px 24px; text-align: center; font-weight: 700; font-size: 16px; color: var(--accent-deep); }
+  @media (max-width: 768px) { .price-overlay { font-size: 14px; padding: 12px; } }
+  .hero-img img { border-radius: 20px; width: 100%; height: auto; box-shadow: 0 20px 44px rgba(38,48,37,0.18); }
+  
+  /* TRUST BAR */
+  .trust { padding: 24px; margin: 30px 20px; max-width: 720px; margin-left: auto; margin-right: auto; }
+  .trust ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 24px; font-size: 15px; font-weight: 700; color: var(--accent-deep); justify-content: center; }
+  .trust li { display: flex; align-items: center; gap: 7px; }
+  .trust li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--marigold); }
+  
+  /* FORMATS */
+  .formats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .fmt { padding: 24px; }
+  .fmt h3 { font-size: 18px; font-weight: 700; }
+  .fmt .price { font-family: 'Philosopher', Georgia, serif; font-weight: 700; font-size: 22px; color: var(--accent-deep); margin-top: 8px; }
+  .fmt p.desc { font-size: 14.5px; color: var(--fg); font-weight: 700; opacity: 0.85; margin-top: 8px; }
+  .fmt .note { display: inline-block; margin-top: 12px; font-size: 13px; font-weight: 700; color: #fff; background: var(--accent-deep); padding: 4px 12px; border-radius: 20px; opacity: 0.9; }
+  
+  /* HONESTY */
+  .honesty { display: flex; flex-direction: column; gap: 16px; }
+  .honesty .card { display: flex; gap: 16px; align-items: flex-start; padding: 24px; }
+  .honesty .card .mark { font-family: 'Philosopher', Georgia, serif; font-weight: 700; color: var(--accent-deep); font-size: 26px; line-height: 1; opacity: 0.8; }
+  .honesty .card p { font-size: 16px; }
+  
+  /* TERRITORY */
+  .territory p { font-size: 17px; color: var(--fg); text-shadow: 0 0 15px rgba(255,255,255,0.9), 0 0 30px #fff; }
+  .territory p + p { margin-top: 14px; }
+  .territory strong { color: var(--accent-deep); }
+  
+  /* GALLERY */
+  .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .gallery figure { margin: 0; overflow: hidden; padding: 12px; }
+  .gallery figure:not(.full) img { border-radius: 12px; width: 100%; height: 240px; object-fit: cover; display: block; }
+  .gallery img { border-radius: 12px; width: 100%; height: auto; }
+  .gallery figcaption { padding: 14px 4px 4px; }
+  .gallery figcaption .t { font-weight: 700; font-size: 15px; }
+  .gallery figcaption .p { font-size: 14px; color: var(--fg); font-weight: 700; opacity: 0.85; margin-top: 4px; }
+  .gallery .full { grid-column: 1 / -1; }
+  
+  /* PROOF */
+  .proof { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .proof .card { text-align: center; padding: 24px; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .proof .big { font-family: 'Philosopher', Georgia, serif; font-weight: 700; font-size: 30px; color: var(--accent-deep); }
+  .proof .lbl { font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .proof a.card { text-decoration: none; display: block; transition: background 0.2s; }
+  .proof a.card:hover { background: rgba(255, 255, 255, 0.85); }
+  
+  /* REVIEWS */
+  .reviews { display: flex; flex-direction: column; gap: 16px; }
+  .review { padding: 24px; }
+  .review .stars { color: var(--marigold); font-size: 15px; letter-spacing: 2px; }
+  .review .who { font-weight: 700; font-size: 15px; margin-top: 10px; }
+  .review .when { font-size: 13px; color: var(--muted); font-weight: 400; margin-left: 8px; }
+  .review p.txt { font-size: 15.5px; color: var(--fg); margin-top: 10px; font-style: italic; }
+  .reviews-link { margin-top: 12px; font-weight: 700; color: var(--accent-deep); background: rgba(255,255,255,0.85); padding: 12px 24px; border-radius: 99px; text-decoration: none; font-size: 15.5px; display: inline-flex; align-items: center; justify-content: center; backdrop-filter: blur(8px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); transition: transform 0.2s; }
+  .reviews-link:hover { transform: translateY(-2px); background: #fff; }
+  
+  /* FAQ */
+  details { padding: 18px 22px; margin-bottom: 12px; }
+  summary { font-weight: 700; cursor: pointer; font-size: 16px; outline: none; }
+  details p { margin-top: 12px; font-size: 15px; color: var(--muted); line-height: 1.55; }
+  
+
+  
+  footer { padding: 40px 20px 90px; text-align: center; }
+  .footer-glass { padding: 30px; margin: 0 auto; max-width: 720px; }
+  footer a { color: var(--accent-deep); font-weight: 700; text-decoration: none; }
+  
+  /* REF CLASSES */
+  .section-title { margin-top: 12px; font-size: 28px; }
+  .section-body { margin-top: 26px; }
+  .section-body-sm { margin-top: 20px; }
+  .footer-links { margin-top: 12px; }
+  .footer-links a, .footer-phone { padding: 10px 6px; display: inline-block; }
+  .footer-phone { color: var(--accent-deep); font-weight: 700; text-decoration: none; }
+  
+  /* ATMOSPHERE COLLAGE */
+  .atmosphere-grid { column-count: 2; column-gap: 16px; margin-top: 26px; }
+  .atm-item { margin-bottom: 16px; break-inside: avoid; }
+  .atmosphere-grid img { width: 100%; height: auto; display: block; border-radius: calc(var(--radius) - 4px); }
+  @media (max-width: 600px) {
+    .atmosphere-grid { column-count: 1; }
+  }
+  /* BRAND DIVIDER */
+  .brand-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px 0 32px;
+    background: transparent;
+  }
+  .brand-logo-img {
+    width: 320px;
+    max-width: 75%;
+    height: auto;
+    border-radius: 0 !important;
+    background: transparent !important;
+    filter: drop-shadow(0 8px 32px rgba(47,77,56,0.22));
+    transition: transform 0.35s ease;
+  }
+  .brand-logo-img:hover { transform: scale(1.06); }
+
+  .pb-24 { padding-bottom: 24px; }
+  
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  @media (max-width: 600px) {
+    .formats { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: 1fr; }
+    .proof { grid-template-columns: 1fr 1fr; }
+  }
+
+  .icon-inst::before, .icon-goog::before, .icon-tur::before {
+    content: ""; display: inline-block; width: 1.1em; height: 1.1em;
+    margin-right: 6px; vertical-align: -0.15em;
+    background-size: contain; background-repeat: no-repeat;
+  }
+  .icon-inst::before { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232F4D38"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>'); }
+  .icon-goog::before { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232F4D38"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>'); }
+  .icon-tur::before { background-image: url('img/logo.png'); width: 2em; height: 2em; vertical-align: -0.6em; margin-right: 10px; }
+</style>
+<link rel="preload" as="image" href="img/photo_4_2026-07-29_07-37-59.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LodgingBusiness",
+  "name": "Tur House",
+  "url": "https://turhouse.com.ua/",
+  "telephone": "+380961275553",
+  "priceRange": "2000-5200 UAH",
+  "image": "https://turhouse.com.ua/img/photo_4_2026-07-29_07-37-59.jpg",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "вул. Лугова, 12",
+    "addressLocality": "с. Беремицьке",
+    "addressRegion": "Чернігівська область",
+    "addressCountry": "UA"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.2",
+    "reviewCount": "142"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Скільки коштує великий будинок на 8-12 осіб?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Точна ціна залежить від дат і кількості гостей. Пишіть у Direct @tur_house_ або телефонуйте за номером +380961275553."}
+    },
+    {
+      "@type": "Question",
+      "name": "Чи є Wi-Fi у котеджах?",
+      "acceptedAnswer": {"@type": "Answer", "text": "У котеджах Wi-Fi немає. Якщо це критично, уточнюйте формат проживання при бронюванні."}
+    },
+    {
+      "@type": "Question",
+      "name": "Скільки їхати з Києва?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Близько 55 хвилин або 55 км від Києва."}
+    },
+    {
+      "@type": "Question",
+      "name": "Що входить у банний ретрит?",
+      "acceptedAnswer": {"@type": "Answer", "text": "2 парні, хамам і чан - оренда на добу коштує 4500-5200 грн. Баня окремо, погодинно - 400 грн/год."}
+    },
+    {
+      "@type": "Question",
+      "name": "Як забронювати?",
+      "acceptedAnswer": {"@type": "Answer", "text": "Онлайн через систему бронювання BookmeNow або за телефоном +380961275553."}
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<nav class="top-bar glass-panel">
+  <span class="eyebrow"><span class="icon-tur">Tur House</span> · с. Беремицьке, Чернігівщина</span>
+  <div class="top-bar-actions">
+    <a class="cta" href="https://go.bookmenow.pro/t/turhouse" target="_blank" rel="noopener">Перевірити вільні дати</a>
+    <a class="cta ghost" href="https://www.instagram.com/tur_house_/" target="_blank" rel="noopener">Написати в <span class="icon-inst">Instagram</span></a>
+  </div>
+</nav><header class="hero">
+  <div class="wrap hero-copy">
+    <!-- eyebrow moved to top bar -->
+    <h1>Спа-баня та котеджі<br>через паркан від заповідника<br>Беремицьке</h1>
+    <p class="lead">Десна, дикі тварини і жодних сусідів за стіною. Лише спокій та перезавантаження.</p>
+    <!-- price line moved to hero image -->
+  </div>
+  <div class="wrap">
+    <div class="hero-img">
+      <img src="img/photo_7_2026-07-29_07-37-59.jpg" alt="Tur House - відпочинок у теплому чані з травами та цитрусовими" fetchpriority="high">
+      <div class="price-overlay glass-panel">Номер від 2000 грн · Котедж для родини від 5000 грн · Банний ретрит з чаном від 4500 грн</div>
+    </div>
+  </div>
+</header>
+
+
+
+<section id="formats">
+  <div class="wrap">
+    <span class="eyebrow">Де жити</span>
+
+    <div class="formats section-body">
+      <div class="card fmt">
+        <h3>Номери</h3>
+        <p class="desc">2 особи, у головному корпусі</p>
+        <div class="price">2000-2500 грн/ніч</div>
+      </div>
+      <div class="card fmt">
+        <h3>Котеджі</h3>
+        <p class="desc">До 5 осіб, кухня + мангал у кожному</p>
+        <div class="price">5000 грн/ніч</div>
+      </div>
+      <div class="card fmt">
+        <h3>Великий будинок</h3>
+        <p class="desc">Компанія чи родина, 8-12 осіб</p>
+        <div class="price">за запитом</div>
+        <span class="note">пишіть у Direct - точна ціна залежить від дат</span>
+      </div>
+      <div class="card fmt">
+        <h3>Банний ретрит</h3>
+        <p class="desc">2 парні, хамам і чан на добу</p>
+        <div class="price">4500-5200 грн</div>
+        <span class="note">баня окремо - 400 грн/год</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="honesty">
+  <div class="wrap">
+    <span class="eyebrow">Чесно, без глянцю</span>
+
+    <div class="honesty section-body">
+      <div class="card">
+        <span class="mark">01</span>
+        <p>З тераси видно оленів заповідника - а сусідів не видно взагалі. Через паркан - вхід у заповідну зону, а не інший будиночок за стінкою.</p>
+      </div>
+      <div class="card">
+        <span class="mark">02</span>
+        <p>У котеджах справді немає Wi-Fi. Частина гостей саме за тишею й перезавантаженням сюди і їде - попереджаємо чесно, а не мовчимо про це до заїзду.</p>
+      </div>
+      <div class="card">
+        <span class="mark">03</span>
+        <p>Кухня в кожному котеджі та мангал на подвір'ї: готуйте самі, або домовтеся з нами про шефа-партнера на вечір.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="territory">
+  <div class="wrap">
+    <span class="eyebrow">Що навколо</span>
+
+    <div class="territory section-body-sm">
+      <div class="glass-panel" style="padding: 24px;">
+        <p>Комплекс стоїть безпосередньо біля межі природного парку <strong>«Беремицьке»</strong> - того самого, який зібрав 4,6 і понад 1400 відгуків у Google. Вихід у заповідну зону - практично з території: туман над Десною вранці, стежки для прогулянок, дикі тварини, яких у Києві вже давно ніхто не бачив.</p>
+        <p>Тут телефон ловить сигнал хіба для фото зоряного неба.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="wrap">
+    <span class="eyebrow">Як це виглядає</span>
+
+    <div class="gallery section-body">
+      <figure class="full">
+        <img src="img/barnhouse.jpg" loading="lazy" alt="Великий будинок Tur House на 8-12 осіб, скляний фасад, сад">
+        <figcaption>
+          <div class="t">Великий будинок на 8-12 осіб</div>
+          <div class="p">Для компанії друзів чи великої родини - ціна за запитом</div>
+        </figcaption>
+      </figure>
+      <figure class="full">
+        <img src="img/sauna.jpg" loading="lazy" alt="Банний ретрит Tur House - дерев'яна баня, віник, тепле світло">
+        <figcaption>
+          <div class="t">Банний ретрит</div>
+          <div class="p">2 парні, хамам, чан - від 4500 грн</div>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="img/cottage.jpg" loading="lazy" alt="Котеджі Tur House серед лавандового поля на території">
+        <figcaption>
+          <div class="t">Котеджі серед лаванди</div>
+          <div class="p">До 5 осіб, кухня і мангал - від 5000 грн</div>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="img/photo_15_2026-07-29_07-37-59.jpg" loading="lazy" alt="Tur House - будинок з басейном">
+        <figcaption>
+          <div class="t">Головний будинок</div>
+          <div class="p">Територія комплексу, сад та відкритий простір</div>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="atmosphere">
+
+  <div class="wrap">
+    <span class="eyebrow">Атмосфера</span>
+
+    <div class="atmosphere-grid">
+      <div class="atm-item"><img src="img/photo_14_2026-07-29_07-37-59.jpg" loading="lazy" alt="Атмосфера Tur House"></div>
+      <div class="atm-item"><img src="img/photo_11_2026-07-29_07-37-59.jpg" loading="lazy" alt="Затишок"></div>
+      <div class="atm-item"><img src="img/photo_13_2026-07-29_07-37-59.jpg" loading="lazy" alt="Деталі"></div>
+      <div class="atm-item"><img src="img/photo_4_2026-07-29_07-37-59.jpg" loading="lazy" alt="Банний комплекс"></div>
+    </div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="wrap">
+    <span class="eyebrow">Не тільки наші слова</span>
+
+    <div class="proof section-body">
+      <a class="card" href="https://www.google.com/maps/place/TUR+House" target="_blank" rel="noopener">
+        <div class="big">4,2 ★</div>
+        <div class="lbl">142 відгуки в Google</div>
+      </a>
+      <a class="card" href="https://www.instagram.com/tur_house_/" target="_blank" rel="noopener">
+        <div class="big">8 600+</div>
+        <div class="lbl">підписників в <span class="icon-inst">Instagram</span></div>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<section id="reviews">
+  <div class="wrap">
+    <span class="eyebrow">Відгуки з Google</span>
+    <h2 class="section-title">Що пишуть гості</h2>
+    <div class="reviews section-body">
+      <div class="card review">
+        <div class="stars">★★★★★</div>
+        <div class="who">Вікторія Обручева<span class="when">місяць тому</span></div>
+        <p class="txt">«Давно не отримувала такого задоволення від відпочинку! Це місце закохує в себе з перших хвилин. Неймовірна природа, спокій, свіже повітря та краєвиди, від яких просто неможливо відвести погляд.»</p>
+      </div>
+      <div class="card review">
+        <div class="stars">★★★★★</div>
+        <div class="who">Andy Andy<span class="when">місяць тому</span></div>
+        <p class="txt">«Чудовий вибір відпочинку неподалік від Києва за прийнятні кошти з можливістю поплавати в басейні та позасмагати.»</p>
+      </div>
+    </div>
+    <a class="reviews-link" href="https://www.google.com/maps/place/TUR+House" target="_blank" rel="noopener">Усі 142 відгуки в Google →</a>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <span class="eyebrow">Питання наперед</span>
+
+    <div class="section-body">
+      <details>
+        <summary>Скільки коштує великий будинок на 8-12 осіб?</summary>
+        <p>Точна ціна залежить від дат і кількості гостей. Напишіть у Direct <a href="https://www.instagram.com/tur_house_/" target="_blank" rel="noopener">@tur_house_</a> або зателефонуйте - порахуємо одразу.</p>
+      </details>
+      <details>
+        <summary>Чи є Wi-Fi у котеджах?</summary>
+        <p>У котеджах Wi-Fi немає - частина гостей обирає <span class="icon-tur">Tur House</span> саме за тишею і можливістю відключитися. Якщо це критично, уточнюйте формат проживання при бронюванні.</p>
+      </details>
+      <details>
+        <summary>Скільки їхати з Києва?</summary>
+        <p>Близько 55 хвилин / 55 км.</p>
+      </details>
+      <details>
+        <summary>Що входить у банний ретрит?</summary>
+        <p>2 парні, хамам і чан - оренда на добу 4500-5200 грн. Баня окремо, погодинно - 400 грн/год.</p>
+      </details>
+      <details>
+        <summary>Як забронювати?</summary>
+        <p>Онлайн через кнопку вище (система бронювання BookmeNow) або за телефоном +38 096 127-55-53.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<div class="wrap pb-24">
+  <a class="cta" style="width:100%" href="https://go.bookmenow.pro/t/turhouse" target="_blank" rel="noopener">Перевірити вільні дати</a>
+</div>
+
+
+<a class="cta floating-cta" href="https://go.bookmenow.pro/t/turhouse" target="_blank" rel="noopener">Забронювати зараз</a>
+
+<footer>
+  <div class="wrap footer-glass">
+    <p><strong style="color:var(--accent-deep)"><span class="icon-tur">Tur House</span></strong> - заміський готельний комплекс, с. Беремицьке, Чернігівська обл.</p>
+    <p class="footer-links"><a href="tel:+380961275553" class="footer-phone">+38 096 127-55-53</a> · <a href="https://www.instagram.com/tur_house_/" target="_blank" rel="noopener"><span class="icon-inst">Instagram</span></a> · <a href="https://www.google.com/maps/place/TUR+House" target="_blank" rel="noopener">Google Карти</a></p>
+  </div>
+</footer>
+<script>
+// Price calculator logic
+const guestsInput = document.getElementById('guests');
+const nightsInput = document.getElementById('nights');
+const priceEl = document.getElementById('total-price');
+function updatePrice() {
+  const guests = parseInt(guestsInput.value);
+  const nights = parseInt(nightsInput.value);
+  // Base rates (simplified): 2000 грн за номер (2 гості), 5000 грн за котедж (5 гостей)
+  let base = guests <= 2 ? 2000 : guests <= 5 ? 5000 : 8000; // approximate
+  const total = base * nights;
+  priceEl.textContent = `≈ ${total.toLocaleString('uk-UA')} грн`;
+}
+guestsInput.addEventListener('input', updatePrice);
+nightsInput.addEventListener('input', updatePrice);
+updatePrice();
+</script>
+
+
+
+</body>
+</html>
+
