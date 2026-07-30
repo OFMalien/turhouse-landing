@@ -1,21 +1,33 @@
 # Tur House - лендинг: деплой і передача
 
-**Статус на 29.07.2026:** это макет для показа владельцу Tur House вместе с офером (`tur_house_offer.html`), не срочный деплой. Всё ниже - готово к моменту, когда Макс решит выкатывать на прод, не раньше.
+**Статус на 30.07.2026 (обновлено):** Макс посмотрел preview в стиле Amrit Palace (`index-amrit-preview.html`, parchment/saffron палитра, Cormorant Garamond + Manrope), подтвердил «заменяй», затем отдельным сообщением попросил «деплой». Оба шага теперь выполнять целиком - ШАГ 0-4.
 
-Файлы лежат в `Business_Brain/турхаус/landing/`: `index.html`, `robots.txt`, `sitemap.xml`, `img/` (4 фото + og-image + favicon-ы, все настоящие, с IG-профиля @tur_house_ и сайта turhouse.com.ua). Палитра - Botanical Garden (theme-factory), применена по запросу Макса 29.07.2026.
+**Важное открытие при подготовке промпта:** в `landing/.git` уже есть коммит `TurHouse landing page initial deploy` (29.07.2026 15:29, автор OFMalien) и настроен remote `origin = https://github.com/OFMalien/turhouse-landing.git`, ветка main синхронизирована с origin/main - то есть эта папка уже была запушена в GitHub в отдельной сессии Code, о которой не осталось записи в этой памяти/mozg. Значит репозиторий создавать заново НЕ нужно, только push поверх существующего. Включён ли уже GitHub Pages - не подтверждено: пытался проверить `https://ofmalien.github.io/turhouse-landing/` через web_fetch из Cowork дважды, оба раза таймаут без ответа - не смог подтвердить ни живой сайт, ни его отсутствие. Проверка и, если нужно, включение Pages - в ШАГ 3 ниже, силами Code (там есть настоящий терминал/curl/gh).
 
-Это только промпт и факты - код в `index.html` из Cowork не трогаю. Правки вносит Claude Code.
+Файлы лежат в `Business_Brain/турхаус/landing/`: `index.html` (текущий боевой файл, палитра Botanical Garden - будет заменён), `index-amrit-preview.html` (новый вариант, подтверждён Максом 30.07.2026), `robots.txt`, `sitemap.xml`, `img/` (все фото настоящие, с IG-профиля @tur_house_ и сайта turhouse.com.ua).
+
+Это только промпт и факты - файлы сайта из Cowork не трогаю. Правки и коммиты вносит Claude Code.
 
 ## 0. SEO - что уже сделано в HTML (проверять, не переделывать)
 
-Уже внутри `index.html`: title, meta description, canonical, Open Graph + Twitter Card, JSON-LD `LodgingBusiness` (адрес, телефон, цены, рейтинг) и `FAQPage`, `robots.txt` + `sitemap.xml`, семантические h1/h2/h3, alt-текст с ценой на всех фото, `loading="lazy"`, сжатые картинки (55-100 КБ). Не хватает двух вещей, которых просил Макс - аналитики (счётчиков) и явного meta robots. Промпт ниже закрывает оба пункта.
+Уже внутри `index-amrit-preview.html` (будущий index.html после ШАГ 0 ниже): title, meta description, canonical, Open Graph + Twitter Card, JSON-LD `LodgingBusiness` (адрес, телефон, цены, рейтинг) и `FAQPage`, `robots.txt` + `sitemap.xml`, семантические h1/h2/h3, alt-текст с ценой на всех фото, `loading="lazy"`, сжатые картинки, явный `meta name="robots"`. Не хватает одной вещи - аналитики (счётчиков). Промпт ниже закрывает это плюс саму замену файла.
 
-## 1. Промпт для Claude Code (аналитика + деплой, один заход)
+## 1. Промпт для Claude Code (замена стиля + аналитика, один заход)
 
 Скопируй целиком в сессию Claude Code с доступом к терминалу и git:
 
 ```
-Работай с папкой Business_Brain/турхаус/landing/ - это боевой лендинг Tur House, index.html уже готов и завёрстан, просто внеси код ниже и задеплой.
+Работай с папкой Business_Brain/турхаус/landing/ - это боевой лендинг Tur House.
+
+ШАГ 0. Замена стиля на Amrit Palace (подтверждено Максом 30.07.2026 - "заменяй").
+index-amrit-preview.html - новый боевой вариант, index.html - старый (Botanical Garden), его заменяем.
+Выполни:
+  cd Business_Brain/турхаус/landing/
+  git rm index.html
+  git mv index-amrit-preview.html index.html
+  git add -A
+  git commit -m "Restyle landing: Amrit Palace design system (replaces Botanical Garden)"
+Старая версия остаётся в git-истории (git show HEAD~1:index.html) - отдельно архивировать не нужно.
 
 ШАГ 1. Аналитика.
 На живом сайте turhouse.com.ua уже установлены счётчики - у нового лендинга должны быть ТЕ ЖЕ ID, иначе Facebook-аудитория ретаргетинга и история GA4 обнулятся:
@@ -48,14 +60,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 ШАГ 2. SEO-довеска.
-Добавь в <head>, рядом с остальными meta-тегами: <meta name="robots" content="index, follow">
+Уже сделано в файле (проверь, что осталось после ШАГ 0, не добавляй повторно): <meta name="robots" content="index, follow">
 Остальное (description, canonical, OG, JSON-LD, robots.txt, sitemap.xml) уже готово - не дублировать и не переписывать.
 
-ШАГ 3. Деплой на GitHub Pages.
-1. Создай новый публичный репозиторий (например turhouse-landing) через gh CLI, или подскажи мне создать вручную на github.com, если gh не авторизован.
-2. Инициализируй git в папке landing/, закоммить все файлы (index.html, robots.txt, sitemap.xml, img/*), запушь в main.
-3. Включи GitHub Pages: Settings -> Pages -> Source: Deploy from branch -> main -> /(root).
-4. Дождись деплоя, забери финальный URL (обычно https://<username>.github.io/turhouse-landing/).
+ШАГ 3. Деплой на GitHub Pages - репозиторий уже существует, НЕ создавай новый.
+В .git уже настроен remote origin = https://github.com/OFMalien/turhouse-landing.git, ветка main, есть более ранний коммит "TurHouse landing page initial deploy" (29.07.2026) - то есть эта папка уже пушилась раньше. Поэтому:
+1. НЕ создавай новый репозиторий и не переинициализируй git - используй существующий.
+2. После коммита из ШАГ 0-2: git push origin main
+3. Проверь, включён ли уже GitHub Pages для этого репо: gh api repos/OFMalien/turhouse-landing/pages (если gh авторизован) или зайди в Settings -> Pages в браузере.
+   - Если уже включён - просто забери html_url оттуда.
+   - Если не включён - включи: Settings -> Pages -> Source: Deploy from branch -> main -> /(root).
+4. Ожидаемый URL: https://ofmalien.github.io/turhouse-landing/ - я (Cowork) пытался проверить его вживую дважды, оба раза таймаут без ответа, не смог подтвердить жив он или нет. Проверь сам.
 
 ШАГ 4. Проверка.
 1. curl -I по финальному URL и по каждой картинке в img/ - подтверди, что всё отдаёт 200.
