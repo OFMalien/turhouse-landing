@@ -330,24 +330,39 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .weekend h2 { font-size: clamp(30px, 4.6vw, 56px); line-height: 0.94; letter-spacing: -1.6px; margin-top: 12px; text-transform: none; }
   .weekend h2 strong { font-weight: 500; }
   .weekend .lede { margin-top: 16px; }
-  .weekend-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(28px, 4vw, 64px); margin-top: 40px; padding-top: 34px; border-top: 1px solid var(--color-warm-stone); }
+  .weekend-card { display: grid; grid-template-columns: minmax(0, 400px); justify-content: center; gap: clamp(28px, 3.6vw, 56px); margin-top: 36px; }
+  .weekend-card[open] { grid-template-columns: minmax(0, 400px) 1fr; justify-content: start; align-items: start; }
+  .weekend-card > summary { list-style: none; cursor: pointer; display: block; }
+  .weekend-card > summary::-webkit-details-marker { display: none; }
+  .weekend-card > summary img { width: 100%; height: auto; border: 1px solid var(--color-warm-stone); transition: opacity 0.4s ease; }
+  .weekend-card > summary:hover img { opacity: 0.88; }
+  .wk-hint { display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 14px; font-family: var(--font-sans); font-weight: 700; font-size: var(--text-caption); text-transform: uppercase; letter-spacing: -0.1px; color: var(--color-onyx-warm); }
+  .wk-hint::after { content: "\2193"; color: var(--color-saffron-glow); font-size: 15px; }
+  .weekend-card[open] .wk-hint::after { content: "\2191"; }
+  .weekend-card[open] .wk-hint .lbl-open { display: none; }
+  .wk-hint .lbl-close { display: none; }
+  .weekend-card[open] .wk-hint .lbl-close { display: inline; }
+  .weekend-grid { display: grid; grid-template-columns: 1fr; gap: 34px; }
+  @media (min-width: 1120px) { .weekend-card[open] .weekend-grid { grid-template-columns: 1.05fr 0.95fr; gap: clamp(28px, 3vw, 48px); } }
   .weekend-includes h3 { font-family: var(--font-sans); font-weight: 700; font-size: var(--text-caption); text-transform: uppercase; letter-spacing: -0.1px; color: var(--color-walnut); }
   .weekend-includes ul { list-style: none; margin: 18px 0 0; padding: 0; }
   .weekend-includes li { position: relative; padding: 9px 0 9px 22px; font-size: 15.5px; line-height: 1.45; border-bottom: 1px solid rgba(182,171,156,0.5); }
   .weekend-includes li:last-child { border-bottom: none; }
   .weekend-includes li::before { content: ""; position: absolute; left: 0; top: 17px; width: 9px; height: 1px; background: var(--color-saffron-glow); }
   .weekend-prices { display: flex; flex-direction: column; gap: 14px; }
-  .price-card { border: 1px solid var(--color-warm-stone); padding: 22px 24px; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-  .price-card .who { font-family: var(--font-serif); font-size: 24px; font-weight: 400; letter-spacing: -0.4px; }
-  .price-card .amounts { text-align: right; }
+  .price-card { border: 1px solid var(--color-warm-stone); padding: 20px 24px; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  .price-card .who { font-family: var(--font-serif); font-size: 22px; font-weight: 400; letter-spacing: -0.4px; }
+  .price-card .amounts { display: flex; align-items: baseline; gap: 12px; }
   .price-card .now { font-family: var(--font-sans); font-weight: 800; font-size: 24px; letter-spacing: -0.6px; white-space: nowrap; }
-  .price-card .was { display: block; font-size: 14px; color: var(--color-walnut); text-decoration: line-through; margin-top: 3px; white-space: nowrap; }
+  .price-card .was { font-size: 14px; color: var(--color-walnut); text-decoration: line-through; white-space: nowrap; }
   .weekend-limit { font-size: 14px; color: var(--color-espresso); margin-top: 4px; }
   .weekend .btn-row { margin-top: 18px; }
   .weekend .btn-primary { background: var(--color-onyx-warm); color: var(--color-parchment); }
   .weekend .btn-primary:hover { background: var(--color-saffron-glow); border-color: var(--color-saffron-glow); color: var(--color-onyx-warm); }
   .nav-weekend { color: var(--color-saffron-glow) !important; opacity: 1 !important; font-weight: 700 !important; }
-  @media (max-width: 860px) { .weekend-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 860px) {
+    .weekend-card, .weekend-card[open] { grid-template-columns: minmax(0, 1fr); justify-content: stretch; }
+  }
 
   /* ---------- Barn house detail ---------- */
   .barn-trigger { margin-top: 10px; align-self: flex-start; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.1px; border-bottom: 1px solid var(--color-saffron-glow); padding-bottom: 3px; cursor: pointer; background: none; border-width: 0 0 1px; font-family: var(--font-sans); color: inherit; }
@@ -470,7 +485,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h2>TUR HOUSE <strong>Weekend</strong></h2>
       <p class="lede">Проводжаємо літо разом. Три дні, коли вам не потрібно нічого планувати: ми вже все продумали за вас.</p>
 
-      <div class="weekend-grid">
+      <details class="weekend-card">
+        <summary>
+          <img src="img/weekend-afisha.jpg" width="900" height="1351" alt="Афіша TUR HOUSE Weekend 28-30 серпня: що входить у пакет">
+          <span class="wk-hint"><span class="lbl-open">Деталі пакета та ціни</span><span class="lbl-close">Згорнути</span></span>
+        </summary>
+
+        <div class="weekend-grid">
         <div class="weekend-includes">
           <h3>У пакет включено</h3>
           <ul>
@@ -506,7 +527,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a class="btn" href="https://www.instagram.com/tur_house_/" target="_blank" rel="noopener">Написати в Instagram</a>
           </div>
         </div>
-      </div>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -921,6 +943,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
     modal.querySelector('.wk-more').addEventListener('click', function () {
       close();
+      var card = section.querySelector('.weekend-card');
+      if (card) card.open = true;
       section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     document.addEventListener('keydown', function (e) {
