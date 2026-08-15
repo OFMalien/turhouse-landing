@@ -322,6 +322,92 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .footer-bottom { padding-top: 24px; font-size: 12px; color: var(--color-walnut); text-transform: uppercase; letter-spacing: -0.1px; }
   @media (max-width: 600px) { .footer-links { align-items: flex-start; } }
 
+  /* ---------- Weekend offer (акція 28-30.08.2026) ---------- */
+  .weekend { padding-top: clamp(48px, 6vw, 92px); padding-bottom: clamp(48px, 6vw, 92px); }
+  .weekend-box { border: 1px solid var(--color-warm-stone); border-top: 3px solid var(--color-saffron-glow); background: rgba(255,255,255,0.22); padding: clamp(26px, 3.4vw, 48px); }
+  .weekend-badge { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-sans); font-weight: 700; font-size: var(--text-caption); text-transform: uppercase; letter-spacing: -0.1px; color: var(--color-saffron-glow); }
+  .weekend-badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--color-saffron-glow); flex: none; }
+  .weekend h2 { font-size: clamp(30px, 4.6vw, 56px); line-height: 0.94; letter-spacing: -1.6px; margin-top: 12px; text-transform: none; }
+  .weekend h2 strong { font-weight: 500; }
+  .weekend .lede { margin-top: 16px; }
+  .weekend-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(28px, 4vw, 64px); margin-top: 40px; padding-top: 34px; border-top: 1px solid var(--color-warm-stone); }
+  .weekend-includes h3 { font-family: var(--font-sans); font-weight: 700; font-size: var(--text-caption); text-transform: uppercase; letter-spacing: -0.1px; color: var(--color-walnut); }
+  .weekend-includes ul { list-style: none; margin: 18px 0 0; padding: 0; }
+  .weekend-includes li { position: relative; padding: 9px 0 9px 22px; font-size: 15.5px; line-height: 1.45; border-bottom: 1px solid rgba(182,171,156,0.5); }
+  .weekend-includes li:last-child { border-bottom: none; }
+  .weekend-includes li::before { content: ""; position: absolute; left: 0; top: 17px; width: 9px; height: 1px; background: var(--color-saffron-glow); }
+  .weekend-prices { display: flex; flex-direction: column; gap: 14px; }
+  .price-card { border: 1px solid var(--color-warm-stone); padding: 22px 24px; display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .price-card .who { font-family: var(--font-serif); font-size: 24px; font-weight: 400; letter-spacing: -0.4px; }
+  .price-card .amounts { text-align: right; }
+  .price-card .now { font-family: var(--font-sans); font-weight: 800; font-size: 24px; letter-spacing: -0.6px; white-space: nowrap; }
+  .price-card .was { display: block; font-size: 14px; color: var(--color-walnut); text-decoration: line-through; margin-top: 3px; white-space: nowrap; }
+  .weekend-limit { font-size: 14px; color: var(--color-espresso); margin-top: 4px; }
+  .weekend .btn-row { margin-top: 18px; }
+  .weekend .btn-primary { background: var(--color-onyx-warm); color: var(--color-parchment); }
+  .weekend .btn-primary:hover { background: var(--color-saffron-glow); border-color: var(--color-saffron-glow); color: var(--color-onyx-warm); }
+  .nav-weekend { color: var(--color-saffron-glow) !important; opacity: 1 !important; font-weight: 700 !important; }
+  @media (max-width: 860px) { .weekend-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Barn house detail ---------- */
+  .barn-trigger { margin-top: 10px; align-self: flex-start; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.1px; border-bottom: 1px solid var(--color-saffron-glow); padding-bottom: 3px; cursor: pointer; background: none; border-width: 0 0 1px; font-family: var(--font-sans); color: inherit; }
+  .barn-trigger:hover { color: var(--color-saffron-glow); }
+  .barn { margin-top: 0; border-bottom: 1px solid var(--color-warm-stone); }
+  .barn > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--color-warm-stone); }
+  .barn > summary::-webkit-details-marker { display: none; }
+  .barn > summary .s-t { font-family: var(--font-serif); font-size: clamp(22px, 2.6vw, 30px); font-weight: 400; letter-spacing: -0.6px; }
+  .barn > summary .s-h { font-size: 13px; text-transform: uppercase; letter-spacing: -0.1px; color: var(--color-walnut); display: flex; align-items: center; gap: 12px; }
+  .barn > summary .s-h::after { content: "+"; font-family: var(--font-serif); font-size: 26px; font-weight: 300; color: var(--color-saffron-glow); line-height: 1; }
+  .barn[open] > summary .s-h::after { content: "\2212"; }
+  .barn-body { padding: 32px 0 40px; }
+  .barn-intro { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 32px; align-items: start; }
+  .barn-intro p { font-size: 16px; line-height: 1.6; max-width: 62ch; color: var(--color-espresso); }
+  .barn-facts { display: flex; flex-direction: column; gap: 10px; }
+  .barn-facts div { border-top: 1px solid var(--color-warm-stone); padding-top: 10px; font-size: 14.5px; }
+  .barn-facts .k { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: -0.1px; color: var(--color-walnut); margin-bottom: 3px; }
+  .barn-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 32px; }
+  .barn-photos button { padding: 0; border: 0; background: none; cursor: zoom-in; display: block; }
+  .barn-photos img { width: 100%; height: 300px; object-fit: cover; }
+  @media (max-width: 860px) { .barn-intro { grid-template-columns: 1fr; } .barn-photos { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .barn-photos { grid-template-columns: 1fr; } .barn-photos img { height: 380px; } }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(41,38,34,0.95); display: none; align-items: center; justify-content: center; padding: 24px; }
+  .lightbox.is-open { display: flex; }
+  .lightbox img { max-width: min(92vw, 780px); max-height: 88vh; width: auto; object-fit: contain; }
+  .lb-btn { position: absolute; background: none; border: 1px solid rgba(216,203,184,0.5); color: var(--color-parchment); width: 46px; height: 46px; border-radius: var(--radius-sm); font-size: 22px; line-height: 1; cursor: pointer; font-family: var(--font-sans); transition: background 0.3s ease, color 0.3s ease; }
+  .lb-btn:hover { background: var(--color-parchment); color: var(--color-onyx-warm); }
+  .lb-close { top: 20px; right: 20px; }
+  .lb-prev { left: 20px; top: 50%; transform: translateY(-50%); }
+  .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
+  .lb-count { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); font-size: 13px; color: var(--color-linen); letter-spacing: 0.04em; }
+  @media (max-width: 560px) { .lb-prev { left: 8px; } .lb-next { right: 8px; } .lb-close { top: 12px; right: 12px; } }
+
+  /* ---------- Weekend modal ---------- */
+  .wk-modal { position: fixed; inset: 0; z-index: 220; background: rgba(41,38,34,0.72); display: none; align-items: center; justify-content: center; padding: 24px; }
+  .wk-modal.is-open { display: flex; }
+  .wk-dialog { position: relative; background: var(--color-parchment); border-top: 3px solid var(--color-saffron-glow); max-width: 440px; width: 100%; padding: 36px 32px 32px; max-height: 90vh; overflow-y: auto; }
+  .wk-dialog .wk-badge { font-family: var(--font-sans); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: -0.1px; color: var(--color-saffron-glow); }
+  .wk-dialog h3 { font-size: 34px; line-height: 0.95; letter-spacing: -1.2px; margin-top: 10px; text-transform: none; }
+  .wk-dialog .wk-dates { font-size: 15px; color: var(--color-espresso); margin-top: 12px; line-height: 1.5; }
+  .wk-rows { margin-top: 20px; border-top: 1px solid var(--color-warm-stone); }
+  .wk-rows div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--color-warm-stone); font-size: 15px; }
+  .wk-rows .n { font-weight: 800; font-size: 19px; letter-spacing: -0.4px; white-space: nowrap; }
+  .wk-rows .w { font-size: 13px; color: var(--color-walnut); text-decoration: line-through; margin-left: 8px; }
+  .wk-dialog .btn { width: 100%; margin-top: 22px; background: var(--color-onyx-warm); color: var(--color-parchment); }
+  .wk-dialog .btn:hover { background: var(--color-saffron-glow); border-color: var(--color-saffron-glow); color: var(--color-onyx-warm); }
+  .wk-more { display: block; text-align: center; margin-top: 16px; font-size: 13.5px; color: var(--color-espresso); border-bottom: 1px solid var(--color-warm-stone); padding-bottom: 3px; width: fit-content; margin-left: auto; margin-right: auto; cursor: pointer; background: none; border-width: 0 0 1px; font-family: var(--font-sans); }
+  .wk-close { position: absolute; top: 10px; right: 10px; width: 38px; height: 38px; background: none; border: 0; font-size: 24px; line-height: 1; color: var(--color-espresso); cursor: pointer; font-family: var(--font-sans); }
+  .wk-close:hover { color: var(--color-onyx-warm); }
+  @media (max-width: 560px) {
+    .wk-modal { align-items: flex-end; padding: 0; }
+    .wk-dialog { max-width: none; padding: 30px 22px 26px; max-height: 88vh; }
+    .wk-dialog h3 { font-size: 29px; }
+  }
+
+  /* акція закінчилась - все її сліди зникають */
+  .weekend-over #weekend, .weekend-over .nav-weekend, .weekend-over #weekendModal { display: none !important; }
+
   /* ---------- Sticky mobile CTA ---------- */
   .sticky-cta { position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 90; display: none; }
   .sticky-cta .btn { width: 100%; background: var(--color-onyx-warm); color: var(--color-parchment); }
@@ -339,6 +425,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <nav class="nav on-dark" id="siteNav">
   <a href="#top" class="nav-logo"><img src="img/logo.png" alt="Tur House"> Tur House</a>
   <div class="nav-links">
+    <a href="#weekend" class="nav-weekend">Weekend 28-30.08</a>
     <a href="#formats">Де жити</a>
     <a href="#territory">Що навколо</a>
     <a href="#gallery">Галерея</a>
@@ -376,6 +463,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
+<section id="weekend" class="weekend">
+  <div class="wrap">
+    <div class="weekend-box">
+      <span class="weekend-badge">Гаряча пропозиція &middot; 28-30 серпня</span>
+      <h2>TUR HOUSE <strong>Weekend</strong></h2>
+      <p class="lede">Проводжаємо літо разом. Три дні, коли вам не потрібно нічого планувати: ми вже все продумали за вас.</p>
+
+      <div class="weekend-grid">
+        <div class="weekend-includes">
+          <h3>У пакет включено</h3>
+          <ul>
+            <li>сніданки на весь період проживання</li>
+            <li>вечори біля багаття</li>
+            <li>відвідування справжньої бані на дровах</li>
+            <li>прогулянки на природі</li>
+            <li>вечір кіно з піцею</li>
+            <li>активності для дітей та дорослих</li>
+            <li>відкритий басейн з підігрівом</li>
+            <li>пізній виїзд до 16:00</li>
+          </ul>
+        </div>
+
+        <div class="weekend-prices">
+          <div class="price-card">
+            <span class="who">Для двох</span>
+            <span class="amounts">
+              <span class="now">8 500 грн</span>
+              <span class="was">11 300 грн</span>
+            </span>
+          </div>
+          <div class="price-card">
+            <span class="who">Для чотирьох</span>
+            <span class="amounts">
+              <span class="now">16 400 грн</span>
+              <span class="was">22 600 грн</span>
+            </span>
+          </div>
+          <p class="weekend-limit">Місць на Weekend обмежена кількість.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" href="tel:+380961275553">Забронювати Weekend</a>
+            <a class="btn" href="https://www.instagram.com/tur_house_/" target="_blank" rel="noopener">Написати в Instagram</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="formats">
   <div class="wrap">
     <span class="caption">Де жити</span>
@@ -402,9 +537,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <p class="desc">Для компанії чи великої родини</p>
         <div class="price">Барн-хаус 8 осіб - 11000 грн / доба</div>
         <div class="price">12 осіб - 13000 грн / доба</div>
+        <button type="button" class="barn-trigger" data-barn-open>Детальніше про Барн-хаус &rarr;</button>
       </div>
     </div>
     <p class="desc" style="margin-top:24px;">У вартість проживання входить користування зоною BBQ, басейном.</p>
+
+    <details class="barn" id="barn">
+      <summary>
+        <span class="s-t">Барн-хаус зсередини</span>
+        <span class="s-h">9 фото</span>
+      </summary>
+      <div class="barn-body">
+        <div class="barn-intro">
+          <p>Окремий будинок для компанії до 8 осіб. Панорамне остеклення на два поверхи, вітальня з каміном і великим диваном, кухня з технікою та обіднім столом. Спальні на двох поверхах, ванна кімната з окремою ванною та санвузол з душовою. На другому поверсі - зона з телевізором. З вікон видно басейн і дитячий майданчик, поруч власна ділянка з газоном.</p>
+          <div class="barn-facts">
+            <div><span class="k">Місткість</span>до 8 осіб</div>
+            <div><span class="k">Вартість</span>11000 грн / доба</div>
+            <div><span class="k">Включено</span>зона BBQ, басейн у період його роботи</div>
+            <div><span class="k">Інтернет</span>Starlink на всій території</div>
+          </div>
+        </div>
+
+        <div class="barn-photos" id="barnPhotos">
+          <button type="button"><img src="img/barn/barn-01-fasad.jpg" loading="lazy" width="733" height="1280" alt="Барн-хаус Tur House - фасад із панорамним остекленням і газон"></button>
+          <button type="button"><img src="img/barn/barn-02-panorama.jpg" loading="lazy" width="960" height="1280" alt="Двосвітла вітальня Барн-хауса з панорамними вікнами та видом на басейн"></button>
+          <button type="button"><img src="img/barn/barn-03-vitalnya-kamin.jpg" loading="lazy" width="960" height="1280" alt="Вітальня Барн-хауса з каміном, диваном і телевізором"></button>
+          <button type="button"><img src="img/barn/barn-04-kukhnya.jpg" loading="lazy" width="960" height="1280" alt="Кухня Барн-хауса з технікою та обіднім столом"></button>
+          <button type="button"><img src="img/barn/barn-05-spalnya.jpg" loading="lazy" width="960" height="1280" alt="Спальня Барн-хауса з двоспальним ліжком і дерев'яною стіною"></button>
+          <button type="button"><img src="img/barn/barn-06-spalnya-verkh.jpg" loading="lazy" width="960" height="1280" alt="Спальня на другому поверсі Барн-хауса з диваном"></button>
+          <button type="button"><img src="img/barn/barn-07-tv-zona.jpg" loading="lazy" width="960" height="1280" alt="Зона відпочинку з телевізором на другому поверсі Барн-хауса"></button>
+          <button type="button"><img src="img/barn/barn-08-vanna.jpg" loading="lazy" width="960" height="1280" alt="Ванна кімната Барн-хауса з окремою ванною"></button>
+          <button type="button"><img src="img/barn/barn-09-dush.jpg" loading="lazy" width="960" height="1280" alt="Санвузол Барн-хауса з душовою кабіною"></button>
+        </div>
+
+        <div class="btn-row">
+          <a class="btn" href="https://go.bookmenow.pro/t/turhouse" target="_blank" rel="noopener">Перевірити вільні дати</a>
+          <a class="btn" href="tel:+380961275553">Зателефонувати</a>
+        </div>
+      </div>
+    </details>
   </div>
 </section>
 
@@ -454,6 +625,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="gallery-cap">
           <div class="t">Будинки для великої компанії</div>
           <div class="p">Барн-хаус 8 осіб - 11000 грн, 12 осіб - 13000 грн</div>
+          <button type="button" class="map-link" data-barn-open style="cursor:pointer; background:none; border-width:0 0 1px; font-family:var(--font-sans); color:inherit; padding:0 0 2px;">Подивитись Барн-хаус зсередини &rarr;</button>
         </div>
       </div>
       <div class="gallery-item">
@@ -618,12 +790,153 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a class="btn" href="https://go.bookmenow.pro/t/turhouse" target="_blank" rel="noopener">Забронювати зараз</a>
 </div>
 
+<div class="wk-modal" id="weekendModal" role="dialog" aria-modal="true" aria-labelledby="wkTitle">
+  <div class="wk-dialog">
+    <button type="button" class="wk-close" aria-label="Закрити">&times;</button>
+    <span class="wk-badge">Гаряча пропозиція</span>
+    <h3 id="wkTitle">TUR HOUSE <strong>Weekend</strong></h3>
+    <p class="wk-dates">28-30 серпня. Три дні, коли вам не потрібно нічого планувати: сніданки, баня на дровах, вечори біля багаття, басейн з підігрівом, пізній виїзд до 16:00.</p>
+    <div class="wk-rows">
+      <div><span>Для двох</span><span><span class="n">8 500 грн</span><span class="w">11 300 грн</span></span></div>
+      <div><span>Для чотирьох</span><span><span class="n">16 400 грн</span><span class="w">22 600 грн</span></span></div>
+    </div>
+    <a class="btn" href="tel:+380961275553">Забронювати Weekend</a>
+    <button type="button" class="wk-more">Що входить у пакет</button>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото Барн-хауса">
+  <button type="button" class="lb-btn lb-close" aria-label="Закрити">&times;</button>
+  <button type="button" class="lb-btn lb-prev" aria-label="Попереднє фото">&lsaquo;</button>
+  <img id="lightboxImg" src="" alt="">
+  <button type="button" class="lb-btn lb-next" aria-label="Наступне фото">&rsaquo;</button>
+  <span class="lb-count" id="lightboxCount"></span>
+</div>
+
 <script>
   var nav = document.getElementById('siteNav');
   window.addEventListener('scroll', function () {
     if (window.scrollY > window.innerHeight * 0.7) { nav.classList.add('scrolled'); }
     else { nav.classList.remove('scrolled'); }
   }, { passive: true });
+
+  /* ---------- Барн-хаус: кнопка «Детальніше» розкриває панель ---------- */
+  (function () {
+    var panel = document.getElementById('barn');
+    if (!panel) return;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-barn-open]'), function (btn) {
+      btn.addEventListener('click', function () {
+        panel.open = true;
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  })();
+
+  /* ---------- Лайтбокс для фото Барн-хауса ---------- */
+  (function () {
+    var box = document.getElementById('lightbox');
+    var grid = document.getElementById('barnPhotos');
+    if (!box || !grid) return;
+
+    var img = document.getElementById('lightboxImg');
+    var count = document.getElementById('lightboxCount');
+    var shots = Array.prototype.slice.call(grid.querySelectorAll('img'));
+    var idx = 0;
+    var lastFocus = null;
+
+    function show(i) {
+      idx = (i + shots.length) % shots.length;
+      img.src = shots[idx].src;
+      img.alt = shots[idx].alt;
+      count.textContent = (idx + 1) + ' / ' + shots.length;
+    }
+    function open(i) {
+      lastFocus = document.activeElement;
+      show(i);
+      box.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      box.querySelector('.lb-close').focus();
+    }
+    function close() {
+      box.classList.remove('is-open');
+      document.body.style.overflow = '';
+      if (lastFocus) lastFocus.focus();
+    }
+
+    shots.forEach(function (shot, i) {
+      shot.parentNode.addEventListener('click', function () { open(i); });
+    });
+    box.querySelector('.lb-close').addEventListener('click', close);
+    box.querySelector('.lb-prev').addEventListener('click', function () { show(idx - 1); });
+    box.querySelector('.lb-next').addEventListener('click', function () { show(idx + 1); });
+    box.addEventListener('click', function (e) { if (e.target === box) close(); });
+    document.addEventListener('keydown', function (e) {
+      if (!box.classList.contains('is-open')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(idx - 1);
+      if (e.key === 'ArrowRight') show(idx + 1);
+    });
+  })();
+
+  /* ---------- Акція TUR HOUSE Weekend ----------
+     Після 30.08.2026 (23:59 за Києвом) секція, пункт меню і вікно зникають самі.
+     Дату зашито в мітку разом із поясом, тому часовий пояс відвідувача ролі не грає. */
+  (function () {
+    var WEEKEND_END = new Date('2026-08-30T23:59:59+03:00').getTime();
+    if (Date.now() > WEEKEND_END) {
+      document.documentElement.classList.add('weekend-over');
+      return;
+    }
+
+    var modal = document.getElementById('weekendModal');
+    var section = document.getElementById('weekend');
+    if (!modal || !section) return;
+
+    var KEY = 'th_weekend_seen';
+    var lastFocus = null;
+    var shown = false;
+
+    function seen() {
+      try { return sessionStorage.getItem(KEY) === '1'; } catch (e) { return false; }
+    }
+    function remember() {
+      try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
+    }
+    function open() {
+      if (shown || seen()) return;
+      shown = true;
+      remember();
+      lastFocus = document.activeElement;
+      modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      modal.querySelector('.wk-close').focus();
+    }
+    function close() {
+      modal.classList.remove('is-open');
+      document.body.style.overflow = '';
+      if (lastFocus) lastFocus.focus();
+    }
+
+    modal.querySelector('.wk-close').addEventListener('click', close);
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+    modal.querySelector('.wk-more').addEventListener('click', function () {
+      close();
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+    });
+
+    /* прийшов одразу на блок акції - вікно не потрібне */
+    if (window.location.hash === '#weekend' || seen()) { shown = true; return; }
+
+    var timer = setTimeout(open, 6000);
+    function onScroll() {
+      var reach = window.scrollY / (document.body.scrollHeight - window.innerHeight || 1);
+      if (reach > 0.4) { clearTimeout(timer); open(); window.removeEventListener('scroll', onScroll); }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
 </script>
 
 </body>
