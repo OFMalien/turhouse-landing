@@ -372,7 +372,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   @media (max-width: 520px) { .barn-photos { grid-template-columns: 1fr; } .barn-photos img { height: 380px; } }
 
   /* ---------- Lightbox ---------- */
-  .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(41,38,34,0.95); display: none; align-items: center; justify-content: center; padding: 24px; }
+  .lightbox { position: fixed; inset: 0; z-index: 200; background: rgba(41,38,34,0.95); display: none; align-items: center; justify-content: center; padding: 24px; outline: none; }
   .lightbox.is-open { display: flex; }
   .lightbox img { max-width: min(92vw, 780px); max-height: 88vh; width: auto; object-fit: contain; }
   .lb-btn { position: absolute; background: none; border: 1px solid rgba(216,203,184,0.5); color: var(--color-parchment); width: 46px; height: 46px; border-radius: var(--radius-sm); font-size: 22px; line-height: 1; cursor: pointer; font-family: var(--font-sans); transition: background 0.3s ease, color 0.3s ease; }
@@ -386,7 +386,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   /* ---------- Weekend modal ---------- */
   .wk-modal { position: fixed; inset: 0; z-index: 220; background: rgba(41,38,34,0.72); display: none; align-items: center; justify-content: center; padding: 24px; }
   .wk-modal.is-open { display: flex; }
-  .wk-dialog { position: relative; background: var(--color-parchment); border-top: 3px solid var(--color-saffron-glow); max-width: 440px; width: 100%; padding: 36px 32px 32px; max-height: 90vh; overflow-y: auto; }
+  .wk-dialog { position: relative; background: var(--color-parchment); border-top: 3px solid var(--color-saffron-glow); max-width: 440px; width: 100%; padding: 36px 32px 32px; max-height: 90vh; overflow-y: auto; outline: none; }
   .wk-dialog .wk-badge { font-family: var(--font-sans); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: -0.1px; color: var(--color-saffron-glow); }
   .wk-dialog h3 { font-size: 34px; line-height: 0.95; letter-spacing: -1.2px; margin-top: 10px; text-transform: none; }
   .wk-dialog .wk-dates { font-size: 15px; color: var(--color-espresso); margin-top: 12px; line-height: 1.5; }
@@ -791,7 +791,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <div class="wk-modal" id="weekendModal" role="dialog" aria-modal="true" aria-labelledby="wkTitle">
-  <div class="wk-dialog">
+  <div class="wk-dialog" tabindex="-1">
     <button type="button" class="wk-close" aria-label="Закрити">&times;</button>
     <span class="wk-badge">Гаряча пропозиція</span>
     <h3 id="wkTitle">TUR HOUSE <strong>Weekend</strong></h3>
@@ -805,7 +805,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото Барн-хауса">
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Фото Барн-хауса" tabindex="-1">
   <button type="button" class="lb-btn lb-close" aria-label="Закрити">&times;</button>
   <button type="button" class="lb-btn lb-prev" aria-label="Попереднє фото">&lsaquo;</button>
   <img id="lightboxImg" src="" alt="">
@@ -855,7 +855,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       show(i);
       box.classList.add('is-open');
       document.body.style.overflow = 'hidden';
-      box.querySelector('.lb-close').focus();
+      box.focus();
     }
     function close() {
       box.classList.remove('is-open');
@@ -909,7 +909,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       lastFocus = document.activeElement;
       modal.classList.add('is-open');
       document.body.style.overflow = 'hidden';
-      modal.querySelector('.wk-close').focus();
+      modal.querySelector('.wk-dialog').focus();
     }
     function close() {
       modal.classList.remove('is-open');
