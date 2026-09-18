@@ -1775,6 +1775,165 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     window.addEventListener('scroll', onScroll, { passive: true });
   })();
+
+  /* ---------- 6. Conversion Analytics & Lead Tracking ---------- */
+  (function () {
+    window.dataLayer = window.dataLayer || [];
+
+    function sendMetaPixel(eventName, params) {
+      if (typeof window.fbq === 'function') {
+        try {
+          window.fbq('track', eventName, params);
+        } catch (err) {
+          console.warn('Meta Pixel track error:', err);
+        }
+      }
+    }
+
+    function sendGtag(eventName, params) {
+      if (typeof window.gtag === 'function') {
+        try {
+          window.gtag('event', eventName, params);
+        } catch (err) {
+          console.warn('gtag event error:', err);
+        }
+      }
+    }
+
+    function getPlacement(el) {
+      if (el.closest('#weekendModal')) return 'promo_modal_weekend';
+      if (el.closest('#weekend')) return 'promo_section_weekend';
+      if (el.closest('#siteNav')) return 'header_nav';
+      if (el.closest('#navDrawer')) return 'mobile_drawer';
+      if (el.closest('.hero')) return 'hero_header';
+      if (el.closest('#barn')) return 'barn_house_card';
+      if (el.closest('#formats')) return 'formats_section';
+      if (el.closest('#spa') || el.closest('.spa-cards-section')) return 'spa_section';
+      if (el.closest('#proof')) return 'social_proof';
+      if (el.closest('#reviews')) return 'reviews_section';
+      if (el.closest('#location')) return 'location_section';
+      if (el.closest('.cta-band')) return 'final_cta_band';
+      if (el.closest('.sticky-cta')) return 'sticky_mobile_cta';
+      if (el.closest('footer')) return 'footer';
+      return 'general';
+    }
+
+    document.addEventListener('click', function (e) {
+      var target = e.target;
+      var link = target && target.closest ? target.closest('a') : null;
+      if (!link) return;
+
+      var href = (link.getAttribute('href') || '').trim();
+      if (!href) return;
+
+      var placement = getPlacement(link);
+      var text = (link.innerText || link.textContent || '').trim().replace(/\s+/g, ' ');
+
+      // 1. BookmeNow Online Booking (5 buttons)
+      if (href.indexOf('go.bookmenow.pro') !== -1) {
+        window.dataLayer.push({
+          event: 'booking_click',
+          event_category: 'ecommerce',
+          event_action: 'click_bookmenow',
+          event_label: placement + ' | ' + text,
+          placement: placement,
+          link_url: href
+        });
+        // Compatibility with legacy Tolk GTM tag
+        window.dataLayer.push({ event: 'Bron_online_ga4', placement: placement });
+
+        sendMetaPixel('InitiateCheckout', {
+          content_name: 'BookmeNow Booking',
+          content_category: placement,
+          currency: 'UAH'
+        });
+        sendGtag('begin_checkout', {
+          event_category: 'booking',
+          event_label: placement
+        });
+        return;
+      }
+
+      // 2. Phone Calls (6 links)
+      if (href.indexOf('tel:') === 0) {
+        var isPromo = placement === 'promo_modal_weekend' || placement === 'promo_section_weekend';
+        window.dataLayer.push({
+          event: isPromo ? 'promo_booking_click' : 'tel_click',
+          event_category: isPromo ? 'promotion' : 'contact',
+          event_action: isPromo ? 'call_promo_booking' : 'click_phone',
+          event_label: placement + ' | ' + text,
+          placement: placement,
+          phone_number: '+380961275553'
+        });
+        // Compatibility with GTM tags
+        window.dataLayer.push({ event: 'click_tel', placement: placement });
+        window.dataLayer.push({ event: 'Click_tel_ga4', placement: placement });
+
+        if (isPromo) {
+          sendMetaPixel('Lead', {
+            content_name: 'Теплі вихідні Booking Call',
+            content_category: placement,
+            currency: 'UAH'
+          });
+          sendGtag('generate_lead', {
+            event_category: 'promo_weekend',
+            event_label: placement
+          });
+        } else {
+          sendMetaPixel('Contact', {
+            content_name: 'Phone Call',
+            content_category: placement
+          });
+          sendGtag('contact', {
+            event_category: 'phone',
+            event_label: placement
+          });
+        }
+        return;
+      }
+
+      // 3. Instagram Direct / Profile (5 links)
+      if (href.indexOf('instagram.com') !== -1) {
+        var isDirect = placement === 'promo_section_weekend' || placement === 'hero_header';
+        window.dataLayer.push({
+          event: isDirect ? 'instagram_direct_click' : 'instagram_click',
+          event_category: 'social',
+          event_action: 'click_instagram',
+          event_label: placement + ' | ' + text,
+          placement: placement,
+          link_url: href
+        });
+        // Compatibility with GTM tags
+        window.dataLayer.push({ event: 'Click_inst_ga4', placement: placement });
+
+        sendMetaPixel('Contact', {
+          content_name: isDirect ? 'Instagram Direct Message' : 'Instagram Profile View',
+          content_category: placement
+        });
+        sendGtag('contact', {
+          event_category: 'social_instagram',
+          event_label: placement
+        });
+        return;
+      }
+
+      // 4. Map & Route Directions (Google Maps / Waze)
+      if (href.indexOf('google.com/maps') !== -1 || href.indexOf('waze.com') !== -1) {
+        window.dataLayer.push({
+          event: 'map_route_click',
+          event_category: 'navigation',
+          event_action: 'get_directions',
+          event_label: placement + ' | ' + (href.indexOf('waze') !== -1 ? 'waze' : 'google_maps'),
+          placement: placement,
+          link_url: href
+        });
+        sendMetaPixel('FindLocation', {
+          content_name: 'Route Directions',
+          content_category: placement
+        });
+      }
+    }, true);
+  })();
 </script>
 
 </body>
