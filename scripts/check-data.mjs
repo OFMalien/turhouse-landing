@@ -19,7 +19,7 @@ const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600,
 const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
 // C9: відстань і час у дорозі не вказувати взагалі (км, "N хвилин їзди", "година в дорозі"). Слово "хвилин" саме по собі дозволене (відгук гостя: "з перших хвилин").
 const CYR_CLASS = 'А-Яа-яІіЇїЄєҐґ';
-const C9_RE = new RegExp(`(^|[^${CYR_CLASS}])км([^${CYR_CLASS}]|$)|кілометр|хвилин[${CYR_CLASS}']*\\s+(їзди|в дорозі|дороги|пішки|на машині)|годин[${CYR_CLASS}']*\\s+(їзди|в дорозі)|\\d+\\s*(хв|год)([^${CYR_CLASS}]|$)`, 'i');
+const C9_RE = new RegExp(`(^|[^${CYR_CLASS}])км([^${CYR_CLASS}]|$)|кілометр|хвилин[${CYR_CLASS}']*\\s+(їзди|[вуи] дорозі|дороги|пішки|на машині)|годин[${CYR_CLASS}']*\\s+(їзди|[вуи] дорозі)|(дор(ог|оз)[${CYR_CLASS}]*|їхат[${CYR_CLASS}]*|їзд[${CYR_CLASS}]*|добрат[${CYR_CLASS}]*)[^.]{0,60}(хвилин[${CYR_CLASS}]*|годин[${CYR_CLASS}]*)|(хвилин[${CYR_CLASS}]*|годин[${CYR_CLASS}]*)[^.]{0,60}(дор(ог|оз)[${CYR_CLASS}]*|їхат[${CYR_CLASS}]*|їзд[${CYR_CLASS}]*)|\\d+\\s*(хв|год)([^${CYR_CLASS}]|$)`, 'i');
 const FORBIDDEN_TEXT = [C9_RE, /(будинок|дім|дом)\s+на\s+12/i, /Барн\s?Хаус|Барнхаус/i, /ретрит/i, /райськ/i, /незабутн/i, /унікальна атмосфера/i, /\b4500\b/, /\b5200\b/, /\b8200\b/, /\b15800\b/, /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u];
 
 // Ціни страв меню не входять у список цін проживання: menu.json перевіряється окремо, по таблиці з 28 позицій (нижче).
@@ -252,7 +252,7 @@ for (const f of contentFiles) {
   scan(data, `texts/${f}`, true);
   if (/грн/i.test(all)) fail(`texts/${f}: у текстах сторінок цін немає, вони беруться з _data (ТЗ §6)`);
   if (/[–—]/.test(all)) fail(`texts/${f}: у тексті довге тире, пишемо двокрапку, кому або крапку`);
-  if (/TUR HOUSE|Tur house|tur house|TurHouse|Tur-House/.test(all)) fail(`texts/${f}: назва пишеться "Tur House", капс тільки через CSS (C8)`);
+  if ([...all.matchAll(/tur[ \-]?house/gi)].some((m) => m[0] !== 'Tur House')) fail(`texts/${f}: назва пишеться "Tur House", капс тільки через CSS (C8)`);
   for (const u of collectLinks(data)) if (!NAV_URLS.includes(u) && u !== '/pryvatnist/') fail(`texts/${f}: посилання ${u} не веде на сторінку сайту`);
   // зовнішні посилання лежать в полі href і дозволені лише на офіційний сайт парку природи
   for (const h of collectHrefs(data)) if (!ALLOWED_EXTERNAL.includes(h)) fail(`texts/${f}: зовнішнє посилання ${h} не дозволене (дозволено: ${ALLOWED_EXTERNAL.join(', ')})`);
@@ -511,6 +511,28 @@ else {
   for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!linkedO.has(u)) fail(`texts/okolitsi.json: немає посилання на ${u} (перелінковка)`);
 }
 
+// texts/yak-distatysya.json: як дістатися (E3-T14). Маршрут тільки з живого лендингу; C9: жодних км і часу в дорозі; транспорт, парковка, в'їзд невідомі.
+const routePage = contentFiles.includes('yak-distatysya.json') ? readContent('yak-distatysya.json') : null;
+if (!routePage) fail('texts/yak-distatysya.json: немає файлу');
+else {
+  checkMeta('yak-distatysya.json', routePage.meta, { titleHas: ['Як дістатися', 'Tur House', 'Беремицьке'], descHas: ['з Києва', 'Google Maps', 'Waze'] });
+  if (routePage.hero?.h1 !== 'Як дістатися до Tur House') fail('texts/yak-distatysya.json: hero.h1 «Як дістатися до Tur House»');
+  if (!/парком природи «Беремицьке»/.test(routePage.hero?.lede || '') || !/Чернігівщин/.test(routePage.hero?.lede || '')) fail('texts/yak-distatysya.json: hero.lede про парк природи «Беремицьке» і Чернігівщину');
+  if (routePage.route?.heading !== 'Як дістатися в Беремицьке з Києва') fail('texts/yak-distatysya.json: route.heading «Як дістатися в Беремицьке з Києва» (кластер ТЗ §6)');
+  // маршрут дослівно з живого лендингу (узгоджений з клієнтом, C5): Броварським проспектом, далі на Зазим'я та Літки
+  if (routePage.route?.text !== "Дорога з Києва: Броварським проспектом, далі на Зазим'я та Літки.") fail("texts/yak-distatysya.json: route.text має бути маршрутом з живого лендингу («Броварським проспектом, далі на Зазим'я та Літки»)");
+  if (!/Google Maps/.test(routePage.navigator?.text || '') || !/Waze/.test(routePage.navigator?.text || '')) fail('texts/yak-distatysya.json: navigator.text про Google Maps і Waze');
+  if (routePage.map?.button !== 'Показати карту' || !/тільки після натискання/.test(routePage.map?.note || '')) fail('texts/yak-distatysya.json: карта вантажиться після кліку («Показати карту», «тільки після натискання»)');
+  if (routePage.landmark?.link?.url !== '/okolitsi/') fail('texts/yak-distatysya.json: landmark.link на /okolitsi/');
+  if (!/зателефонуйте/i.test(routePage.help?.text || '') || !/Direct/.test(routePage.help?.text || '')) fail('texts/yak-distatysya.json: help.text пропонує телефон і Instagram Direct');
+  // чого в джерелах немає: Остер (маршрут з ТЗ), асфальт, в'їзд, парковка, громадський транспорт, таксі, траса
+  const routeJson = JSON.stringify(routePage);
+  if (new RegExp(`(?<![${CYR_CLASS}])(Остер|асфальт|під.їзд|в.їзд|парковк|паркінг|автобус|маршрутк|електричк|потяг|залізнич|таксі|трас[аиуі]|шосе|автомагістрал|GPS|координат|бездоріж|ґрунтов)`, 'i').test(routeJson)) fail("texts/yak-distatysya.json: у тексті є маршрут, транспорт, парковка чи стан дороги, яких немає в джерелах (Остер, асфальт, в'їзд, парковка, автобус тощо), C6");
+  checkPagePhotos('yak-distatysya.json', [routePage.hero?.photo]);
+  const linkedR = new Set(collectLinks(routePage));
+  for (const u of ['/okolitsi/', '/kontakty/', '/nomery/', '/kotedzhi/', '/barn-house/']) if (!linkedR.has(u)) fail(`texts/yak-distatysya.json: немає посилання на ${u} (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -537,4 +559,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, yak-distatysya, promo, photos, ціни і заборонені слова)');
