@@ -122,6 +122,11 @@ export default function (eleventyConfig) {
     return JSON.stringify(ctx).replace(/</g, '\\u003c');
   });
 
+  // JSON-LD: серіалізація для вставки в <script>. "<" екранується, щоб розмітка не розірвала тег.
+  eleventyConfig.addFilter('jsonLd', (obj) =>
+    JSON.stringify(obj).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029'),
+  );
+
   // Абсолютна адреса сторінки для canonical, og:url, sitemap.
   // page.url не містить pathPrefix, origin для превью його містить.
   eleventyConfig.addFilter('absoluteUrl', (pageUrl) => `${env.origin}${pageUrl}`);
