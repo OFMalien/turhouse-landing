@@ -349,12 +349,44 @@ else {
   if (!/до 8 або до 12 гостей/.test(kotedzhi.group?.text || '') || !/двох гостей/.test(kotedzhi.group?.text || '')) fail('texts/kotedzhi.json: group.text про номери для двох гостей і Барн-хаус до 8 або до 12 гостей (R4, R6)');
   if (!/BookmeNow/.test(kotedzhi.booking?.text || '') || !/Direct/.test(kotedzhi.booking?.text || '')) fail('texts/kotedzhi.json: booking.text має згадувати BookmeNow і Instagram Direct');
   // комплектація, якої немає в джерелах (у ТЗ є посуд, опалення, постіль, але живий лендинг їх не підтверджує), Wi-Fi у котеджах (тільки "на території"), спальні, площа, вечірній вигляд
-  if (new RegExp(`(?<![${CYR_CLASS}])(посуд|опален|постіль|постільн|білизн|рушник|кондиціонер|камін|телевізор|санвуз|ванн|душ|спальн|снідан|кв\\.?\\s?м|м²|паркін|парковк|дитяч|холодильник|балкон)|wi-?fi|вайфай`, 'i').test(JSON.stringify(kotedzhi))) fail('texts/kotedzhi.json: у тексті є комплектація або зручності, яких немає в джерелах (посуд, опалення, спальні, Wi-Fi тощо), C6');
+  if (new RegExp(`(?<![${CYR_CLASS}])(посуд|опален|постіль|постільн|білизн|рушник|кондиціонер|камін|телевізор|санвуз|ванн|душ|спальн|спален|снідан|кв\\.?\\s?м|м²|паркін|парковк|дитяч|холодильник|балкон)|wi-?fi|вайфай`, 'i').test(JSON.stringify(kotedzhi))) fail('texts/kotedzhi.json: у тексті є комплектація або зручності, яких немає в джерелах (посуд, опалення, спальні, Wi-Fi тощо), C6');
   // фото: інтер'єри з фіолетовими стінами (verify, питання 9) на сторінку не ставимо; у галереї два підтверджені фасадні кадри
   checkPagePhotos('kotedzhi.json', [kotedzhi.hero?.photo, ...(kotedzhi.gallery?.photos || [])]);
   if (!same(kotedzhi.gallery?.photos, ['cottages/cottage-orange', 'cottages/cottages-sunset'])) fail('texts/kotedzhi.json: у галереї два підтверджені фасадні кадри (інтер\'єри з verify чекають відповіді на питання 9)');
   const linkedK = new Set(collectLinks(kotedzhi));
   for (const u of ['/nomery/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedK.has(u)) fail(`texts/kotedzhi.json: немає посилання на ${u} (перелінковка)`);
+}
+
+// texts/barn-house.json: сторінка Барн-хауса (E3-T10). R6: один дім, два тарифи; факти тільки з barn.json (живий лендинг), планування невідоме
+const barnPage = contentFiles.includes('barn-house.json') ? readContent('barn-house.json') : null;
+if (!barnPage) fail('texts/barn-house.json: немає файлу');
+else {
+  checkMeta('barn-house.json', barnPage.meta, { titleHas: ['Барн-хаус', 'Tur House'], descHas: ['під Києвом', 'Барн-хаус', 'до 8 або до 12 гостей'] });
+  if (!/Барн-хаус/.test(barnPage.hero?.h1 || '') || !/окремий будинок/i.test(barnPage.hero?.h1 || '')) fail('texts/barn-house.json: hero.h1 "Барн-хаус: окремий будинок ..."');
+  if (!/Один будинок/.test(barnPage.hero?.lede || '') || !/До 8 або до 12 гостей/.test(barnPage.hero?.lede || '')) fail('texts/barn-house.json: hero.lede "Один будинок ... До 8 або до 12 гостей" (R6)');
+  const introB = barnPage.intro?.text || '';
+  if (!/будинок для компанії під Києвом/i.test(introB) || !/Чернігівщин/.test(introB)) fail('texts/barn-house.json: у вступі кластер ТЗ «будинок для компанії під Києвом» і «Чернігівщина»');
+  if (!/Будинок один/.test(barnPage.tariffs?.text || '') || !/до 8 або до 12/.test(barnPage.tariffs?.text || '') || !/за добу/.test(barnPage.tariffs?.text || '')) fail('texts/barn-house.json: tariffs.text "Будинок один ... до 8 або до 12 ... за добу" (R6)');
+  // inside і outside збігаються з підтвердженими пунктами barn.json
+  const hl = barn?.highlights || [];
+  const inside = `${barnPage.inside?.lead || ''}`;
+  for (const w of ['Панорамне скління на два поверхи', 'вітальня з каміном і великим диваном', 'кухня з технікою та обіднім столом', 'Спальні розташовані на двох поверхах', 'на другому поверсі є зона з телевізором']) if (!inside.includes(w)) fail(`texts/barn-house.json: inside.lead без "${w}" (пункт із barn.json)`);
+  for (const w of ['Панорамне скління на два поверхи', 'Вітальня з каміном і великим диваном', 'Кухня з технікою та обіднім столом', 'Спальні на двох поверхах', 'На другому поверсі зона з телевізором']) if (!hl.includes(w)) fail(`barn.json: у highlights немає "${w}", на який спирається texts/barn-house.json`);
+  const outside = barnPage.outside?.text || '';
+  if (!/власна ділянка з газоном/.test(outside) || !/З вікон видно басейн і дитячий майданчик/.test(outside) || !hl.includes('Власна ділянка з газоном') || !hl.includes('З вікон видно басейн і дитячий майданчик')) fail('texts/barn-house.json: outside.text "власна ділянка з газоном" і "З вікон видно басейн і дитячий майданчик" (є в barn.json)');
+  const inclB = (barnPage.included?.items || []).join(' ');
+  for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(inclB)) fail(`texts/barn-house.json: included.items без "${w}"`);
+  if (!/двох гостей/.test(barnPage.group?.text || '') || !/чотирьох і шести гостей/.test(barnPage.group?.text || '')) fail('texts/barn-house.json: group.text про номери для двох гостей і котеджі для чотирьох і шести (R4, R5)');
+  if (!/BookmeNow/.test(barnPage.booking?.text || '') || !/Direct/.test(barnPage.booking?.text || '')) fail('texts/barn-house.json: booking.text має згадувати BookmeNow і Instagram Direct');
+  // чого в джерелах немає: число спалень і ліжок, огороджена територія, мангал, джакузі, паркінг, заходи (корпоратив, весілля, банкет, музика), Wi-Fi, сніданок, кондиціонер
+  const barnJson = JSON.stringify(barnPage);
+  if (new RegExp(`(?<![${CYR_CLASS}])(мангал|джакузі|огороджен|паркін|парковк|кондиціонер|корпоратив|весілл|банкет|вечірк|музик|караоке|фотосесі|снідан|сауна)|wi-?fi|вайфай`, 'i').test(barnJson)) fail('texts/barn-house.json: у тексті є умови або зручності, яких немає в джерелах (огороджена територія, мангал, корпоративи, Wi-Fi тощо), C6');
+  if (/(\d+|одна|одне|два|дві|три|чотири|п'ять|шість|сім|вісім|дев'ять|десять)\s+(спальн|спален|ліжк|ліжок|ліжко|кімнат)/i.test(barnJson)) fail('texts/barn-house.json: кількість спалень і ліжок невідома (питання 2), не вказувати');
+  // фото: hero без verify; галерея береться з barn.json, де verify заборонений
+  checkPagePhotos('barn-house.json', [barnPage.hero?.photo]);
+  if (barnPage.hero?.photo !== barn?.photo) fail('texts/barn-house.json: hero.photo має збігатися з barn.photo');
+  const linkedB = new Set(collectLinks(barnPage));
+  for (const u of ['/nomery/', '/kotedzhi/', '/banya-ta-spa/', '/kafe/']) if (!linkedB.has(u)) fail(`texts/barn-house.json: немає посилання на ${u} (перелінковка)`);
 }
 
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
@@ -383,4 +415,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, promo, photos, ціни і заборонені слова)');
