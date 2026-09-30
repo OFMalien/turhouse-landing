@@ -282,6 +282,52 @@ else {
   if (linked.size < 6) fail(`texts/home.json: головна посилається лише на ${linked.size} розділів, потрібно не менше 6 (перелінковка)`);
 }
 
+// Спільна перевірка meta сторінок: title 30-65, description 70-160, breadcrumbTitle
+const checkMeta = (file, m, { titleHas = [], descHas = [] } = {}) => {
+  if (!m?.title || m.title.length < 30 || m.title.length > 65) fail(`texts/${file}: meta.title 30-65 знаків, є ${(m?.title || '').length}`);
+  for (const w of titleHas) if (!(m?.title || '').includes(w)) fail(`texts/${file}: meta.title має містити "${w}"`);
+  if (!m?.description || m.description.length < 70 || m.description.length > 160) fail(`texts/${file}: meta.description 70-160 знаків, є ${(m?.description || '').length}`);
+  for (const w of descHas) if (!(m?.description || '').toLowerCase().includes(w.toLowerCase())) fail(`texts/${file}: meta.description має містити "${w}"`);
+  if (!m?.breadcrumbTitle) fail(`texts/${file}: немає meta.breadcrumbTitle`);
+};
+// Фото сторінки: є в паспорті, без verify (окрім явно дозволених id)
+const checkPagePhotos = (file, ids, verifyOk = []) => {
+  for (const id of ids.filter(Boolean)) {
+    if (!photos[id]) fail(`texts/${file}: фото "${id}" немає в photos.json`);
+    else if (photos[id].verify && !verifyOk.includes(id)) fail(`texts/${file}: фото "${id}" позначене verify і не дозволене на цій сторінці`);
+  }
+};
+
+// texts/nomery.json: сторінка номерів (E3-T8). У джерелах немає нічого про відмінності між видами номерів, тому зручності не вигадуємо (C6)
+const nomery = contentFiles.includes('nomery.json') ? readContent('nomery.json') : null;
+if (!nomery) fail('texts/nomery.json: немає файлу');
+else {
+  checkMeta('nomery.json', nomery.meta, { titleHas: ['Номери', 'Tur House', 'Беремицьке'], descHas: ['під Києвом', 'номер'] });
+  if (!/Номери/.test(nomery.hero?.h1 || '') || !/готел/.test(nomery.hero?.h1 || '')) fail('texts/nomery.json: hero.h1 має містити "Номери" і "готелі"');
+  if (!/Шість номерів/.test(nomery.hero?.lede || '') || !/по два/.test(nomery.hero?.lede || '')) fail('texts/nomery.json: hero.lede "Шість номерів ... по два" (R4)');
+  const introT = nomery.intro?.text || '';
+  for (const w of ['готель', 'біля Десни', 'під Києвом', 'Чернігівщин']) if (!new RegExp(w, 'i').test(introT)) fail(`texts/nomery.json: у вступі немає "${w}" (кластер ТЗ §6 і чесне місце)`);
+  if (rooms && rooms.length === 3) {
+    const t = rooms.map((r) => r.title);
+    const names = `${t.slice(0, -1).join(', ')} і ${t[t.length - 1]}`;
+    if (!(nomery.types?.lead || '').includes(names) || !/по два номери/.test(nomery.types.lead) || !/двоє гостей/.test(nomery.types.lead)) fail(`texts/nomery.json: types.lead "${names}", "по два номери", "двоє гостей" (R4)`);
+  }
+  if (!/головному корпусі/.test(nomery.where?.text || '')) fail('texts/nomery.json: where.text має говорити про головний корпус');
+  const incl = (nomery.included?.items || []).join(' ');
+  for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(incl)) fail(`texts/nomery.json: included.items без "${w}"`);
+  if (!/до 8 або до 12 гостей/.test(nomery.group?.text || '') || !/чотирьох і шести гостей/.test(nomery.group?.text || '')) fail('texts/nomery.json: group.text про котеджі на 4 і 6 гостей і Барн-хаус до 8 або до 12 гостей (R5, R6)');
+  if (!/BookmeNow/.test(nomery.booking?.text || '') || !/Direct/.test(nomery.booking?.text || '')) fail('texts/nomery.json: booking.text має згадувати BookmeNow і Instagram Direct');
+  // зручності, яких немає в джерелах: площа, санвузол, кондиціонер, чайник, телевізор, сніданок, балкон, вид з вікна
+  if (new RegExp(`(?<![${CYR_CLASS}])(кв\\.?\\s?м|м²|санвуз|ванн|душ|кондиціонер|чайник|телевізор|снідан|холодильник|балкон|вид на|вид з)`, 'i').test(JSON.stringify(nomery))) fail('texts/nomery.json: у тексті є зручності, яких немає в джерелах (площа, санвузол, кондиціонер, сніданок тощо), C6');
+  // фото: hero і where без verify; галерея номерів 4 кадри, verify дозволений лише для них (тип номера не підтверджено, питання 8)
+  const ROOM_GALLERY_OK = ['rooms/room-burgundy', 'rooms/room-white-brown', 'rooms/room-blue', 'rooms/room-panorama-window'];
+  checkPagePhotos('nomery.json', [nomery.hero?.photo, nomery.where?.photo]);
+  checkPagePhotos('nomery.json', nomery.gallery?.photos || [], ROOM_GALLERY_OK);
+  if (!same(nomery.gallery?.photos, ROOM_GALLERY_OK)) fail('texts/nomery.json: у галереї номерів мають бути 4 кадри без room-wood-wall (схожий на спальню Барн-хауса, питання 8)');
+  const linkedN = new Set(collectLinks(nomery));
+  for (const u of ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedN.has(u)) fail(`texts/nomery.json: немає посилання на ${u} (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -308,4 +354,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home і nomery, promo, photos, ціни і заборонені слова)');
