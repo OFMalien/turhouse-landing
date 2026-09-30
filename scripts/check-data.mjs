@@ -252,13 +252,17 @@ for (const f of contentFiles) {
   scan(data, `texts/${f}`, true);
   if (/грн/i.test(all)) fail(`texts/${f}: у текстах сторінок цін немає, вони беруться з _data (ТЗ §6)`);
   if (/[–—]/.test(all)) fail(`texts/${f}: у тексті довге тире, пишемо двокрапку, кому або крапку`);
-  if ([...all.matchAll(/tur[ \-]?house/gi)].some((m) => m[0] !== 'Tur House')) fail(`texts/${f}: назва пишеться "Tur House", капс тільки через CSS (C8)`);
+  if ([...all.matchAll(/(?<![\w@./])tur[ \-]?house(?!\.com\.ua|_)/gi)].some((m) => m[0] !== 'Tur House')) fail(`texts/${f}: назва пишеться "Tur House", капс тільки через CSS (C8)`);
   for (const u of collectLinks(data)) if (!NAV_URLS.includes(u) && u !== '/pryvatnist/') fail(`texts/${f}: посилання ${u} не веде на сторінку сайту`);
   // зовнішні посилання лежать в полі href і дозволені лише на офіційний сайт парку природи
   for (const h of collectHrefs(data)) if (!ALLOWED_EXTERNAL.includes(h)) fail(`texts/${f}: зовнішнє посилання ${h} не дозволене (дозволено: ${ALLOWED_EXTERNAL.join(', ')})`);
   // офіційна назва парку: «Парк природи «Беремицьке»» (сайт парку), а не «Парк дикої природи»; це не заповідник
   if (/парк\S*\s+дикої\s+природи/i.test(all)) fail(`texts/${f}: парк називається «Парк природи «Беремицьке»», не «Парк дикої природи» (сайт парку, питання 12)`);
   if (/заповідник/i.test(all)) fail(`texts/${f}: «Беремицьке» це парк природи, не заповідник`);
+  // внутрішні люди й сервіси клієнта на сайт не йдуть (карточка клієнта); e-mail і телефон у тексті не дублюємо (вони з site.json)
+  if (new RegExp(`(?<![${CYR_CLASS}])(Макс|Оля|Олі|Олю|Олею|Ольг[${CYR_CLASS}]*|Іван[${CYR_CLASS}]*|Толк|Tolk)(?![${CYR_CLASS}])`).test(all)) fail(`texts/${f}: на сайті не згадуємо внутрішніх людей і сервіси клієнта (Макс, Оля, Іван, Tolk)`);
+  if (/[\w.-]+@[\w-]+\.[\w.]+/.test(all)) fail(`texts/${f}: e-mail у тексті, в джерелах його немає`);
+  if (/\+?\d[\d\s()\-]{8,}\d/.test(all)) fail(`texts/${f}: номер телефону в тексті, телефон виводить шаблон із site.json`);
 }
 
 // texts/home.json: головна (E3-T7). SEO-кластер, блоки ТЗ §6, R4-R7
@@ -533,6 +537,26 @@ else {
   for (const u of ['/okolitsi/', '/kontakty/', '/nomery/', '/kotedzhi/', '/barn-house/']) if (!linkedR.has(u)) fail(`texts/yak-distatysya.json: немає посилання на ${u} (перелінковка)`);
 }
 
+// texts/kontakty.json: контакти (E3-T15). Телефон, Instagram, BookmeNow, адреса: з site.json; годин рецепції, e-mail, реквізитів у джерелах немає (FACTS §5), не вигадуємо.
+const contactPage = contentFiles.includes('kontakty.json') ? readContent('kontakty.json') : null;
+if (!contactPage) fail('texts/kontakty.json: немає файлу');
+else {
+  checkMeta('kontakty.json', contactPage.meta, { titleHas: ['Контакти', 'Tur House'], descHas: ['Instagram', 'BookmeNow', 'телефон'] });
+  if (contactPage.hero?.h1 !== 'Контакти Tur House') fail('texts/kontakty.json: hero.h1 «Контакти Tur House»');
+  if (!/Direct/.test(contactPage.hero?.lede || '') || !/BookmeNow/.test(contactPage.hero?.lede || '') || !/Зателефонуйте/.test(contactPage.hero?.lede || '')) fail('texts/kontakty.json: hero.lede про телефон, Instagram Direct і BookmeNow');
+  if (!/Зателефонуйте/.test(contactPage.phone?.text || '')) fail('texts/kontakty.json: phone.text пропонує зателефонувати');
+  if (!/Direct/.test(contactPage.instagram?.text || '')) fail('texts/kontakty.json: instagram.text про Direct');
+  if (!/BookmeNow/.test(contactPage.booking?.text || '') || !/проживання/.test(contactPage.booking?.text || '')) fail('texts/kontakty.json: booking.text про BookmeNow для проживання (баню через BookmeNow не бронюємо, питання 22)');
+  if (!/Беремицьке/.test(contactPage.address?.text || '') || !/Чернігівська область/.test(contactPage.address?.text || '') || contactPage.address?.link?.url !== '/yak-distatysya/') fail('texts/kontakty.json: address.text про село Беремицьке, Чернігівську область і посилання на /yak-distatysya/');
+  if (!/Google Картах/.test(contactPage.maps?.text || '')) fail('texts/kontakty.json: maps.text про Google Карти');
+  // чого в джерелах немає: години й графік рецепції, режим, час відповіді, цілодобово, реквізити, ФОП/ТОВ, e-mail
+  const contactJson = JSON.stringify(contactPage);
+  if (new RegExp(`(?<![${CYR_CLASS}])(рецепц|години|графік|режим|цілодобов|щодня|відповіда|протягом|реквізит|ФОП|ТОВ|ЄДРПОУ|ІПН|IBAN|юридичн|пошт)|24\\s*/\\s*7|\\d{1,2}[:.]\\d{2}`, 'i').test(contactJson)) fail('texts/kontakty.json: у тексті є години, графік, час відповіді чи реквізити, яких немає в джерелах (FACTS §5)');
+  checkPagePhotos('kontakty.json', [contactPage.hero?.photo]);
+  const linkedC = new Set(collectLinks(contactPage));
+  for (const u of ['/yak-distatysya/', '/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedC.has(u)) fail(`texts/kontakty.json: немає посилання на ${u} (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -559,4 +583,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, yak-distatysya, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, yak-distatysya, kontakty, promo, photos, ціни і заборонені слова)');
