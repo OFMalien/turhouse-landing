@@ -109,6 +109,10 @@
   align-items: center;
   gap: 10px;
   flex: none;
+  /* поле вокруг логотипа: зона нажатия не менше 44px */
+  min-height: 44px;
+  padding: 6px;
+  margin-left: -6px;
   font-family: var(--font-sans);
   font-weight: 700;
   font-size: 15px;
@@ -322,6 +326,8 @@ html.nav-open { overflow: hidden; }
 }
 @media (max-width: 799.98px) {
   .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  /* на сенсорних екранах зона нажатия посилань не менше 44px */
+  .footer-col a { display: inline-flex; align-items: center; min-height: 44px; }
   /* місце під липку кнопку «Забронювати» */
   .site-footer { padding-bottom: 100px; }
 }

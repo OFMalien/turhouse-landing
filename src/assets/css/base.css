@@ -62,6 +62,9 @@ h1 {
 }
 h2,
 .section-heading {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  text-transform: uppercase;
   font-size: clamp(30px, 4.6vw, 56px);
   line-height: 0.96;
   letter-spacing: -0.028em;
