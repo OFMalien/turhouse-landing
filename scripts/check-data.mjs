@@ -230,6 +230,15 @@ const collectLinks = (node, acc = []) => {
   }
   return acc;
 };
+const ALLOWED_EXTERNAL = ['https://beremytske.com.ua/'];
+const collectHrefs = (node, acc = []) => {
+  if (Array.isArray(node)) node.forEach((n) => collectHrefs(n, acc));
+  else if (node && typeof node === 'object') {
+    if (typeof node.href === 'string') acc.push(node.href);
+    Object.values(node).forEach((v) => collectHrefs(v, acc));
+  }
+  return acc;
+};
 // усі текстові рядки дерева (для правил, що мають діяти в межах одного рядка, а не через сусідні поля JSON)
 const collectStrings = (node, acc = []) => {
   if (typeof node === 'string') acc.push(node);
@@ -245,6 +254,11 @@ for (const f of contentFiles) {
   if (/[–—]/.test(all)) fail(`texts/${f}: у тексті довге тире, пишемо двокрапку, кому або крапку`);
   if (/TUR HOUSE|Tur house|tur house|TurHouse|Tur-House/.test(all)) fail(`texts/${f}: назва пишеться "Tur House", капс тільки через CSS (C8)`);
   for (const u of collectLinks(data)) if (!NAV_URLS.includes(u) && u !== '/pryvatnist/') fail(`texts/${f}: посилання ${u} не веде на сторінку сайту`);
+  // зовнішні посилання лежать в полі href і дозволені лише на офіційний сайт парку природи
+  for (const h of collectHrefs(data)) if (!ALLOWED_EXTERNAL.includes(h)) fail(`texts/${f}: зовнішнє посилання ${h} не дозволене (дозволено: ${ALLOWED_EXTERNAL.join(', ')})`);
+  // офіційна назва парку: «Парк природи «Беремицьке»» (сайт парку), а не «Парк дикої природи»; це не заповідник
+  if (/парк\S*\s+дикої\s+природи/i.test(all)) fail(`texts/${f}: парк називається «Парк природи «Беремицьке»», не «Парк дикої природи» (сайт парку, питання 12)`);
+  if (/заповідник/i.test(all)) fail(`texts/${f}: «Беремицьке» це парк природи, не заповідник`);
 }
 
 // texts/home.json: головна (E3-T7). SEO-кластер, блоки ТЗ §6, R4-R7
@@ -469,6 +483,34 @@ else {
   for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/']) if (!linkedF.has(u)) fail(`texts/kafe.json: немає посилання на ${u} (перелінковка)`);
 }
 
+// texts/okolitsi.json: околиці та парк природи «Беремицьке» (E3-T13). Факти про парк: лише підтверджені сайтом парку (beremytske.com.ua) і другим джерелом;
+// Tur House не частина парку і не використовує його брендинг (ТЗ §6); годин, цін квитків, відстаней немає.
+const okolitsi = contentFiles.includes('okolitsi.json') ? readContent('okolitsi.json') : null;
+if (!okolitsi) fail('texts/okolitsi.json: немає файлу');
+else {
+  checkMeta('okolitsi.json', okolitsi.meta, { titleHas: ['Еко-парк Беремицьке', 'Tur House'], descHas: ['парк природи «Беремицьке»', 'під Києвом', 'дітьми'] });
+  if (!/парк природи «Беремицьке»/.test(okolitsi.hero?.h1 || '') || !/Десна/.test(okolitsi.hero?.h1 || '')) fail('texts/okolitsi.json: hero.h1 має містити «парк природи «Беремицьке»» і «Десна»');
+  if (!/Чернігівщин/.test(okolitsi.hero?.lede || '') || !/поруч із парком природи «Беремицьке»/.test(okolitsi.hero?.lede || '')) fail('texts/okolitsi.json: hero.lede про Чернігівщину та «поруч із парком природи «Беремицьке»»');
+  const introO = okolitsi.intro?.text || '';
+  if (!/Куди поїхати на вихідні під Києвом/.test(introO)) fail('texts/okolitsi.json: у вступі кластер ТЗ «куди поїхати на вихідні під Києвом»');
+  if (!/Tur House і парк природи окремі/.test(introO)) fail('texts/okolitsi.json: у вступі має бути, що Tur House і парк природи окремі (ТЗ §6: не називати себе частиною парку)');
+  const parkT = okolitsi.park?.text || '';
+  if (!/За інформацією на сайті парку/.test(parkT)) fail('texts/okolitsi.json: факти про парк з посиланням на джерело («За інформацією на сайті парку»)');
+  for (const w of ['польські коники', 'кулани', 'муфлони', 'екостежки', 'екскурсії', 'прогулянки на конях', 'години роботи', 'вартість квитків']) if (!parkT.toLowerCase().includes(w)) fail(`texts/okolitsi.json: park.text без "${w}" (підтверджено сайтом парку)`);
+  if (okolitsi.park?.link?.href !== 'https://beremytske.com.ua/' || !okolitsi.park?.link?.label) fail('texts/okolitsi.json: park.link.href має вести на https://beremytske.com.ua/');
+  if (!/дитячий майданчик/.test(okolitsi.family?.text || '') || !/тварин/.test(okolitsi.family?.text || '')) fail('texts/okolitsi.json: family.text про дитячий майданчик (barn.json) і тварин парку');
+  if (!/Десна/.test(okolitsi.desna?.text || '')) fail('texts/okolitsi.json: desna.text про Десну');
+  // не вигадувати про парк: інші тварини (зубри, коні Пржевальського, ведмеді, вовки, тури), площа, рік відкриття, ціни, години, відстані, розваги, яких немає в джерелах Tur House
+  const okJson = JSON.stringify(okolitsi);
+  if (new RegExp(`(?<![${CYR_CLASS}])(зубр|бізон|пржевальськ|ведмід|ведмед|вовк|рис[іь]|тур[иіів]|тарпан|гектар|\\d+\\s*га|2017|вежа|оглядов|лучн|стрільб|велосипед|кемпінг|ресторан|квиток|вхід)`, 'i').test(okJson.replace(/вартість квитків/gi, '').replace(/квитків/gi, ''))) fail('texts/okolitsi.json: про парк є тварини, розваги чи умови, яких не підтверджено (дикі коні, тури, оглядова вежа, вхід тощо)');
+  if (/\d{1,2}[:.]\d{2}|\d+\s*(га|гектар)/i.test(okJson)) fail('texts/okolitsi.json: годин роботи, площі парку в тексті немає');
+  if (/(наш|наші|наше)\s+(парк|тварин|коні|екостежк)/i.test(okJson)) fail('texts/okolitsi.json: Tur House не називає парк і його тварин своїми (ТЗ §6)');
+  checkPagePhotos('okolitsi.json', [okolitsi.hero?.photo, ...(okolitsi.gallery?.photos || [])]);
+  if (!same(okolitsi.gallery?.photos, ['home/hammock', 'cottages/cottages-sunset'])) fail('texts/okolitsi.json: у галереї два територіальні кадри TEMP (кадрів парку немає, питання в техборзі)');
+  const linkedO = new Set(collectLinks(okolitsi));
+  for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!linkedO.has(u)) fail(`texts/okolitsi.json: немає посилання на ${u} (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -495,4 +537,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, promo, photos, ціни і заборонені слова)');
