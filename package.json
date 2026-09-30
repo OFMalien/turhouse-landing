@@ -12,7 +12,8 @@
     "build:preview": "ELEVENTY_ENV=preview eleventy",
     "build:production": "ELEVENTY_ENV=production eleventy",
     "start": "ELEVENTY_ENV=preview eleventy --serve",
-    "clean": "rm -rf _site"
+    "clean": "rm -rf _site",
+    "check:contrast": "node scripts/check-contrast.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
