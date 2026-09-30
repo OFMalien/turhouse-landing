@@ -1,0 +1,11 @@
+---
+permalink: "/"
+---
+<!doctype html>
+<html lang="uk">
+<head><meta charset="utf-8"><title>Заглушка</title></head>
+<body>
+<p>Env: {{ env.name }}, pathPrefix: {{ env.pathPrefix }}, origin: {{ env.origin }}</p>
+<p><a href="{{ '/nomery/' | url }}">Номери</a> · {{ 2500 | price }} грн · {{ page.url | absoluteUrl }}</p>
+</body>
+</html>
