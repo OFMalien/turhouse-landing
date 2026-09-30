@@ -587,6 +587,22 @@ else {
   for (const u of ['/kontakty/', '/yak-distatysya/']) if (!linkedP.has(u)) fail(`texts/pryvatnist.json: немає посилання на ${u} (перелінковка)`);
 }
 
+// texts/404.json: сторінка 404 (E3-T17). Навігацію на всі розділи виводить шаблон із nav.json, кнопку броні з site.json; у тексті лише пояснення.
+const notFound = contentFiles.includes('404.json') ? readContent('404.json') : null;
+if (!notFound) fail('texts/404.json: немає файлу');
+else {
+  checkMeta('404.json', notFound.meta, { titleHas: ['Сторінку не знайдено', 'Tur House'], descHas: ['головну'] });
+  if (notFound.hero?.h1 !== 'Сторінку не знайдено') fail('texts/404.json: hero.h1 «Сторінку не знайдено»');
+  if (!/головну/.test(notFound.hero?.lede || '') || !/розділ/.test(notFound.hero?.lede || '')) fail('texts/404.json: hero.lede веде на головну і до розділів');
+  if (!notFound.sections?.heading) fail('texts/404.json: sections.heading (заголовок списку розділів)');
+  if (!/вільні дати/.test(notFound.booking?.text || '')) fail('texts/404.json: booking.text про вільні дати (кнопка броні)');
+  if (collectLinks(notFound).length) fail('texts/404.json: посилання на розділи виводить шаблон із nav.json, у тексті їх немає');
+}
+
+// набір текстових файлів: по одному на кожну сторінку (9 контентних + політика + 404)
+const TEXT_FILES = ['404.json', 'banya-ta-spa.json', 'barn-house.json', 'home.json', 'kafe.json', 'kontakty.json', 'kotedzhi.json', 'nomery.json', 'okolitsi.json', 'pryvatnist.json', 'yak-distatysya.json'];
+if (!same([...contentFiles].sort(), TEXT_FILES)) fail(`texts/: має бути рівно ${TEXT_FILES.length} файлів ${TEXT_FILES.join(', ')}, є ${[...contentFiles].sort().join(', ')}`);
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -613,4 +629,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, yak-distatysya, kontakty, pryvatnist, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, yak-distatysya, kontakty, pryvatnist, 404, promo, photos, ціни і заборонені слова)');
