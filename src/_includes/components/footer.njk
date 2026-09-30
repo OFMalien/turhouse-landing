@@ -1,0 +1,30 @@
+<footer class="site-footer on-dark" data-placement="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-about">
+        <p class="footer-brand">{{ site.name }}</p>
+        <p class="footer-addr">{{ site.descriptor }}, {{ site.address.full }}</p>
+      </div>
+
+      <nav class="footer-col" aria-labelledby="footer-nav-title">
+        <p class="caption" id="footer-nav-title">Розділи</p>
+        <ul>
+          {%- for item in nav %}
+          <li><a href="{{ item.url | url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+          {%- endfor %}
+          <li><a href="{{ '/pryvatnist/' | url }}"{% if page.url == '/pryvatnist/' %} aria-current="page"{% endif %}>Політика конфіденційності</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer-col">
+        <p class="caption">Зв'язок</p>
+        <ul>
+          <li><a href="tel:{{ site.phone.tel }}" class="nowrap">{{ site.phone.display }}</a></li>
+          <li><a href="{{ site.links.instagram }}" target="_blank" rel="noopener">Instagram {{ site.links.instagramHandle }}</a></li>
+          <li><a href="{{ site.links.googleMaps }}" target="_blank" rel="noopener">Google Карти</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer-bottom">{{ site.name }} &middot; {{ site.address.short }}</p>
+  </div>
+</footer>

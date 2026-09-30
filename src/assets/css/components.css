@@ -263,3 +263,90 @@
 .drawer-footer .btn { width: 100%; }
 
 html.nav-open { overflow: hidden; }
+
+/* ---------- Блок заклику до дії (CTA) ---------- */
+.cta-band {
+  padding-block: 90px;
+  background: var(--color-midnight-roast);
+  text-align: center;
+}
+.cta-band .section-heading {
+  max-width: 20ch;
+  margin: 10px auto 0;
+  text-align: center;
+}
+.cta-band .btn-row { justify-content: center; }
+
+/* ---------- Підвал ---------- */
+.site-footer {
+  padding: 56px 0 40px;
+  background: var(--color-onyx-warm);
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--line-on-dark);
+}
+.footer-brand {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.1px;
+  text-transform: uppercase;
+  color: var(--color-parchment);
+}
+.footer-addr {
+  max-width: 34ch;
+  margin-top: 10px;
+  font-size: var(--text-small);
+  line-height: 1.5;
+  color: var(--color-linen);
+}
+.footer-col ul { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; }
+.footer-col a {
+  display: inline-block;
+  padding: 6px 0;
+  font-size: var(--text-small);
+  color: var(--color-parchment);
+  transition: color var(--t-fast);
+}
+.footer-col a:hover { color: var(--color-saffron-bright); }
+.footer-col a[aria-current="page"] { color: var(--color-saffron-bright); }
+.footer-bottom {
+  padding-top: 24px;
+  font-size: var(--text-small);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-linen);
+}
+@media (max-width: 799.98px) {
+  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  /* місце під липку кнопку «Забронювати» */
+  .site-footer { padding-bottom: 100px; }
+}
+
+/* ---------- Липка кнопка «Забронювати» (мобільна) ---------- */
+.sticky-cta {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 90;
+  display: none;
+}
+/* Шафранова кнопка (onyx на saffron-glow 5,55:1) видна і на світлому, і на темному фоні. */
+.sticky-cta .btn {
+  width: 100%;
+  background: var(--color-saffron-glow);
+  border-color: var(--color-saffron-glow);
+  color: var(--color-onyx-warm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+.sticky-cta .btn:hover {
+  background: var(--color-saffron-bright);
+  border-color: var(--color-saffron-bright);
+}
+@media (max-width: 799.98px) {
+  .sticky-cta { display: block; }
+}

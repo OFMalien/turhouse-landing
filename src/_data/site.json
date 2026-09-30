@@ -24,8 +24,18 @@
     "waze": "https://waze.com/ul?q=TUR+House+Беремицьке"
   },
   "analytics": {
-    "gtm": ["GTM-PRF3SNG", "GTM-T97JFZCZ"],
+    "gtm": [
+      "GTM-PRF3SNG",
+      "GTM-T97JFZCZ"
+    ],
     "metaPixel": "548259214495555"
   },
-  "geo": null
+  "geo": null,
+  "descriptor": "Заміський готельний комплекс",
+  "cta": {
+    "caption": "Спокій чекає на тебе",
+    "heading": "Tur House",
+    "booking": "Перевірити вільні дати",
+    "instagram": "Написати в Instagram"
+  }
 }

@@ -23,6 +23,8 @@
 <main id="main" tabindex="-1">
 {{ content | safe }}
 </main>
+{% include "components/footer.njk" %}
+{% include "components/sticky-cta.njk" %}
 <script src="{{ '/assets/js/app.js' | url }}" defer></script>
 </body>
 </html>

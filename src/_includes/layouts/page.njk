@@ -1,0 +1,5 @@
+---
+layout: layouts/base.njk
+---
+{{ content | safe }}
+{% if not noCta %}{% include "components/cta-block.njk" %}{% endif %}
