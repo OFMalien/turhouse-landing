@@ -70,6 +70,11 @@ for (const f of htmlFiles) {
       if (lodging.priceRange && !/^\d+-\d+ UAH$/.test(lodging.priceRange)) fail(`${name}: priceRange "${lodging.priceRange}" не у форматі "2500-13000 UAH"`);
       const a = lodging.address || {};
       for (const k of ['streetAddress', 'addressLocality', 'addressRegion', 'addressCountry']) if (!a[k]) fail(`${name}: address без ${k}`);
+      if (lodging.geo) {
+        const { latitude: la, longitude: lo } = lodging.geo;
+        // Грубі межі України: лише щоб зловити переплутані широту й довготу або опечатку.
+        if (!(la > 44 && la < 53 && lo > 22 && lo < 41)) fail(`${name}: geo (${la}, ${lo}) поза межами України`);
+      }
       for (const k of ['url', 'image', 'hasMap']) if (lodging[k] && !isAbs(lodging[k])) fail(`${name}: LodgingBusiness.${k} не абсолютна адреса`);
       if (lodging.url && !lodging.url.startsWith(ORIGIN)) fail(`${name}: LodgingBusiness.url не на ${ORIGIN}`);
       if (lodging.image && !lodging.image.startsWith(ORIGIN)) fail(`${name}: LodgingBusiness.image не на ${ORIGIN}`);
