@@ -81,6 +81,9 @@ export default function (eleventyConfig) {
     return renderImage(p.file, options.alt ?? p.alt, options);
   });
 
+  // Службові сторінки (src/dev) існують тільки в превью: у бойову збірку не потрапляють.
+  if (env.isProduction) eleventyConfig.ignores.add('src/dev/**');
+
   eleventyConfig.on('eleventy.before', () => {
     usedImageFiles.clear();
   });

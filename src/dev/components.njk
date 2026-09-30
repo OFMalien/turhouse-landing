@@ -1,0 +1,16 @@
+---
+permalink: "/dev/components/"
+title: "Компоненти (службова сторінка)"
+description: "Службова сторінка для перевірки компонентів дизайн-системи. Не входить у бойовий сайт."
+---
+<div class="wrap section">
+  <p class="caption">Службова сторінка, не для гостей</p>
+  <h1>Компоненти</h1>
+
+  <h2 style="margin-top:48px">Карточки об'єктів</h2>
+  <div class="cards-grid" data-placement="formats_section">
+    {%- asyncEach item in fixtures %}
+    {% include "components/card-object.njk" %}
+    {%- endeach %}
+  </div>
+</div>

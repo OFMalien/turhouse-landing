@@ -75,6 +75,9 @@ if (mode === 'preview') {
     if (/^Disallow:\s*\/\s*$/m.test(robots)) fail('robots.txt бойової збірки закриває сайт (Disallow: /)');
     if (!/^Sitemap:\s*https:\/\/turhouse\.com\.ua\/sitemap\.xml/m.test(robots)) fail('robots.txt без Sitemap на turhouse.com.ua');
   }
+  for (const f of files) {
+    if (/(^|\/)dev(\/|$)/.test(rel(f))) fail(`Службова сторінка у бойовій збірці: ${rel(f)}`);
+  }
   for (const f of htmlFiles) {
     // Сторінка 404 закрита від індексації в будь-якій збірці, це не помилка.
     if (rel(f) === '404.html') continue;

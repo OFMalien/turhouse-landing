@@ -1,0 +1,44 @@
+{
+  "layout": "layouts/base.njk",
+  "eleventyExcludeFromCollections": true,
+  "promo": { "enabled": true },
+  "fixtures": [
+    {
+      "id": "sample-room",
+      "category": "rooms",
+      "title": "Стандарт",
+      "capacity": "2 гості",
+      "count": "2 номери цього типу",
+      "price": 2500,
+      "promoPrice": 2000,
+      "description": "Приклад карточки номера з фото, звичайною ціною і ціною зі знижкою.",
+      "features": ["Starlink на території", "Басейн включено"],
+      "photo": "rooms/room-wood-wall"
+    },
+    {
+      "id": "sample-cottage",
+      "category": "cottages",
+      "title": "Котедж на 4 гості",
+      "capacity": "до 4 гостей",
+      "count": "2 котеджі цього типу",
+      "price": 6000,
+      "promoPrice": 4800,
+      "description": "Приклад карточки без фото: замість кадру плашка.",
+      "features": ["Кухня", "Зона BBQ", "Власна тераса", "Мангал"],
+      "photo": null
+    },
+    {
+      "id": "sample-barn",
+      "category": "barn",
+      "title": "Барн-хаус",
+      "capacity": "до 8 або до 12 гостей",
+      "tariffs": [
+        { "label": "до 8 гостей", "amount": 11000 },
+        { "label": "до 12 гостей", "amount": 13000 }
+      ],
+      "description": "Приклад карточки з двома тарифами замість однієї ціни.",
+      "features": ["Зона BBQ", "Басейн включено"],
+      "photo": "barn/barn-01-fasad"
+    }
+  ]
+}
