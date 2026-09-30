@@ -427,6 +427,48 @@ else {
   for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/kafe/']) if (!linkedS.has(u)) fail(`texts/banya-ta-spa.json: немає посилання на ${u} (перелінковка)`);
 }
 
+// texts/kafe.json: сторінка кафе та піца-бару (E3-T12, R7). Страви в тексті є в menu.json; годин, доставки, столиків, десертів, алкоголю в джерелах немає.
+const kafePage = contentFiles.includes('kafe.json') ? readContent('kafe.json') : null;
+if (!kafePage) fail('texts/kafe.json: немає файлу');
+else {
+  checkMeta('kafe.json', kafePage.meta, { titleHas: ['Кафе', 'Беремицьке', 'Tur House'], descHas: ['піца', 'біля парку «Беремицьке»'] });
+  if (!/Кафе та піца-бар/.test(kafePage.hero?.h1 || '')) fail('texts/kafe.json: hero.h1 "Кафе та піца-бар ..." (R7)');
+  if (!/на території/.test(kafePage.hero?.lede || '') || !/парком «Беремицьке»/.test(kafePage.hero?.lede || '')) fail('texts/kafe.json: hero.lede про територію і парк «Беремицьке»');
+  const introF = kafePage.intro?.text || '';
+  if (!/Кафе в Беремицькому/.test(introF)) fail('texts/kafe.json: у вступі кластер ТЗ «кафе Беремицьке» («Кафе в Беремицькому»)');
+  // усе, що названо в тексті, є в menu.json; «чотири види піци» = 4 позиції піци; назви піц збігаються з меню
+  const kItems = (menu?.sections || []).flatMap((s) => s.items);
+  const kHas = (id) => kItems.some((i) => i.id === id);
+  const kText = `${kafePage.hero?.lede || ''} ${introF} ${kafePage.pizza?.text || ''} ${kafePage.meta?.description || ''}`;
+  for (const [word, id] of [['сирники', 'syrnyky'], ['вареники з вишнями', 'varenyky-cherry'], ['омлет', 'omelette'], ['борщ', 'borscht'], ['бульйон', 'broth-noodles'], ['дируни', 'deruny'], ['карбонара', 'carbonara'], ['бургер', 'burger'], ['паста', 'carbonara'], ['пепероні', 'pizza-pepperoni'], ['маргарита', 'pizza-margherita']]) {
+    if (new RegExp(word, 'i').test(kText) && !kHas(id)) fail(`texts/kafe.json: у тексті "${word}", а в menu.json немає позиції ${id}`);
+  }
+  const pizzaItems = (menu?.sections || []).find((s) => s.id === 'pizza')?.items || [];
+  if (pizzaItems.length !== 4) fail('texts/kafe.json: у menu.json має бути 4 піци');
+  if (!/чотири види піци/.test(kafePage.intro?.text || '') && !/чотири види піци/.test(kafePage.meta?.description || '')) fail('texts/kafe.json: «чотири види піци» (4 позиції піци в menu.json)');
+  const pizzaT = (kafePage.pizza?.text || '').toLowerCase();
+  for (const p of pizzaItems) { const name = p.title.toLowerCase().replace(/^4 /, 'чотири '); if (!pizzaT.includes(name)) fail(`texts/kafe.json: у pizza.text немає піци "${name}" з menu.json`); }
+  if (!/Свіжа піца просто з печі/.test(kafePage.pizza?.text || '')) fail('texts/kafe.json: pizza.text «Свіжа піца просто з печі» (формулювання живого лендингу, C5)');
+  // дата меню = cafe.menuUpdated
+  const MONTHS = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
+  const [yy, mm, dd] = (cafe?.menuUpdated || '').split('-').map(Number);
+  const menuDate = `${dd} ${MONTHS[mm - 1]} ${yy} року`;
+  if (!(kafePage.menu?.note || '').includes(`станом на ${menuDate}`)) fail(`texts/kafe.json: menu.note має містити "станом на ${menuDate}" (cafe.menuUpdated)`);
+  if (!/Direct/.test(kafePage.menu?.note || '') || !/телефоном/.test(kafePage.menu?.note || '')) fail('texts/kafe.json: menu.note має відсилати до телефону та Instagram Direct');
+  // години роботи невідомі: текст тільки відсилає до телефону / Direct (cafe.hours === null)
+  if (cafe?.hours !== null || !/Години роботи/.test(kafePage.hours?.heading || '') || !/телефоном/.test(kafePage.hours?.text || '') || !/Direct/.test(kafePage.hours?.text || '')) fail('texts/kafe.json: hours.heading "Години роботи", hours.text відсилає до телефону та Direct; cafe.hours має бути null (питання 1)');
+  // чого в джерелах немає
+  const kafeJson = JSON.stringify(kafePage);
+  if (new RegExp(`\\d{1,2}[:.]\\d{2}|з\\s+\\d{1,2}\\s+до\\s+\\d{1,2}|(?<![${CYR_CLASS}])(щодня|цілодобов|пізн|зранку|вихідн|будн|доставк|навинос|з собою|столик|резерв|десерт|алкогол|вино|пиво|коктейл|віскі|дитяч|вегетар|веган|безглютен|шеф|кухар|пекарн|дров)`, 'i').test(kafeJson)) fail('texts/kafe.json: у тексті є години, доставка, столики, десерти, алкоголь чи інші умови, яких немає в джерелах (R7, C6)');
+  // страви, яких немає в menu.json (типові, які можуть "прийти" з власних знань): суші, стейк, шашлик, риба, торти тощо
+  const NOT_ON_MENU = new RegExp(`(?<![${CYR_CLASS}])(суші|ролл?и?|стейк[${CYR_CLASS}]*|шашлик[${CYR_CLASS}]*|шаурм[${CYR_CLASS}]*|хінкал[${CYR_CLASS}]*|плов|пельмен[${CYR_CLASS}]*|млинц[${CYR_CLASS}]*|торт[${CYR_CLASS}]*|морозив[${CYR_CLASS}]*|тірамісу|чізкейк[${CYR_CLASS}]*|лимонад[${CYR_CLASS}]*|смузі|фреш[${CYR_CLASS}]*|риб[аиуі]|лосос[${CYR_CLASS}]*|креветк[${CYR_CLASS}]*|устриц[${CYR_CLASS}]*|гриль-бар|сет[${CYR_CLASS}]*)(?![${CYR_CLASS}])`, 'i');
+  for (const s of collectStrings(kafePage)) if (NOT_ON_MENU.test(s)) fail(`texts/kafe.json: у тексті "${s.slice(0, 70)}" назва страви, якої немає в menu.json`);
+  checkPagePhotos('kafe.json', [kafePage.hero?.photo]);
+  if (kafePage.hero?.photo !== cafe?.photo) fail('texts/kafe.json: hero.photo має збігатися з cafe.photo');
+  const linkedF = new Set(collectLinks(kafePage));
+  for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/']) if (!linkedF.has(u)) fail(`texts/kafe.json: немає посилання на ${u} (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -453,4 +495,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, promo, photos, ціни і заборонені слова)');
