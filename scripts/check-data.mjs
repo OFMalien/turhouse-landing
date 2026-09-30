@@ -28,6 +28,11 @@ function scan(node, where) {
     }
   } else if (typeof node === 'string') {
     for (const re of FORBIDDEN_TEXT) if (re.test(node)) fail(`${where}: заборонений вміст ${re}`);
+    // Будь-яка сума з "грн" у тексті має бути з дозволеного списку цін (правило C6: цін не вигадувати).
+    for (const m of node.matchAll(/(\d[\d\s\u00a0]*)\s*грн/g)) {
+      const n = Number(m[1].replace(/[\s\u00a0]/g, ''));
+      if (!ALLOWED_PRICES.has(n)) fail(`${where}: сума "${m[0].trim()}" у тексті поза дозволеним списком цін`);
+    }
   }
 }
 
@@ -93,6 +98,22 @@ for (const [name, list] of [['rooms', rooms], ['cottages', cottages]]) {
   }
 }
 
+// spa: 600 + 200, склад комплексу, картки, фото
+const spa = readJson('spa.json');
+if (!spa) fail('spa.json: немає файлу');
+else {
+  if (spa.price.first !== 600 || spa.price.next !== 200) fail('spa.json: тариф має бути 600 за першу годину і 200 за кожну наступну');
+  const need = ['Дві парні', 'Зал відпочинку до 20 осіб', 'Басейн', 'Купіль', 'Водоспади', 'Кімната-сіновал', 'Чан просто неба'];
+  if (!same(spa.complex, need)) fail(`spa.json: склад комплексу має бути ${need.join(', ')}`);
+  if (!/банщик/i.test(spa.bathAttendant || '') || /\d/.test(spa.bathAttendant || '')) fail('spa.json: банщик за доплату, без суми (суми в джерелах немає)');
+  if (!spa.cards || !same(spa.cards.map((c) => c.id), ['banya', 'chan', 'pool'])) fail('spa.json: картки banya, chan, pool');
+  for (const id of [spa.photo, ...(spa.gallery || []), ...((spa.cards || []).map((c) => c.photo))]) {
+    if (!photos[id]) fail(`spa.json: фото "${id}" немає в photos.json`);
+    else if (photos[id].verify) fail(`spa.json: фото "${id}" позначене verify (ялинка на кадрі тощо), у галерею йдуть підтверджені кадри`);
+  }
+  if (new Set(spa.gallery).size !== (spa.gallery || []).length) fail('spa.json: у gallery є повтори');
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -119,4 +140,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, promo, photos, ціни і заборонені слова)');
