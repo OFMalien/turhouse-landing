@@ -1,22 +1,10 @@
 <!doctype html>
 <html lang="uk">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ title or site.name }}</title>
-  {%- if description %}
-  <meta name="description" content="{{ description }}">
-  {%- endif %}
-  {%- if env.noindex %}
-  <meta name="robots" content="noindex">
-  {%- else %}
-  <meta name="robots" content="index, follow">
-  {%- endif %}
-  <link rel="canonical" href="{{ page.url | absoluteUrl }}">
-  <link rel="stylesheet" href="{{ '/assets/css/main.css' | url }}">
-  <script>document.documentElement.classList.add('js');</script>
+{% include "components/head.njk" %}
 </head>
 <body>
+{% include "components/analytics-noscript.njk" %}
 <a class="skip-link" href="#main">Перейти до змісту</a>
 {% include "components/header.njk" %}
 {% include "components/drawer.njk" %}

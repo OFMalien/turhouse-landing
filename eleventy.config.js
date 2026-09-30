@@ -115,6 +115,13 @@ export default function (eleventyConfig) {
     new Intl.NumberFormat('uk-UA').format(Number(value)).replace(/ | /g, ' '),
   );
 
+  // Контекст сторінки для dataLayer (ТЗ §9.3): значення з front matter сторінки, не руками в шаблоні.
+  // Знак "<" екранується, щоб JSON безпечно стояв усередині <script>.
+  eleventyConfig.addFilter('pageContext', (analytics) => {
+    const ctx = { event: 'page_context', page_type: 'info', item_category: 'general', ...(analytics || {}) };
+    return JSON.stringify(ctx).replace(/</g, '\\u003c');
+  });
+
   // Абсолютна адреса сторінки для canonical, og:url, sitemap.
   // page.url не містить pathPrefix, origin для превью його містить.
   eleventyConfig.addFilter('absoluteUrl', (pageUrl) => `${env.origin}${pageUrl}`);

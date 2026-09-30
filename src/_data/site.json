@@ -37,5 +37,12 @@
     "heading": "Tur House",
     "booking": "Перевірити вільні дати",
     "instagram": "Написати в Instagram"
-  }
+  },
+  "ogImage": {
+    "file": "og-default.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "Tur House: готельно-банний комплекс"
+  },
+  "themeColor": "#d8cbb8"
 }

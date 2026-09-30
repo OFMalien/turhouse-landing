@@ -58,6 +58,23 @@ const textFiles = files.filter((f) => /\.(html|xml|txt|json|webmanifest|css|js)$
 const htmlFiles = files.filter((f) => f.endsWith('.html'));
 const read = (f) => fs.readFileSync(f, 'utf8');
 
+// Спільні перевірки: контекст сторінки в dataLayer, значки, манифест.
+for (const f of htmlFiles) {
+  const h = read(f);
+  if (!/dataLayer\.push\(\{"event":"page_context"/.test(h)) fail(`Немає page_context у dataLayer: ${rel(f)}`);
+  if (!/<link rel="apple-touch-icon"/.test(h)) fail(`Немає apple-touch-icon: ${rel(f)}`);
+}
+const manifestPath = path.join(dir, 'site.webmanifest');
+if (!fs.existsSync(manifestPath)) fail('Немає site.webmanifest');
+else {
+  try {
+    const m = JSON.parse(read(manifestPath));
+    if (!m.name || !Array.isArray(m.icons) || !m.icons.length) fail('site.webmanifest без name або icons');
+  } catch (e) {
+    fail(`site.webmanifest не є коректним JSON: ${e.message}`);
+  }
+}
+
 if (mode === 'preview') {
   if (fs.existsSync(cnamePath)) fail('У превью є файл CNAME (його там не має бути ніколи)');
   if (robots !== null && !/^Disallow:\s*\/\s*$/m.test(robots)) fail('robots.txt превью без "Disallow: /"');
@@ -82,6 +99,21 @@ if (mode === 'preview') {
     // Сторінка 404 закрита від індексації в будь-якій збірці, це не помилка.
     if (rel(f) === '404.html') continue;
     if (/<meta name="robots" content="[^"]*noindex/.test(read(f))) fail(`У бойовій збірці є noindex: ${rel(f)}`);
+  }
+  const GTM_IDS = ['GTM-PRF3SNG', 'GTM-T97JFZCZ'];
+  for (const f of htmlFiles) {
+    const h = read(f);
+    for (const id of GTM_IDS) {
+      if (!h.includes(`'${id}'`)) fail(`У бойовій збірці немає контейнера ${id}: ${rel(f)}`);
+    }
+    // dataLayer і контекст сторінки мають стояти раніше за GTM
+    const ctxAt = h.indexOf('page_context');
+    const gtmAt = h.indexOf('googletagmanager.com/gtm.js');
+    if (ctxAt === -1 || gtmAt === -1 || ctxAt > gtmAt) fail(`page_context має бути раніше за GTM: ${rel(f)}`);
+    if (rel(f) === '404.html') continue;
+    for (const re of [/<link rel="canonical" href="(https:\/\/turhouse\.com\.ua\/[^"]*)"/, /<meta property="og:url" content="(https:\/\/turhouse\.com\.ua\/[^"]*)"/, /<meta property="og:image" content="(https:\/\/turhouse\.com\.ua\/[^"]*)"/, /<meta name="twitter:image" content="(https:\/\/turhouse\.com\.ua\/[^"]*)"/]) {
+      if (!re.test(h)) fail(`Немає адреси turhouse.com.ua (canonical/og:url/og:image/twitter:image): ${rel(f)} ${re.source.slice(0, 40)}`);
+    }
   }
   for (const f of textFiles) {
     const t = read(f);

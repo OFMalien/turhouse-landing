@@ -1,0 +1,19 @@
+---
+permalink: "/site.webmanifest"
+eleventyExcludeFromCollections: true
+---
+{
+  "name": "{{ site.name }}",
+  "short_name": "{{ site.name }}",
+  "description": "{{ site.tagline }}",
+  "lang": "uk",
+  "start_url": "{{ '/' | url }}",
+  "scope": "{{ '/' | url }}",
+  "display": "standalone",
+  "theme_color": "{{ site.themeColor }}",
+  "background_color": "{{ site.themeColor }}",
+  "icons": [
+    { "src": "{{ '/favicon-192.png' | url }}", "sizes": "192x192", "type": "image/png" },
+    { "src": "{{ '/apple-touch-icon.png' | url }}", "sizes": "180x180", "type": "image/png" }
+  ]
+}

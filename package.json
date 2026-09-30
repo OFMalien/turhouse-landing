@@ -14,7 +14,8 @@
     "start": "ELEVENTY_ENV=preview eleventy --serve",
     "clean": "rm -rf _site",
     "check:contrast": "node scripts/check-contrast.mjs",
-    "check:photos": "node scripts/photos.mjs check"
+    "check:photos": "node scripts/photos.mjs check",
+    "make:static": "node scripts/make-static.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
