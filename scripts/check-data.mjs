@@ -19,7 +19,7 @@ const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600,
 const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
 // C9: відстань і час у дорозі не вказувати взагалі (км, "N хвилин їзди", "година в дорозі"). Слово "хвилин" саме по собі дозволене (відгук гостя: "з перших хвилин").
 const CYR_CLASS = 'А-Яа-яІіЇїЄєҐґ';
-const C9_RE = new RegExp(`(^|[^${CYR_CLASS}])км([^${CYR_CLASS}]|$)|кілометр|хвилин\\w*\\s+(їзди|в дорозі|дороги|пішки|на машині)|годин\\w*\\s+(їзди|в дорозі)|\\d+\\s*(хв|год)([^${CYR_CLASS}]|$)`, 'i');
+const C9_RE = new RegExp(`(^|[^${CYR_CLASS}])км([^${CYR_CLASS}]|$)|кілометр|хвилин[${CYR_CLASS}']*\\s+(їзди|в дорозі|дороги|пішки|на машині)|годин[${CYR_CLASS}']*\\s+(їзди|в дорозі)|\\d+\\s*(хв|год)([^${CYR_CLASS}]|$)`, 'i');
 const FORBIDDEN_TEXT = [C9_RE, /(будинок|дім|дом)\s+на\s+12/i, /Барн\s?Хаус|Барнхаус/i, /ретрит/i, /райськ/i, /незабутн/i, /унікальна атмосфера/i, /\b4500\b/, /\b5200\b/, /\b8200\b/, /\b15800\b/, /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u];
 
 // Ціни страв меню не входять у список цін проживання: menu.json перевіряється окремо, по таблиці з 28 позицій (нижче).
@@ -230,6 +230,13 @@ const collectLinks = (node, acc = []) => {
   }
   return acc;
 };
+// усі текстові рядки дерева (для правил, що мають діяти в межах одного рядка, а не через сусідні поля JSON)
+const collectStrings = (node, acc = []) => {
+  if (typeof node === 'string') acc.push(node);
+  else if (Array.isArray(node)) node.forEach((n) => collectStrings(n, acc));
+  else if (node && typeof node === 'object') Object.values(node).forEach((v) => collectStrings(v, acc));
+  return acc;
+};
 for (const f of contentFiles) {
   const data = readContent(f);
   const all = JSON.stringify(data);
@@ -389,6 +396,37 @@ else {
   for (const u of ['/nomery/', '/kotedzhi/', '/banya-ta-spa/', '/kafe/']) if (!linkedB.has(u)) fail(`texts/barn-house.json: немає посилання на ${u} (перелінковка)`);
 }
 
+// texts/banya-ta-spa.json: сторінка бані та спа (E3-T11). Ціна 600+200 і склад комплексу беруться з spa.json; цін у тексті немає.
+// Невідомо з джерел: ціна чана і банщика, скільки людей у чані, години роботи, порядок бронювання бані, чи можна без проживання.
+const spaPage = contentFiles.includes('banya-ta-spa.json') ? readContent('banya-ta-spa.json') : null;
+if (!spaPage) fail('texts/banya-ta-spa.json: немає файлу');
+else {
+  checkMeta('banya-ta-spa.json', spaPage.meta, { titleHas: ['Баня', 'чаном', 'під Києвом', 'Tur House'], descHas: ['під Києвом', 'чан'] });
+  if (!/Баня/.test(spaPage.hero?.h1 || '') || !/чан/i.test(spaPage.hero?.h1 || '')) fail('texts/banya-ta-spa.json: hero.h1 має містити "Баня" і "чан"');
+  if (!/весняно-осінній/.test(spaPage.hero?.lede || '')) fail('texts/banya-ta-spa.json: hero.lede про басейн має казати "весняно-осінній сезон"');
+  const introS = spaPage.intro?.text || '';
+  if (!/Банний комплекс/.test(introS) || !/Чернігівська область/.test(introS) || !/баня з чаном під Києвом/i.test(introS)) fail('texts/banya-ta-spa.json: у вступі кластери ТЗ «баня з чаном під Києвом», «банний комплекс Чернігівська область»');
+  // склад комплексу в тексті = spa.complex (7 пунктів у тому ж порядку)
+  const lead = (spaPage.complex?.lead || '').toLowerCase();
+  const cplx = (spa?.complex || []).map((c) => c.toLowerCase());
+  let pos = -1;
+  for (const c of cplx) { const p = lead.indexOf(c, pos + 1); if (p < 0) { fail(`texts/banya-ta-spa.json: у complex.lead немає "${c}" (spa.json)`); break; } pos = p; }
+  const priceT = spaPage.price?.text || '';
+  for (const w of ['з особи', 'першу годину', 'наступну', 'попереднім бронюванням', 'банщика']) if (!priceT.includes(w)) fail(`texts/banya-ta-spa.json: у price.text немає "${w}"`);
+  if (!/Direct/.test(spaPage.booking?.text || '') || !/зателефонуйте/.test(spaPage.booking?.text || '')) fail('texts/banya-ta-spa.json: booking.text має пропонувати телефон і Instagram Direct');
+  if (/BookmeNow/.test(JSON.stringify(spaPage))) fail('texts/banya-ta-spa.json: що баню бронюють через BookmeNow, в джерелах немає (BookmeNow для проживання)');
+  // не вигадувати: хамам, масаж, сауна, процедури, ретрит, абстрактний велнес, віник, температуру, вартість чана, скільки людей у чані, години, "без проживання"
+  const spaJson = JSON.stringify(spaPage);
+  if (new RegExp(`(?<![${CYR_CLASS}])(хамам|масаж|сауна|джакузі|скраб|процедур|ретрит|велнес|wellness|спа-відпочин|детокс|віник|температур|цілодобов|щодня|вихідн|без проживання|без ночівлі|на день)`, 'i').test(spaJson)) fail('texts/banya-ta-spa.json: у тексті є послуги, години чи умови, яких немає в джерелах (хамам, масаж, спа-процедури, години роботи, візит без проживання тощо), C2, C6');
+  const W = `[${CYR_CLASS}']*`; // \w у JS не знає кирилиці, тому закінчення слів беремо класом літер
+  const chanCap = new RegExp(`(чан${W})(\\s+просто\\s+неба)?\\s+(на|для|до|вміщ${W}|розрахован${W}\\s+на)\\s+\\d+|\\d+\\s*(осіб|гостей|людей|чол${W})\\s+(у|в)\\s+чан`, 'i');
+  if (collectStrings(spaPage).some((s) => chanCap.test(s))) fail('texts/banya-ta-spa.json: скільки людей у чані, в джерелах немає');
+  checkPagePhotos('banya-ta-spa.json', [spaPage.hero?.photo]);
+  if (spaPage.hero?.photo !== spa?.photo) fail('texts/banya-ta-spa.json: hero.photo має збігатися з spa.photo');
+  const linkedS = new Set(collectLinks(spaPage));
+  for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/kafe/']) if (!linkedS.has(u)) fail(`texts/banya-ta-spa.json: немає посилання на ${u} (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -415,4 +453,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, promo, photos, ціни і заборонені слова)');
