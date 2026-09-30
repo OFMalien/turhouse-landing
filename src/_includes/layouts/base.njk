@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or 'Tur House' }}</title>
+  {%- if description %}
+  <meta name="description" content="{{ description }}">
+  {%- endif %}
+  {%- if env.noindex %}
+  <meta name="robots" content="noindex">
+  {%- else %}
+  <meta name="robots" content="index, follow">
+  {%- endif %}
+  <link rel="canonical" href="{{ page.url | absoluteUrl }}">
+</head>
+<body>
+{{ content | safe }}
+</body>
+</html>
