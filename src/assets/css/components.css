@@ -1,1 +1,265 @@
-/* Компоненти додаються в задачах E2-T3 і далі. */
+/* Компоненти. Кожна секція відповідає задачі E2-*; значення перенесені з бойового index.html. */
+
+/* ---------- Кнопки ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 14px 28px;
+  background: transparent;
+  border: 1px solid var(--color-onyx-warm);
+  border-radius: var(--radius-sm);
+  color: var(--color-onyx-warm);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-small);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--t-base), color var(--t-base), border-color var(--t-base), transform 0.2s ease;
+}
+.btn:hover {
+  background: var(--color-onyx-warm);
+  color: var(--color-parchment);
+  transform: translateY(-1px);
+}
+.btn-primary {
+  background: var(--color-onyx-warm);
+  color: var(--color-parchment);
+}
+.btn-primary:hover {
+  background: var(--color-saffron-bright);
+  border-color: var(--color-saffron-bright);
+  color: var(--color-onyx-warm);
+}
+.btn-compact { min-height: 44px; padding: 10px 20px; }
+
+/* На темному фоні: контурна кнопка світла, головна шафранова (onyx на saffron 5,55:1, ТЗ §5.2). */
+.on-dark .btn {
+  border-color: var(--color-parchment);
+  color: var(--color-parchment);
+}
+.on-dark .btn:hover {
+  background: var(--color-parchment);
+  color: var(--color-onyx-warm);
+}
+.on-dark .btn-primary {
+  background: var(--color-saffron-glow);
+  border-color: var(--color-saffron-glow);
+  color: var(--color-onyx-warm);
+}
+.on-dark .btn-primary:hover {
+  background: var(--color-saffron-bright);
+  border-color: var(--color-saffron-bright);
+  color: var(--color-onyx-warm);
+}
+.btn-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+
+.icon { width: 18px; height: 18px; flex: none; }
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--color-parchment);
+  border-radius: var(--radius-sm);
+  color: var(--color-parchment);
+  cursor: pointer;
+  transition: background var(--t-base), color var(--t-base);
+}
+.icon-btn:hover {
+  background: var(--color-parchment);
+  color: var(--color-onyx-warm);
+}
+
+/* Якорі не ховаються під липкою шапкою */
+[id] { scroll-margin-top: 88px; }
+
+/* ---------- Шапка ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav);
+  background: rgba(26, 24, 22, 0.94);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line-on-dark);
+}
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1320px;
+  min-height: 68px;
+  margin: 0 auto;
+  padding: 10px var(--gutter);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.12px;
+  text-transform: uppercase;
+  color: var(--color-parchment);
+}
+.brand img { width: 32px; height: 32px; object-fit: contain; }
+
+.site-nav ul {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px 16px;
+}
+.site-nav a {
+  display: inline-block;
+  padding: 10px 2px;
+  border-bottom: 2px solid transparent;
+  font-weight: 600;
+  font-size: var(--text-small);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-linen);
+  transition: color var(--t-fast), border-color var(--t-fast);
+}
+.site-nav a:hover { color: var(--color-parchment); }
+.site-nav a[aria-current="page"] {
+  color: var(--color-parchment);
+  border-bottom-color: var(--color-saffron-bright);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+
+/* Бургер: прихований на широких екранах (9 пунктів у рядок не вміщуються нижче 1280px;
+   у ТЗ вимога «нижче 960px» виконується, бо бургер є на всіх екранах вужче 1280px). */
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--color-parchment);
+  border-radius: var(--radius-sm);
+  color: var(--color-parchment);
+  cursor: pointer;
+  transition: background var(--t-base), color var(--t-base);
+}
+.nav-toggle:hover {
+  background: var(--color-parchment);
+  color: var(--color-onyx-warm);
+}
+.nav-toggle .icon { width: 22px; height: 22px; }
+
+@media (max-width: 1279.98px) {
+  .js .site-nav { display: none; }
+  .js .nav-toggle { display: inline-flex; }
+  /* Без JS меню лишається в шапці й переноситься на новий рядок. */
+  html:not(.js) .site-header__inner { flex-wrap: wrap; }
+  html:not(.js) .site-nav { order: 3; width: 100%; }
+}
+/* Вузький десктоп: поруч з логотипом без напису, щоб меню вмістилося в один рядок. */
+@media (min-width: 1280px) and (max-width: 1439.98px) {
+  .site-header .brand span { display: none; }
+}
+@media (max-width: 599.98px) {
+  .header-actions .btn { display: none; }
+}
+
+/* ---------- Мобільне меню (drawer) ---------- */
+.nav-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer);
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  overflow-y: auto;
+  background: rgba(20, 18, 16, 0.98);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-out), visibility 0s linear 0.3s;
+}
+.nav-drawer.is-open {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line-on-dark);
+}
+.drawer-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--line-on-dark-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-parchment);
+  cursor: pointer;
+}
+.drawer-close:hover { background: var(--color-parchment); color: var(--color-onyx-warm); }
+.drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 24px;
+}
+.drawer-links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(216, 203, 184, 0.08);
+  font-family: var(--font-serif);
+  font-size: 24px;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--color-parchment);
+}
+.drawer-links a::after {
+  content: "→";
+  content: "→" / "";
+  font-family: var(--font-sans);
+  font-size: 18px;
+  color: var(--color-saffron-bright);
+}
+.drawer-links a[aria-current="page"] { color: var(--color-saffron-bright); }
+.drawer-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+.drawer-footer .btn { width: 100%; }
+
+html.nav-open { overflow: hidden; }

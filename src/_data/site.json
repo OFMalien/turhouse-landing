@@ -1,0 +1,31 @@
+{
+  "name": "Tur House",
+  "tagline": "Готельно-банний комплекс",
+  "locale": "uk_UA",
+  "phone": {
+    "display": "+38 096 127-55-53",
+    "tel": "+380961275553"
+  },
+  "address": {
+    "street": "вул. Лугова, 24",
+    "locality": "с. Беремицьке",
+    "region": "Чернігівська область",
+    "country": "UA",
+    "short": "с. Беремицьке, Чернігівщина",
+    "full": "вул. Лугова, 24, с. Беремицьке, Чернігівська обл."
+  },
+  "links": {
+    "booking": "https://go.bookmenow.pro/t/turhouse",
+    "instagram": "https://www.instagram.com/tur_house_/",
+    "instagramHandle": "@tur_house_",
+    "instagramDirect": "https://ig.me/m/tur_house_",
+    "googleMaps": "https://www.google.com/maps/place/TUR+House",
+    "googleMapsRoute": "https://www.google.com/maps/dir/?api=1&destination=TUR+House%2C+%D0%9B%D1%83%D0%B3%D0%BE%D0%B2%D0%B0%2C+%D0%91%D0%B5%D1%80%D0%B5%D0%BC%D0%B8%D1%86%D1%8C%D0%BA%D0%B5",
+    "waze": "https://waze.com/ul?q=TUR+House+Беремицьке"
+  },
+  "analytics": {
+    "gtm": ["GTM-PRF3SNG", "GTM-T97JFZCZ"],
+    "metaPixel": "548259214495555"
+  },
+  "geo": null
+}

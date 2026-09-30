@@ -1,0 +1,23 @@
+{% from "components/icons.njk" import instagram, menu %}
+<header class="site-header on-dark" data-placement="header_nav">
+  <div class="site-header__inner">
+    <a class="brand" href="{{ '/' | url }}" aria-label="{{ site.name }}, на головну">
+      <img src="{{ '/assets/img/static/logo.png' | url }}" width="32" height="32" alt="">
+      <span>{{ site.name }}</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Головне меню">
+      <ul>
+        {%- for item in nav %}
+        <li><a href="{{ item.url | url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+        {%- endfor %}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a class="icon-btn" href="{{ site.links.instagram }}" target="_blank" rel="noopener" aria-label="Instagram {{ site.links.instagramHandle }}">{{ instagram() }}</a>
+      <a class="btn btn-primary btn-compact" href="{{ site.links.booking }}" target="_blank" rel="noopener">Забронювати</a>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Відкрити меню">{{ menu() }}</button>
+    </div>
+  </div>
+</header>

@@ -109,7 +109,7 @@ h4 {
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
-.section { padding: var(--section-gap) 0; }
+.section { padding-block: var(--section-gap); }
 
 /* Фокус: на світлому фоні тёмне кільце (saffron на parchment дає 1,59:1 і не видно), на темному шафранове. */
 :focus-visible {
@@ -121,6 +121,7 @@ h4 {
 .nav-drawer :focus-visible { outline-color: var(--focus-ring); }
 
 /* Допоміжне */
+.nowrap { white-space: nowrap; }
 .visually-hidden {
   position: absolute;
   width: 1px;

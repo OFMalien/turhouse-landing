@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ title or 'Tur House' }}</title>
+  <title>{{ title or site.name }}</title>
   {%- if description %}
   <meta name="description" content="{{ description }}">
   {%- endif %}
@@ -14,8 +14,15 @@
   {%- endif %}
   <link rel="canonical" href="{{ page.url | absoluteUrl }}">
   <link rel="stylesheet" href="{{ '/assets/css/main.css' | url }}">
+  <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
+<a class="skip-link" href="#main">Перейти до змісту</a>
+{% include "components/header.njk" %}
+{% include "components/drawer.njk" %}
+<main id="main" tabindex="-1">
 {{ content | safe }}
+</main>
+<script src="{{ '/assets/js/app.js' | url }}" defer></script>
 </body>
 </html>
