@@ -1,0 +1,21 @@
+{
+  "name": "turhouse-multipage",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Багатосторінковий сайт Tur House (Eleventy)",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "eleventy",
+    "build:preview": "ELEVENTY_ENV=preview eleventy",
+    "build:production": "ELEVENTY_ENV=production eleventy",
+    "start": "ELEVENTY_ENV=preview eleventy --serve",
+    "clean": "rm -rf _site"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.6",
+    "@11ty/eleventy-img": "^7.0.0"
+  }
+}

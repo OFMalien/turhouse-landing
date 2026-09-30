@@ -1,3 +1,8 @@
 DEPLOY.md
 DOMAIN_SETUP.md
 *.local.md
+node_modules/
+_site/
+.cache/
+.eleventy-img-cache/
+.DS_Store
