@@ -328,6 +328,35 @@ else {
   for (const u of ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedN.has(u)) fail(`texts/nomery.json: немає посилання на ${u} (перелінковка)`);
 }
 
+// texts/kotedzhi.json: сторінка котеджів (E3-T9). Підтверджено лише: двокімнатні, кухня, зона BBQ, власна тераса, мангал, 2+2 котеджі (R5)
+const kotedzhi = contentFiles.includes('kotedzhi.json') ? readContent('kotedzhi.json') : null;
+if (!kotedzhi) fail('texts/kotedzhi.json: немає файлу');
+else {
+  checkMeta('kotedzhi.json', kotedzhi.meta, { titleHas: ['Котеджі', 'Tur House'], descHas: ['під Києвом', 'котедж'] });
+  if (!/Котеджі/.test(kotedzhi.hero?.h1 || '')) fail('texts/kotedzhi.json: hero.h1 має містити "Котеджі"');
+  const capN = (cottages || []).map((c) => Number((c.capacity.match(/\d+/) || [])[0]));
+  if (!same(capN, [4, 6])) fail('texts/kotedzhi.json: у cottages.json місткість має бути 4 і 6 гостей (R5)');
+  for (const [where, t] of [['hero.lede', kotedzhi.hero?.lede], ['types.lead', kotedzhi.types?.lead]]) {
+    if (!/(два котеджі|два) на 4 гості й два на 6 гостей/i.test(t || '')) fail(`texts/kotedzhi.json: ${where} "два на 4 гості й два на 6 гостей" (R5)`);
+  }
+  if (!/Чотири котеджі/.test(kotedzhi.hero?.lede || '') || !/двокімнатні/i.test(kotedzhi.hero?.lede || '')) fail('texts/kotedzhi.json: hero.lede "Чотири котеджі ... двокімнатні" (R5, джерело LIVE)');
+  const introK = kotedzhi.intro?.text || '';
+  for (const w of ['під Києвом', 'Чернігівщин', 'кухня', "сім.ї"]) if (!new RegExp(w, 'i').test(introK)) fail(`texts/kotedzhi.json: у вступі немає "${w}" (кластер ТЗ §6 «котедж під Києвом з кухнею», «котедж для сім'ї»)`);
+  const kit = kotedzhi.kitchen?.text || '';
+  for (const w of ['кухня', 'тераса', 'мангал', 'BBQ']) if (!new RegExp(w, 'i').test(kit)) fail(`texts/kotedzhi.json: у kitchen.text немає "${w}"`);
+  const inclK = (kotedzhi.included?.items || []).join(' ');
+  for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(inclK)) fail(`texts/kotedzhi.json: included.items без "${w}"`);
+  if (!/до 8 або до 12 гостей/.test(kotedzhi.group?.text || '') || !/двох гостей/.test(kotedzhi.group?.text || '')) fail('texts/kotedzhi.json: group.text про номери для двох гостей і Барн-хаус до 8 або до 12 гостей (R4, R6)');
+  if (!/BookmeNow/.test(kotedzhi.booking?.text || '') || !/Direct/.test(kotedzhi.booking?.text || '')) fail('texts/kotedzhi.json: booking.text має згадувати BookmeNow і Instagram Direct');
+  // комплектація, якої немає в джерелах (у ТЗ є посуд, опалення, постіль, але живий лендинг їх не підтверджує), Wi-Fi у котеджах (тільки "на території"), спальні, площа, вечірній вигляд
+  if (new RegExp(`(?<![${CYR_CLASS}])(посуд|опален|постіль|постільн|білизн|рушник|кондиціонер|камін|телевізор|санвуз|ванн|душ|спальн|снідан|кв\\.?\\s?м|м²|паркін|парковк|дитяч|холодильник|балкон)|wi-?fi|вайфай`, 'i').test(JSON.stringify(kotedzhi))) fail('texts/kotedzhi.json: у тексті є комплектація або зручності, яких немає в джерелах (посуд, опалення, спальні, Wi-Fi тощо), C6');
+  // фото: інтер'єри з фіолетовими стінами (verify, питання 9) на сторінку не ставимо; у галереї два підтверджені фасадні кадри
+  checkPagePhotos('kotedzhi.json', [kotedzhi.hero?.photo, ...(kotedzhi.gallery?.photos || [])]);
+  if (!same(kotedzhi.gallery?.photos, ['cottages/cottage-orange', 'cottages/cottages-sunset'])) fail('texts/kotedzhi.json: у галереї два підтверджені фасадні кадри (інтер\'єри з verify чекають відповіді на питання 9)');
+  const linkedK = new Set(collectLinks(kotedzhi));
+  for (const u of ['/nomery/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedK.has(u)) fail(`texts/kotedzhi.json: немає посилання на ${u} (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -354,4 +383,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home і nomery, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, promo, photos, ціни і заборонені слова)');
