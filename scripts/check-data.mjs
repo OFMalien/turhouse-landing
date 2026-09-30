@@ -17,7 +17,10 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 // Дозволені ціни на сайті (п.6 промпта): 2500/2800/3000, 6000/7000, 11000 і 13000 (Барн-хаус), 600+200, 500, ціни акції.
 const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800]);
 const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
-const FORBIDDEN_TEXT = [/(будинок|дім|дом)\s+на\s+12/i, /Барн\s?Хаус|Барнхаус/i, /ретрит/i, /райськ/i, /незабутн/i, /унікальна атмосфера/i, /\b4500\b/, /\b5200\b/, /\b8200\b/, /\b15800\b/, /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u];
+// C9: відстань і час у дорозі не вказувати взагалі (км, "N хвилин їзди", "година в дорозі"). Слово "хвилин" саме по собі дозволене (відгук гостя: "з перших хвилин").
+const CYR_CLASS = 'А-Яа-яІіЇїЄєҐґ';
+const C9_RE = new RegExp(`(^|[^${CYR_CLASS}])км([^${CYR_CLASS}]|$)|кілометр|хвилин\\w*\\s+(їзди|в дорозі|дороги|пішки|на машині)|годин\\w*\\s+(їзди|в дорозі)|\\d+\\s*(хв|год)([^${CYR_CLASS}]|$)`, 'i');
+const FORBIDDEN_TEXT = [C9_RE, /(будинок|дім|дом)\s+на\s+12/i, /Барн\s?Хаус|Барнхаус/i, /ретрит/i, /райськ/i, /незабутн/i, /унікальна атмосфера/i, /\b4500\b/, /\b5200\b/, /\b8200\b/, /\b15800\b/, /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u];
 
 // Ціни страв меню не входять у список цін проживання: menu.json перевіряється окремо, по таблиці з 28 позицій (нижче).
 const PRICE_SCAN_SKIP = new Set(['menu.json']);
@@ -30,7 +33,7 @@ function scan(node, where, checkPrices = true) {
       scan(v, `${where}.${k}`, checkPrices);
     }
   } else if (typeof node === 'string') {
-    for (const re of FORBIDDEN_TEXT) if (re.test(node)) fail(`${where}: заборонений вміст ${re}`);
+    for (const re of FORBIDDEN_TEXT) if (re.test(node)) fail(`${where}: ${re === C9_RE ? 'відстань або час у дорозі (C9)' : `заборонений вміст ${re}`}`);
     // Будь-яка сума з "грн" у тексті має бути з дозволеного списку цін (правило C6: цін не вигадувати).
     if (checkPrices) for (const m of node.matchAll(/(\d[\d\s\u00a0]*)\s*грн/g)) {
       const n = Number(m[1].replace(/[\s\u00a0]/g, ''));
@@ -215,6 +218,70 @@ else {
   if (/aggregateRating|ratingValue|reviewCount|ratingCount|bestRating|worstRating/i.test(JSON.stringify(reviews))) fail('reviews.json: агрегованого рейтингу на сайті немає (ТЗ §7.2, питання 11)');
 }
 
+// texts/*.json: тексти сторінок. Цін у текстах немає (вони беруться з _data, ТЗ §6), діють правила C1-C9
+const contentDir = path.join(dataDir, 'texts');
+const contentFiles = fs.existsSync(contentDir) ? fs.readdirSync(contentDir).filter((n) => n.endsWith('.json')) : [];
+const readContent = (n) => JSON.parse(fs.readFileSync(path.join(contentDir, n), 'utf8'));
+const collectLinks = (node, acc = []) => {
+  if (Array.isArray(node)) node.forEach((n) => collectLinks(n, acc));
+  else if (node && typeof node === 'object') {
+    if (typeof node.url === 'string') acc.push(node.url);
+    Object.values(node).forEach((v) => collectLinks(v, acc));
+  }
+  return acc;
+};
+for (const f of contentFiles) {
+  const data = readContent(f);
+  const all = JSON.stringify(data);
+  scan(data, `texts/${f}`, true);
+  if (/грн/i.test(all)) fail(`texts/${f}: у текстах сторінок цін немає, вони беруться з _data (ТЗ §6)`);
+  if (/[–—]/.test(all)) fail(`texts/${f}: у тексті довге тире, пишемо двокрапку, кому або крапку`);
+  if (/TUR HOUSE|Tur house|tur house|TurHouse|Tur-House/.test(all)) fail(`texts/${f}: назва пишеться "Tur House", капс тільки через CSS (C8)`);
+  for (const u of collectLinks(data)) if (!NAV_URLS.includes(u) && u !== '/pryvatnist/') fail(`texts/${f}: посилання ${u} не веде на сторінку сайту`);
+}
+
+// texts/home.json: головна (E3-T7). SEO-кластер, блоки ТЗ §6, R4-R7
+const home = contentFiles.includes('home.json') ? readContent('home.json') : null;
+if (!home) fail('texts/home.json: немає файлу');
+else {
+  const m = home.meta || {};
+  if (!m.title || m.title.length < 30 || m.title.length > 65 || !/Tur House/.test(m.title) || !/Беремицьке/.test(m.title)) fail('texts/home.json: meta.title 30-65 знаків, з "Tur House" і "Беремицьке"');
+  if (!m.description || m.description.length < 70 || m.description.length > 160) fail(`texts/home.json: meta.description 70-160 знаків, є ${(m.description || '').length}`);
+  if (!home.hero?.h1 || !/Беремицьке/.test(home.hero.h1)) fail('texts/home.json: hero.h1 порожній або без "Беремицьке"');
+  if (!same(home.hero?.tags, ['Котеджі', 'Басейн з підігрівом', 'Чан', 'Баня на дровах', 'Starlink'])) fail('texts/home.json: hero.tags як на живому лендингу (C5)');
+  if (!Array.isArray(home.intro?.points) || home.intro.points.length !== 3) fail('texts/home.json: intro.points має бути 3 пункти');
+  const introText = (home.intro?.points || []).join(' ');
+  if (!/відпочинок під Києвом/i.test(introText) || !/Чернігівщин/.test(introText)) fail('texts/home.json: у вступі має бути кластер "відпочинок під Києвом" (ТЗ §6) і чесне "Чернігівщина"');
+  const fmt = home.formats?.items || [];
+  if (!same(fmt.map((i) => i.id), ['rooms', 'cottages', 'barn']) || !same(fmt.map((i) => i.link?.url), ['/nomery/', '/kotedzhi/', '/barn-house/'])) fail('texts/home.json: formats.items rooms, cottages, barn з посиланнями на свої сторінки (R4-R6: три формати)');
+  else {
+    if (!/по два номери/.test(fmt[0].desc)) fail('texts/home.json: rooms.desc має говорити "по два номери кожного виду" (R4)');
+    if (!/Два котеджі на 4 гості й два на 6 гостей/.test(fmt[1].desc)) fail('texts/home.json: cottages.desc має говорити "два котеджі на 4 гості й два на 6 гостей" (R5)');
+    if (!/до 8 або до 12 гостей/.test(fmt[2].desc) || !/Окремий будинок/.test(fmt[2].desc)) fail('texts/home.json: barn.desc "Окремий будинок ... до 8 або до 12 гостей" (R6: один дім, два тарифи)');
+  }
+  if (!/BBQ/.test(home.formats?.included || '') || !/басейн/.test(home.formats?.included || '')) fail('texts/home.json: formats.included має говорити про BBQ і басейн');
+  if (home.spa?.link?.url !== '/banya-ta-spa/' || home.cafe?.link?.url !== '/kafe/' || home.area?.link?.url !== '/okolitsi/' || home.location?.link?.url !== '/yak-distatysya/') fail('texts/home.json: посилання spa, cafe, area, location на свої сторінки');
+  if (!same((home.territory?.items || []).map((i) => i.id), ['pool', 'bbq', 'starlink'])) fail('texts/home.json: territory.items pool, bbq, starlink');
+  // тизер кафе: усе, що названо, є в menu.json (C6), "чотири види піци" = 4 позиції піци
+  const menuItems = (menu?.sections || []).flatMap((s) => s.items);
+  const hasItem = (id) => menuItems.some((i) => i.id === id);
+  const cafeText = home.cafe?.text || '';
+  for (const [word, id] of [['сирники', 'syrnyky'], ['вареники з вишнями', 'varenyky-cherry'], ['омлет', 'omelette'], ['борщ', 'borscht'], ['дируни', 'deruny'], ['карбонара', 'carbonara']]) {
+    if (new RegExp(word, 'i').test(cafeText) && !hasItem(id)) fail(`texts/home.json: у тизері кафе "${word}", а в menu.json немає позиції ${id}`);
+  }
+  if (/чотири види піци/.test(cafeText) && (menu?.sections.find((s) => s.id === 'pizza')?.items.length !== 4)) fail('texts/home.json: "чотири види піци", а в menu.json їх не чотири');
+  if (/десерт|алкогол|вино|пиво|коктейл/i.test(cafeText)) fail('texts/home.json: у тизері кафе десертів і алкоголю немає в джерелі');
+  // фото з паспорта, без verify
+  const homePhotos = [home.hero?.photo, home.spa?.photo, home.cafe?.photo, home.area?.photo, ...fmt.map((i) => i.photo)].filter(Boolean);
+  for (const id of homePhotos) {
+    if (!photos[id]) fail(`texts/home.json: фото "${id}" немає в photos.json`);
+    else if (photos[id].verify) fail(`texts/home.json: фото "${id}" позначене verify`);
+  }
+  // перелінковка: головна веде мінімум на 6 інших розділів
+  const linked = new Set(collectLinks(home));
+  if (linked.size < 6) fail(`texts/home.json: головна посилається лише на ${linked.size} розділів, потрібно не менше 6 (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -241,4 +308,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, promo, photos, ціни і заборонені слова)');
