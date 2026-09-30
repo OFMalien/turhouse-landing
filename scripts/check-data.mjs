@@ -19,17 +19,20 @@ const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600,
 const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
 const FORBIDDEN_TEXT = [/(будинок|дім|дом)\s+на\s+12/i, /Барн\s?Хаус|Барнхаус/i, /ретрит/i, /райськ/i, /незабутн/i, /унікальна атмосфера/i, /\b4500\b/, /\b5200\b/, /\b8200\b/, /\b15800\b/, /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u];
 
-function scan(node, where) {
-  if (Array.isArray(node)) return node.forEach((n, i) => scan(n, `${where}[${i}]`));
+// Ціни страв меню не входять у список цін проживання: menu.json перевіряється окремо, по таблиці з 28 позицій (нижче).
+const PRICE_SCAN_SKIP = new Set(['menu.json']);
+
+function scan(node, where, checkPrices = true) {
+  if (Array.isArray(node)) return node.forEach((n, i) => scan(n, `${where}[${i}]`, checkPrices));
   if (node && typeof node === 'object') {
     for (const [k, v] of Object.entries(node)) {
-      if (PRICE_KEYS.has(k) && typeof v === 'number' && !ALLOWED_PRICES.has(v)) fail(`${where}.${k}: ціна ${v} поза дозволеним списком`);
-      scan(v, `${where}.${k}`);
+      if (checkPrices && PRICE_KEYS.has(k) && typeof v === 'number' && !ALLOWED_PRICES.has(v)) fail(`${where}.${k}: ціна ${v} поза дозволеним списком`);
+      scan(v, `${where}.${k}`, checkPrices);
     }
   } else if (typeof node === 'string') {
     for (const re of FORBIDDEN_TEXT) if (re.test(node)) fail(`${where}: заборонений вміст ${re}`);
     // Будь-яка сума з "грн" у тексті має бути з дозволеного списку цін (правило C6: цін не вигадувати).
-    for (const m of node.matchAll(/(\d[\d\s\u00a0]*)\s*грн/g)) {
+    if (checkPrices) for (const m of node.matchAll(/(\d[\d\s\u00a0]*)\s*грн/g)) {
       const n = Number(m[1].replace(/[\s\u00a0]/g, ''));
       if (!ALLOWED_PRICES.has(n)) fail(`${where}: сума "${m[0].trim()}" у тексті поза дозволеним списком цін`);
     }
@@ -37,7 +40,7 @@ function scan(node, where) {
 }
 
 // Усі JSON у _data: ціни і заборонені слова
-for (const f of fs.readdirSync(dataDir).filter((n) => n.endsWith('.json'))) scan(readJson(f), f);
+for (const f of fs.readdirSync(dataDir).filter((n) => n.endsWith('.json'))) scan(readJson(f), f, !PRICE_SCAN_SKIP.has(f));
 
 // nav: 9 розділів у заданому порядку
 const nav = readJson('nav.json');
@@ -114,6 +117,57 @@ else {
   if (new Set(spa.gallery).size !== (spa.gallery || []).length) fail('spa.json: у gallery є повтори');
 }
 
+// menu: 28 позицій з фото меню від 28.08.2026 (секція, id, ціна, вага). Десертів і алкоголю немає (у джерелі порожньо).
+const MENU_EXPECTED = {
+  breakfasts: [['oatmeal', 180, '200 г'], ['fried-eggs', 350, null], ['omelette', 350, '250-280 г'], ['syrnyky', 350, '210/50 г'], ['varenyky-cherry', 280, '240 г']],
+  'first-courses': [['broth-noodles', 200, '300 мл'], ['borscht', 250, '300 мл']],
+  'hot-and-salads': [['teriyaki-noodles', 340, '320 г'], ['french-fries', 150, '150 г'], ['potato-pan-mushrooms', 320, '280 г'], ['potato-pan-brisket', 330, '280 г'], ['grilled-vegetables', 250, '200 г'], ['caesar', 350, '250 г'], ['deruny', 270, '450 г'], ['chicken-breast-fries', 370, '200/150 г'], ['chicken-nuggets', 220, '200 г'], ['burger', 380, null], ['carbonara', 360, '320 г']],
+  pizza: [['pizza-meat', 450, '550-600 г'], ['pizza-pepperoni', 400, '450-520 г'], ['pizza-margherita', 350, '450-520 г'], ['pizza-four-cheese', 410, '450-520 г']],
+  drinks: [['tea', 80, null], ['americano', 120, null], ['latte', 150, null], ['cappuccino', 120, null], ['uzvar', 80, '250 мл'], ['juice', 100, null]],
+};
+const menu = readJson('menu.json');
+if (!menu || !Array.isArray(menu.sections)) fail('menu.json: немає sections');
+else {
+  if (menu.currency !== 'UAH') fail('menu.json: currency має бути UAH');
+  if (!same(menu.sections.map((s) => s.id), Object.keys(MENU_EXPECTED))) fail(`menu.json: розділи мають бути ${Object.keys(MENU_EXPECTED).join(', ')} (без десертів: позицій у джерелі немає)`);
+  let total = 0;
+  const seen = new Set();
+  for (const s of menu.sections) {
+    const exp = MENU_EXPECTED[s.id] || [];
+    if (!s.title) fail(`menu.json ${s.id}: немає title`);
+    if (!same(s.items.map((i) => [i.id, i.price, i.weight ?? null]), exp)) fail(`menu.json ${s.id}: позиції, ціни чи вага не збігаються з меню від 28.08.2026 (фото "меню тур.jpg")`);
+    for (const i of s.items) {
+      total += 1;
+      if (seen.has(i.id)) fail(`menu.json: id "${i.id}" повторюється`);
+      seen.add(i.id);
+      if (!i.title) fail(`menu.json ${i.id}: немає title`);
+      if (!Number.isInteger(i.price) || i.price <= 0) fail(`menu.json ${i.id}: ціна має бути цілим додатним числом`);
+      if (i.variants && (!Array.isArray(i.variants) || i.variants.some((v) => typeof v !== 'string' || !v))) fail(`menu.json ${i.id}: variants має бути списком рядків`);
+    }
+  }
+  if (total !== 28) fail(`menu.json: має бути 28 позицій, є ${total}`);
+  if (!same((menu.sections.find((s) => s.id === 'breakfasts')?.items.find((i) => i.id === 'omelette')?.variants), ['з сиром та шинкою (у вершках)', 'з беконом та помідором', 'з помідорами чері та базиліком'])) fail('menu.json: у омлету мають бути три варіанти з меню');
+  if (/десерт/i.test(JSON.stringify(menu))) fail('menu.json: десертів у джерелі немає, позиції не вигадувати');
+  if (/алкогол|вино|пиво|коктейл|віскі|горілк|шампанськ|лікер|самогон|настоянк/i.test(JSON.stringify(menu))) fail('menu.json: алкоголю в меню немає');
+}
+
+// cafe: факти про кафе, години роботи невідомі (null), фото з паспорта без verify
+const cafe = readJson('cafe.json');
+if (!cafe) fail('cafe.json: немає файлу');
+else {
+  if (cafe.title !== 'Кафе та піца-бар') fail('cafe.json: title "Кафе та піца-бар"');
+  if (cafe.hours !== null) fail('cafe.json: годин роботи в джерелах немає, hours має бути null (R7)');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(cafe.menuUpdated || '')) fail('cafe.json: menuUpdated має бути датою YYYY-MM-DD');
+  else if (cafe.menuUpdated !== '2026-08-28') fail('cafe.json: меню від 2026-08-28 (змінювати дату тільки після нового меню)');
+  for (const k of ['serves', 'cuisine']) if (!Array.isArray(cafe[k]) || !cafe[k].length) fail(`cafe.json: ${k} має бути непустим списком`);
+  for (const id of [cafe.photo, ...(cafe.gallery || [])]) {
+    if (!photos[id]) fail(`cafe.json: фото "${id}" немає в photos.json`);
+    else if (photos[id].verify) fail(`cafe.json: фото "${id}" позначене verify`);
+  }
+  if (new Set(cafe.gallery).size !== (cafe.gallery || []).length) fail('cafe.json: у gallery є повтори');
+  if (!(cafe.gallery || []).includes(cafe.photo)) fail('cafe.json: головне фото має бути і в gallery');
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -140,4 +194,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, promo, photos, ціни і заборонені слова)');

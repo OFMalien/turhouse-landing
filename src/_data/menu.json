@@ -1,0 +1,74 @@
+{
+  "currency": "UAH",
+  "sections": [
+    {
+      "id": "breakfasts",
+      "title": "Сніданки",
+      "items": [
+        { "id": "oatmeal", "title": "Вівсяна каша", "weight": "200 г", "price": 180 },
+        { "id": "fried-eggs", "title": "Яєчня-глазунья з ковбасками", "details": "2 яйця, 2 тости, овочі", "price": 350 },
+        {
+          "id": "omelette",
+          "title": "Омлет",
+          "details": "3 яйця",
+          "weight": "250-280 г",
+          "variants": [
+            "з сиром та шинкою (у вершках)",
+            "з беконом та помідором",
+            "з помідорами чері та базиліком"
+          ],
+          "price": 350
+        },
+        { "id": "syrnyky", "title": "Сирники", "details": "джем, згущене молоко або сметана", "weight": "210/50 г", "price": 350 },
+        { "id": "varenyky-cherry", "title": "Вареники з вишнями", "weight": "240 г", "price": 280 }
+      ]
+    },
+    {
+      "id": "first-courses",
+      "title": "Перші страви",
+      "items": [
+        { "id": "broth-noodles", "title": "Бульйон з локшиною та яйцем", "weight": "300 мл", "price": 200 },
+        { "id": "borscht", "title": "Борщ український", "weight": "300 мл", "price": 250 }
+      ]
+    },
+    {
+      "id": "hot-and-salads",
+      "title": "Гарячі страви та салати",
+      "items": [
+        { "id": "teriyaki-noodles", "title": "Локшина з куркою теріякі", "weight": "320 г", "price": 340 },
+        { "id": "french-fries", "title": "Картопля фрі", "weight": "150 г", "price": 150 },
+        { "id": "potato-pan-mushrooms", "title": "Пательня картоплі з грибами", "weight": "280 г", "price": 320 },
+        { "id": "potato-pan-brisket", "title": "Пательня картоплі з грудкою", "weight": "280 г", "price": 330 },
+        { "id": "grilled-vegetables", "title": "Овочі гріль", "weight": "200 г", "price": 250 },
+        { "id": "caesar", "title": "Салат «Цезар класичний»", "weight": "250 г", "price": 350 },
+        { "id": "deruny", "title": "Дируни зі сметаною та шкварками", "weight": "450 г", "price": 270 },
+        { "id": "chicken-breast-fries", "title": "Куряча грудка з картоплею фрі", "weight": "200/150 г", "price": 370 },
+        { "id": "chicken-nuggets", "title": "Курячі нагетси п/ф", "weight": "200 г", "price": 220 },
+        { "id": "burger", "title": "Бургер", "price": 380 },
+        { "id": "carbonara", "title": "Паста карбонара", "weight": "320 г", "price": 360 }
+      ]
+    },
+    {
+      "id": "pizza",
+      "title": "Піца",
+      "items": [
+        { "id": "pizza-meat", "title": "М'ясна фірмова", "weight": "550-600 г", "price": 450 },
+        { "id": "pizza-pepperoni", "title": "Пепероні", "weight": "450-520 г", "price": 400 },
+        { "id": "pizza-margherita", "title": "Маргарита", "weight": "450-520 г", "price": 350 },
+        { "id": "pizza-four-cheese", "title": "4 сири", "weight": "450-520 г", "price": 410 }
+      ]
+    },
+    {
+      "id": "drinks",
+      "title": "Напої",
+      "items": [
+        { "id": "tea", "title": "Чай в асортименті", "price": 80 },
+        { "id": "americano", "title": "Американо", "price": 120 },
+        { "id": "latte", "title": "Латте", "price": 150 },
+        { "id": "cappuccino", "title": "Капучино", "price": 120 },
+        { "id": "uzvar", "title": "Узвар", "weight": "250 мл", "price": 80 },
+        { "id": "juice", "title": "Сік в асортименті", "price": 100 }
+      ]
+    }
+  ]
+}

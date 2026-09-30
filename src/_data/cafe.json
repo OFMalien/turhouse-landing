@@ -1,0 +1,15 @@
+{
+  "title": "Кафе та піца-бар",
+  "serves": ["страви", "кава", "піца", "прохолодні напої"],
+  "cuisine": ["Українська", "Піца"],
+  "menuUpdated": "2026-08-28",
+  "hours": null,
+  "photo": "cafe/pizza",
+  "gallery": [
+    "cafe/pizza",
+    "cafe/borsch",
+    "cafe/burger",
+    "cafe/pasta",
+    "cafe/terrace-table"
+  ]
+}
