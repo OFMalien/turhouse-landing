@@ -1,11 +1,18 @@
 ---
 permalink: "/dev/components/"
 title: "Компоненти (службова сторінка)"
+promoModal: true
 description: "Службова сторінка для перевірки компонентів дизайн-системи. Не входить у бойовий сайт."
 ---
 <div class="wrap section">
   <p class="caption">Службова сторінка, не для гостей</p>
   <h1>Компоненти</h1>
+
+  <h2 style="margin-top:48px">Акція</h2>
+</div>
+{% include "components/promo-banner.njk" %}
+<div class="wrap section">
+  <button type="button" class="btn" onclick="window.thPromoOpen && window.thPromoOpen()">Показати вікно акції</button>
 
   <h2 style="margin-top:48px">Карточки об'єктів</h2>
   <div class="cards-grid" data-placement="formats_section">

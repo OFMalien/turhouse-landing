@@ -1,0 +1,41 @@
+{%- if promo.enabled %}
+<section class="promo-banner" id="promo" aria-labelledby="promo-title" data-placement="promo_section_weekend">
+  <div class="wrap">
+    <div class="promo-banner__box">
+      <div class="promo-banner__poster">
+        {% photo promo.image, { sizes: "(min-width: 900px) 400px, 100vw", class: "media" } %}
+      </div>
+      <div class="promo-banner__content">
+        <p class="promo-badge">{{ promo.badge }}</p>
+        <h2 id="promo-title" class="promo-banner__title">{{ promo.title }}</h2>
+        <p class="promo-banner__subtitle">{{ promo.subtitle }}</p>
+        <p class="lede">{{ promo.lead }}</p>
+
+        <ul class="promo-terms">
+          {%- for t in promo.terms %}
+          <li>{{ t }}</li>
+          {%- endfor %}
+        </ul>
+
+        <ul class="promo-prices">
+          {%- for row in promoItems %}
+          <li class="promo-price">
+            <span class="promo-price__who">{{ row.label }}</span>
+            <span class="promo-price__amounts">
+              <span class="visually-hidden">Звичайна ціна:</span> <s>{{ row.was | price }}&nbsp;грн</s>
+              <span class="visually-hidden">Ціна зі знижкою:</span> <strong>{{ row.now | price }}&nbsp;грн</strong>
+            </span>
+          </li>
+          {%- endfor %}
+        </ul>
+        <p class="promo-banner__note">{{ promo.note }}</p>
+
+        <div class="btn-row">
+          <a class="btn btn-primary" href="{{ promo.cta.url }}" target="_blank" rel="noopener">{{ promo.cta.label }}</a>
+          <a class="btn" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}">Зателефонувати</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endif %}

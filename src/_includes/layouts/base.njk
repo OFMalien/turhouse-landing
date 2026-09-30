@@ -25,6 +25,7 @@
 </main>
 {% include "components/footer.njk" %}
 {% include "components/sticky-cta.njk" %}
+{% if promoModal %}{% include "components/promo-modal.njk" %}{% endif %}
 <script src="{{ '/assets/js/app.js' | url }}" defer></script>
 </body>
 </html>

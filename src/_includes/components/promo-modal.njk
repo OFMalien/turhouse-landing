@@ -1,0 +1,25 @@
+{%- from "components/icons.njk" import close %}
+{%- if promo.enabled %}
+<div class="promo-modal" id="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-modal-title" data-placement="promo_modal_weekend" data-session-key="{{ promo.sessionKey }}" hidden>
+  <div class="promo-modal__dialog" tabindex="-1">
+    <button type="button" class="promo-modal__close" aria-label="Закрити">{{ close() }}</button>
+    <p class="promo-badge">{{ promo.badge }}</p>
+    <p class="promo-modal__title" id="promo-modal-title">{{ promo.title }}</p>
+    <p class="promo-modal__text">{{ promo.modalText }}</p>
+    <ul class="promo-rows">
+      {%- for row in promoItems %}
+      <li>
+        <span>{{ row.label }}</span>
+        <span class="promo-rows__amounts">
+          <span class="visually-hidden">Звичайна ціна:</span> <s>{{ row.was | price }}&nbsp;грн</s>
+          <span class="visually-hidden">Ціна зі знижкою:</span> <strong>{{ row.now | price }}&nbsp;грн</strong>
+        </span>
+      </li>
+      {%- endfor %}
+    </ul>
+    <a class="btn btn-primary" href="{{ promo.cta.url }}" target="_blank" rel="noopener">{{ promo.cta.label }}</a>
+    <a class="promo-modal__more" href="{{ '/' | url }}#promo">Деталі акції</a>
+  </div>
+</div>
+<script src="{{ '/assets/js/promo.js' | url }}" defer></script>
+{%- endif %}
