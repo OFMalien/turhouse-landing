@@ -28,6 +28,7 @@ video,
 svg { max-width: 100%; }
 img,
 video { height: auto; }
+.media { width: 100%; height: auto; }
 img,
 picture { display: block; }
 

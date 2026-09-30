@@ -1,7 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import Image from '@11ty/eleventy-img';
 import { bundle } from 'lightningcss';
 import env from './src/_data/env.js';
+
+// Зображення: web-ready оригінали лежать у src/assets/img/source/, похідні (AVIF, WebP, JPEG)
+// генеруються eleventy-img у постійний кеш .eleventy-img-cache/ (у git не йде) і після збірки
+// копіюються в _site/assets/img/ лише ті, що справді використані на сторінках.
+const IMG_SOURCE_DIR = 'src/assets/img/source';
+const IMG_CACHE_DIR = '.eleventy-img-cache';
+const IMG_URL_PATH = `${env.pathPrefix}assets/img/`;
+const usedImageFiles = new Set();
 
 export default function (eleventyConfig) {
   // Статичні файли: CSS, JS і логотип/іконки копіюються як є.
@@ -28,7 +37,50 @@ export default function (eleventyConfig) {
   });
   eleventyConfig.addWatchTarget('src/assets/css/');
 
+  // {% image "група/файл.jpg", "опис", { sizes: "...", widths: [...], priority: true, class: "..." } %}
+  // alt обов'язковий (для суто декоративних кадрів передайте порожній рядок "").
+  // priority: true - кадр першого екрана (hero): без lazy, з fetchpriority="high".
+  eleventyConfig.addAsyncShortcode('image', async function (src, alt, options = {}) {
+    if (typeof alt !== 'string') {
+      throw new Error(`image "${src}": не задано alt (для декору передайте "")`);
+    }
+    const { sizes = '100vw', widths = [480, 800, 1200, 1600], priority = false, class: cssClass } = options;
+    const metadata = await Image(path.join(IMG_SOURCE_DIR, src), {
+      widths,
+      formats: ['avif', 'webp', 'jpeg'],
+      outputDir: IMG_CACHE_DIR,
+      urlPath: IMG_URL_PATH,
+      filenameFormat: (id, file, width, format) => {
+        const name = path.basename(file, path.extname(file));
+        return `${name}-${id}-${width}.${format}`;
+      },
+    });
+    for (const list of Object.values(metadata)) {
+      for (const entry of list) usedImageFiles.add(entry.outputPath);
+    }
+    const attrs = { alt, sizes, decoding: 'async' };
+    if (priority) {
+      attrs.loading = 'eager';
+      attrs.fetchpriority = 'high';
+    } else {
+      attrs.loading = 'lazy';
+    }
+    if (cssClass) attrs.class = cssClass;
+    return Image.generateHTML(metadata, attrs);
+  });
+
+  eleventyConfig.on('eleventy.before', () => {
+    usedImageFiles.clear();
+  });
+
   eleventyConfig.on('eleventy.after', ({ dir }) => {
+    // Копіюємо в збірку тільки використані похідні зображення.
+    if (usedImageFiles.size) {
+      const target = path.join(dir.output, 'assets', 'img');
+      fs.mkdirSync(target, { recursive: true });
+      for (const file of usedImageFiles) fs.copyFileSync(file, path.join(target, path.basename(file)));
+    }
+
     // GitHub Pages не має обробляти файли Jekyll'ом.
     fs.writeFileSync(path.join(dir.output, '.nojekyll'), '');
 
