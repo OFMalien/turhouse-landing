@@ -14,6 +14,8 @@ export default {
   isProduction,
   // Префікс шляху: превью живе як project site, бойовий сайт у корені домену.
   pathPrefix: isProduction ? '/' : '/turhouse-multipage-preview/',
+  // Домен бойового сайту (потрапляє у файл CNAME тільки при production).
+  domain: 'turhouse.com.ua',
   // Абсолютна адреса для canonical, og:url, og:image, sitemap (без завершального слеша).
   origin: isProduction
     ? 'https://turhouse.com.ua'

@@ -13,9 +13,18 @@ export default function (eleventyConfig) {
     'src/static': '.',
   });
 
-  // GitHub Pages не має обробляти файли Jekyll'ом.
   eleventyConfig.on('eleventy.after', ({ dir }) => {
+    // GitHub Pages не має обробляти файли Jekyll'ом.
     fs.writeFileSync(path.join(dir.output, '.nojekyll'), '');
+
+    // CNAME існує тільки у бойовій збірці (ТЗ §3.2). У превью його немає ніколи:
+    // другий сайт з тим самим доменом відбирає прив'язку у бойового.
+    const cname = path.join(dir.output, 'CNAME');
+    if (env.isProduction) {
+      fs.writeFileSync(cname, `${env.domain}\n`);
+    } else {
+      fs.rmSync(cname, { force: true });
+    }
   });
 
   // Ціна з пробілом-роздільником тисяч: 2500 -> "2 500".

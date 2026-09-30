@@ -1,0 +1,13 @@
+---
+permalink: "/robots.txt"
+eleventyExcludeFromCollections: true
+---
+{% if env.isProduction -%}
+User-agent: *
+Allow: /
+
+Sitemap: {{ env.origin }}/sitemap.xml
+{%- else -%}
+User-agent: *
+Disallow: /
+{%- endif %}
