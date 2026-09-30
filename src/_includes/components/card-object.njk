@@ -2,7 +2,7 @@
     title, capacity, count?, price? (число) | tariffs? [{label, amount}], promoPrice?, description?, features? [], photo? (id з photos.json), category.
     Змінна cardPlacement (необов'язкова) задає місце кліку для аналітики. -#}
 <article class="card-object">
-  <div class="card-object__media">
+  <div class="card-object__media{% if not item.photo %} card-object__media--empty{% endif %}">
     {%- if item.photo %}
     {% photo item.photo, { sizes: "(min-width: 1000px) 380px, (min-width: 600px) 50vw, 100vw" } %}
     {%- else %}

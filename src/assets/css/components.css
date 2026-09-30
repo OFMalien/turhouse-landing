@@ -378,6 +378,9 @@ html.nav-open { overflow: hidden; }
   aspect-ratio: 4 / 3;
   overflow: hidden;
 }
+/* Без кадра: невисока плашка замість фото (TEMP, ТЗ §8.4), щоб картка не виглядала порожньою. */
+.card-object__media--empty { aspect-ratio: auto; border-bottom: 1px solid var(--line); }
+.card-object__media--empty .card-object__placeholder { height: auto; padding: 22px 24px; }
 .card-object__media picture { display: block; height: 100%; }
 .card-object__media img {
   width: 100%;

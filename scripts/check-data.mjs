@@ -17,7 +17,7 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 // Дозволені ціни на сайті (п.6 промпта): 2500/2800/3000, 6000/7000, 11000 і 13000 (Барн-хаус), 600+200, 500, ціни акції.
 const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800]);
 const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
-const FORBIDDEN_TEXT = [/ретрит/i, /райськ/i, /незабутн/i, /унікальна атмосфера/i, /\b4500\b/, /\b5200\b/, /\b8200\b/, /\b15800\b/, /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u];
+const FORBIDDEN_TEXT = [/(будинок|дім|дом)\s+на\s+12/i, /Барн\s?Хаус|Барнхаус/i, /ретрит/i, /райськ/i, /незабутн/i, /унікальна атмосфера/i, /\b4500\b/, /\b5200\b/, /\b8200\b/, /\b15800\b/, /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u];
 
 function scan(node, where) {
   if (Array.isArray(node)) return node.forEach((n, i) => scan(n, `${where}[${i}]`));
@@ -68,6 +68,31 @@ else {
   }
 }
 
+// photos.json: паспорт фото, на нього посилаються дані
+const photos = readJson('photos.json') || {};
+
+// barn: один дім, два тарифи (R6), без "дім на 12" як окремої позиції
+const barn = readJson('barn.json');
+if (!barn || Array.isArray(barn)) fail('barn.json: має бути один об\'єкт (один дім, R6)');
+else {
+  if (barn.title !== 'Барн-хаус') fail('barn.json: назва "Барн-хаус" (через дефіс)');
+  if (barn.category !== 'barn') fail('barn.json: category barn');
+  if (barn.price !== undefined) fail('barn.json: замість price мають бути tariffs (R6)');
+  if (!same(barn.tariffs, [{ label: 'до 8 гостей', amount: 11000 }, { label: 'до 12 гостей', amount: 13000 }])) fail('barn.json: tariffs мають бути "до 8 гостей" 11000 і "до 12 гостей" 13000 (R6)');
+  if (!barn.included || !barn.included.some((t) => /Starlink/.test(t)) || !barn.included.some((t) => /BBQ/.test(t)) || !barn.included.some((t) => /басейн/i.test(t))) fail('barn.json: included має містити BBQ, басейн і Starlink (як на живому лендингу)');
+  if (!Array.isArray(barn.highlights) || barn.highlights.length < 5) fail('barn.json: мало пунктів highlights');
+  for (const id of [barn.photo, ...(barn.gallery || [])]) {
+    if (!photos[id]) fail(`barn.json: фото "${id}" немає в photos.json`);
+    else if (photos[id].verify) fail(`barn.json: фото "${id}" позначене verify, у галерею йдуть тільки підтверджені кадри`);
+  }
+  if (new Set(barn.gallery).size !== (barn.gallery || []).length) fail('barn.json: у gallery є повтори');
+}
+for (const [name, list] of [['rooms', rooms], ['cottages', cottages]]) {
+  for (const item of list || []) {
+    if (item.photo && !photos[item.photo]) fail(`${name}.json ${item.id}: фото "${item.photo}" немає в photos.json`);
+  }
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -94,4 +119,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, promo, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, promo, photos, ціни і заборонені слова)');

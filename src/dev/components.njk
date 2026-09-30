@@ -71,12 +71,27 @@ description: "Службова сторінка для перевірки ком
     <button type="button" class="btn" onclick="window.thPromoOpen && window.thPromoOpen()">Показати вікно акції</button>
   </div>
 
-  <section class="dev-block" style="padding-bottom:var(--section-gap)">
+  <section class="dev-block">
     <h2>Карточки об'єктів</h2>
     <div class="cards-grid" data-placement="formats_section">
       {%- asyncEach item in fixtures %}
       {% include "components/card-object.njk" %}
       {%- endeach %}
+    </div>
+  </section>
+
+  <section class="dev-block" style="padding-bottom:var(--section-gap)">
+    <h2>Реальні дані</h2>
+    <p class="dev-note">Номери, котеджі й Барн-хаус із файлів rooms.json, cottages.json, barn.json.</p>
+    <div class="cards-grid" data-placement="formats_section">
+      {%- asyncEach item in rooms %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+      {%- asyncEach item in cottages %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+      {%- set item = barn %}
+      {% include "components/card-object.njk" %}
     </div>
   </section>
 </div>
