@@ -1,17 +1,32 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { bundle } from 'lightningcss';
 import env from './src/_data/env.js';
 
 export default function (eleventyConfig) {
   // Статичні файли: CSS, JS і логотип/іконки копіюються як є.
   // Зображення контенту йдуть через @11ty/eleventy-img (шорткод image), не через passthrough.
   eleventyConfig.addPassthroughCopy({
-    'src/assets/css': 'assets/css',
     'src/assets/js': 'assets/js',
     'src/assets/img/static': 'assets/img/static',
     // favicon.ico, apple-touch-icon.png та інші файли, що мають лежати в корені
     'src/static': '.',
   });
+
+  // CSS: точка входу main.css збирається з @import в один мініфікований файл.
+  // Частини (tokens.css, base.css, components.css) самі по собі у вивід не потрапляють.
+  eleventyConfig.addTemplateFormats('css');
+  eleventyConfig.addExtension('css', {
+    outputFileExtension: 'css',
+    compile: async function (_content, inputPath) {
+      if (path.parse(inputPath).name !== 'main') return;
+      return async () => {
+        const { code } = await bundle({ filename: inputPath, minify: true });
+        return code;
+      };
+    },
+  });
+  eleventyConfig.addWatchTarget('src/assets/css/');
 
   eleventyConfig.on('eleventy.after', ({ dir }) => {
     // GitHub Pages не має обробляти файли Jekyll'ом.

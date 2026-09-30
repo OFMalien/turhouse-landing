@@ -1,0 +1,4 @@
+/* Точка входу. Збирається в один мініфікований _site/assets/css/main.css (lightningcss). */
+@import "tokens.css";
+@import "base.css";
+@import "components.css";
