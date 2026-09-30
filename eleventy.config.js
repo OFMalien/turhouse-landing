@@ -11,6 +11,7 @@ const IMG_SOURCE_DIR = 'src/assets/img/source';
 const IMG_CACHE_DIR = '.eleventy-img-cache';
 const IMG_URL_PATH = `${env.pathPrefix}assets/img/`;
 const usedImageFiles = new Set();
+const photos = JSON.parse(fs.readFileSync(new URL('./src/_data/photos.json', import.meta.url), 'utf8'));
 
 export default function (eleventyConfig) {
   // Статичні файли: CSS, JS і логотип/іконки копіюються як є.
@@ -37,10 +38,8 @@ export default function (eleventyConfig) {
   });
   eleventyConfig.addWatchTarget('src/assets/css/');
 
-  // {% image "група/файл.jpg", "опис", { sizes: "...", widths: [...], priority: true, class: "..." } %}
-  // alt обов'язковий (для суто декоративних кадрів передайте порожній рядок "").
-  // priority: true - кадр першого екрана (hero): без lazy, з fetchpriority="high".
-  eleventyConfig.addAsyncShortcode('image', async function (src, alt, options = {}) {
+  // Спільна частина шорткодів image і photo.
+  async function renderImage(src, alt, options = {}) {
     if (typeof alt !== 'string') {
       throw new Error(`image "${src}": не задано alt (для декору передайте "")`);
     }
@@ -67,6 +66,19 @@ export default function (eleventyConfig) {
     }
     if (cssClass) attrs.class = cssClass;
     return Image.generateHTML(metadata, attrs);
+  }
+
+  // {% image "група/файл.jpg", "опис", { sizes: "...", widths: [...], priority: true, class: "..." } %}
+  // alt обов'язковий (для суто декоративних кадрів передайте порожній рядок "").
+  // priority: true - кадр першого екрана (hero): без lazy, з fetchpriority="high".
+  eleventyConfig.addAsyncShortcode('image', renderImage);
+
+  // {% photo "група/назва", { sizes: "...", priority: true, class: "...", alt: "...(необов'язково)" } %}
+  // Файл і опис беруться з паспорта src/_data/photos.json, щоб alt не розходився між сторінками.
+  eleventyConfig.addAsyncShortcode('photo', async function (id, options = {}) {
+    const p = photos[id];
+    if (!p) throw new Error(`photo "${id}": немає запису в src/_data/photos.json`);
+    return renderImage(p.file, options.alt ?? p.alt, options);
   });
 
   eleventyConfig.on('eleventy.before', () => {
