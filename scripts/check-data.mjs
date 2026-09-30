@@ -557,6 +557,36 @@ else {
   for (const u of ['/yak-distatysya/', '/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedC.has(u)) fail(`texts/kontakty.json: немає посилання на ${u} (перелінковка)`);
 }
 
+// texts/pryvatnist.json: політика конфіденційності (E3-T16, R10). Описує лише те, що сайт реально робить (ANALYTICS_AUDIT.md, ТЗ §9): GTM, GA4, Meta Pixel, Google Fonts,
+// карта після кліку, sessionStorage вікна акції. Без вигаданих термінів зберігання, законів і юридичних даних; текст погоджує Макс або юрист клієнта (питання 4).
+const privacy = contentFiles.includes('pryvatnist.json') ? readContent('pryvatnist.json') : null;
+if (!privacy) fail('texts/pryvatnist.json: немає файлу');
+else {
+  checkMeta('pryvatnist.json', privacy.meta, { titleHas: ['Політика конфіденційності', 'Tur House'], descHas: ['Google Analytics', 'Meta Pixel'] });
+  if (privacy.hero?.h1 !== 'Політика конфіденційності') fail('texts/pryvatnist.json: hero.h1 «Політика конфіденційності»');
+  const ownerT = privacy.owner?.text || '';
+  if (!/turhouse\.com\.ua/.test(ownerT) || !/Лугова, 24/.test(ownerT) || !/Беремицьке/.test(ownerT) || privacy.owner?.link?.url !== '/kontakty/') fail('texts/pryvatnist.json: owner.text про turhouse.com.ua, вул. Лугова, 24, Беремицьке і посилання на /kontakty/');
+  const collectedIds = (privacy.collected?.items || []).map((i) => i.id);
+  if (!same(collectedIds, ['analytics', 'pixel', 'fonts', 'maps'])) fail('texts/pryvatnist.json: collected.items analytics, pixel, fonts, maps (усе, що сайт справді завантажує)');
+  if (!/Google Tag Manager/.test(privacy.collected?.lead || '')) fail('texts/pryvatnist.json: collected.lead має згадувати Google Tag Manager');
+  const titles = (privacy.collected?.items || []).map((i) => i.title).join(' | ');
+  for (const w of ['Google Analytics', 'Meta Pixel', 'Google Fonts', 'Google Карти']) if (!titles.includes(w)) fail(`texts/pryvatnist.json: у collected.items немає "${w}"`);
+  if (!/«Показати карту»/.test((privacy.collected?.items || []).find((i) => i.id === 'maps')?.text || '')) fail('texts/pryvatnist.json: maps: карта вантажиться після кнопки «Показати карту» (узгоджено з yak-distatysya.json)');
+  if (!/IP-адрес/.test((privacy.collected?.items || []).find((i) => i.id === 'fonts')?.text || '')) fail('texts/pryvatnist.json: fonts: Google отримує IP-адресу');
+  if (!/cookie/.test(privacy.cookies?.text || '') || !/пам'ят[іи] браузера/.test(privacy.cookies?.text || '') || !/вікно з акцією/.test(privacy.cookies?.text || '')) fail('texts/pryvatnist.json: cookies.text про cookie і sessionStorage вікна акції (пам\'ять браузера)');
+  if (!/немає форм/.test(privacy.yours?.text || '') || !/BookmeNow/.test(privacy.yours?.text || '') || !/Instagram/.test(privacy.yours?.text || '')) fail('texts/pryvatnist.json: yours.text: немає форм, дані повідомляє сам гість по телефону, в Instagram чи BookmeNow');
+  const opt = (privacy.optout?.items || []).join(' ');
+  for (const w of ['cookie', 'Google Analytics Opt-out Browser Add-on', 'налаштування реклами', 'Facebook або Instagram']) if (!opt.includes(w)) fail(`texts/pryvatnist.json: optout.items без "${w}"`);
+  if (!/за межами України/.test(privacy.third?.text || '') || !/BookmeNow/.test(privacy.third?.text || '')) fail('texts/pryvatnist.json: third.text про обробку за межами України і сторонні сервіси');
+  // чого не вигадуємо: сервіси, яких на сайті немає, строки зберігання, закони, юридичні дані, гарантії, продаж даних, точна геолокація
+  const privJson = JSON.stringify(privacy);
+  if (new RegExp(`(?<![${CYR_CLASS}\\w])(Hotjar|Yandex|Яндекс|TikTok|LinkedIn|Clarity|Pinterest|YouTube|Telegram|Viber|WhatsApp|GDPR|CCPA|ФОП|ТОВ|ЄДРПОУ|ІПН)(?![${CYR_CLASS}\\w])|Закон\\S* України|ст\\.\\s?\\d+|стаття\\s+\\d+|\\d+\\s*(місяц|роки|років|днів)|строк\\S* зберіган|термін\\S* зберіган|гарантуємо|гарантія|100\\s?%|повністю анонім|продаємо|продаж[${CYR_CLASS}]*\\s+даних|відбитк|fingerprint|точн[${CYR_CLASS}]*\\s+геолокац`, 'i').test(privJson)) fail('texts/pryvatnist.json: у тексті є сервіси, закони, строки зберігання, гарантії чи юридичні дані, яких немає в джерелах; текст погоджує Макс або юрист (питання 4), C6');
+  // політика не пропонує "погоджуйтесь" (банера немає, R10), а описує способи відмовитися
+  if (/погоджуєтесь|погоджуєтеся|даєте згоду|продовжуючи користуватися/i.test(privJson)) fail('texts/pryvatnist.json: банера згоди немає (R10), формулювання «ви погоджуєтесь» не підходить; питання про Consent Mode лишається Максу');
+  const linkedP = new Set(collectLinks(privacy));
+  for (const u of ['/kontakty/', '/yak-distatysya/']) if (!linkedP.has(u)) fail(`texts/pryvatnist.json: немає посилання на ${u} (перелінковка)`);
+}
+
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
@@ -583,4 +613,4 @@ if (errors.length) {
   for (const e of errors) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, yak-distatysya, kontakty, promo, photos, ціни і заборонені слова)');
+console.log('check-data: OK (nav, rooms, cottages, barn, spa, menu, cafe, faq, reviews, тексти texts/home, nomery, kotedzhi, barn-house, banya-ta-spa, kafe, okolitsi, yak-distatysya, kontakty, pryvatnist, promo, photos, ціни і заборонені слова)');
