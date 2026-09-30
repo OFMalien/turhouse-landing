@@ -16,7 +16,8 @@
     "check:contrast": "node scripts/check-contrast.mjs",
     "check:photos": "node scripts/photos.mjs check",
     "make:static": "node scripts/make-static.mjs",
-    "check:jsonld": "node scripts/check-jsonld.mjs production"
+    "check:jsonld": "node scripts/check-jsonld.mjs production",
+    "check:data": "node scripts/check-data.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
