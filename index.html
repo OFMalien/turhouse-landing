@@ -486,7 +486,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     to { transform: translateX(-50%); }
   }
 
-  /* ---------- Weekend offer (Теплі вихідні) ---------- */
+  /* ---------- Promo offer (блок акції; зараз -20% у будні) ---------- */
   .weekend { padding-top: clamp(48px, 6vw, 92px); padding-bottom: clamp(48px, 6vw, 92px); scroll-margin-top: 80px; }
   .weekend-box {
     border: 1px solid var(--color-warm-stone);
@@ -1099,7 +1099,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </a>
 
   <div class="nav-links">
-    <a href="#weekend" class="nav-weekend">Теплі вихідні</a>
+    <a href="#weekend" class="nav-weekend">&minus;20% у будні</a>
     <a href="#formats">Де жити</a>
     <a href="#spa">Банний комплекс</a>
     <a href="#territory">Що навколо</a>
@@ -1130,7 +1130,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <button type="button" class="drawer-close" id="drawerCloseBtn" aria-label="Закрити меню">&times;</button>
   </div>
   <div class="drawer-links" id="drawerLinks">
-    <a href="#weekend" class="drawer-weekend" style="color:var(--color-saffron-bright); font-weight:700;">Теплі вихідні</a>
+    <a href="#weekend" class="drawer-weekend" style="color:var(--color-saffron-bright); font-weight:700;">&minus;20% у будні</a>
     <a href="#formats">Де жити</a>
     <a href="#spa">Банний комплекс</a>
     <a href="#territory">Що навколо</a>
@@ -1169,52 +1169,64 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
-<!-- Special Promotion: Tur House Weekend -->
+<!-- Special Promotion: -20% у будні (з 30.09.2026) -->
 <section id="weekend" class="weekend">
   <div class="wrap">
     <div class="weekend-box">
-      <span class="weekend-badge">Спеціальна пропозиція &middot; Осінній сезон</span>
-      <h2>ТЕПЛІ ВИХІДНІ В <strong>TUR HOUSE</strong></h2>
-      <p class="lede">Ми підготували спеціальну пакетну пропозицію &laquo;Теплі вихідні&raquo;, щоб вам не довелося ні про що думати &mdash; просто приїхати й відпочивати.</p>
+      <span class="weekend-badge">Спеціальна пропозиція &middot; Будні дні</span>
+      <h2>&minus;20% НА ПРОЖИВАННЯ У БУДНІ В <strong>TUR HOUSE</strong></h2>
+      <p class="lede">У Tur House діє знижка 20% на всі варіанти проживання у будні. Це не про втечу від життя. Це про кілька днів, щоб відновити сили й повернутися до нього трохи спокійнішими.</p>
 
       <details class="weekend-card">
         <summary>
-          <img src="img/tepli-vyhidni.jpg" width="682" height="1024" alt="Афіша «Теплі вихідні в TUR HOUSE»: що входить у пакет">
-          <span class="wk-hint"><span class="lbl-open">Деталі пакета та ціни</span><span class="lbl-close">Згорнути</span></span>
+          <img src="img/znyzhka-budni-20.jpg" width="853" height="1280" alt="Афіша «Знижка 20% на всі варіанти проживання у будні дні»: камін, крісло-мішок і плед у Tur House">
+          <span class="wk-hint"><span class="lbl-open">Ціни зі знижкою</span><span class="lbl-close">Згорнути</span></span>
         </summary>
 
         <div class="weekend-grid">
           <div class="weekend-includes">
-            <h3>У пакет входить</h3>
+            <h3>Умови</h3>
             <ul>
-              <li>проживання 2 ночі та 3 дні в номері або котеджі з пізнім виїздом</li>
-              <li>сніданки на весь період проживання</li>
-              <li>відвідування бані на дровах</li>
-              <li>Welcome Pizza</li>
-              <li>снасті для риболовлі</li>
-              <li>теплий басейн з підігрівом</li>
+              <li>знижка 20% на всі варіанти проживання</li>
+              <li>діє у будні дні</li>
+              <li>проживання від 2000 грн на двох</li>
+              <li>щоб відновитись, виспатись і просто відпочити</li>
             </ul>
           </div>
 
           <div class="weekend-prices">
             <div class="price-card">
-              <span class="who">Для двох</span>
+              <span class="who">Стандарт</span>
               <span class="amounts">
-                <span class="now">8 200 грн</span>
-                <span class="was">11 200 грн</span>
+                <span class="now">2 000 грн</span>
+                <span class="was">2 500 грн</span>
               </span>
             </div>
             <div class="price-card">
-              <span class="who">Для чотирьох</span>
+              <span class="who">Напівлюкс</span>
               <span class="amounts">
-                <span class="now">15 800 грн</span>
-                <span class="was">21 800 грн</span>
+                <span class="now">2 240 грн</span>
+                <span class="was">2 800 грн</span>
               </span>
             </div>
-            <p class="weekend-limit">Бронюйте свої теплі вихідні та приїжджайте відпочивати разом!</p>
+            <div class="price-card">
+              <span class="who">Люкс</span>
+              <span class="amounts">
+                <span class="now">2 400 грн</span>
+                <span class="was">3 000 грн</span>
+              </span>
+            </div>
+            <div class="price-card">
+              <span class="who">Котедж</span>
+              <span class="amounts">
+                <span class="now">4 800 грн</span>
+                <span class="was">6 000 грн</span>
+              </span>
+            </div>
+            <p class="weekend-limit">Ціни за добу. Напишіть нам, і ми підберемо дати та варіант проживання.</p>
             <div class="btn-row">
-              <a class="btn btn-primary" href="tel:+380961275553">Забронювати вихідні</a>
-              <a class="btn" href="https://www.instagram.com/tur_house_/" target="_blank" rel="noopener">Написати в Direct</a>
+              <a class="btn btn-primary" href="https://ig.me/m/tur_house_" target="_blank" rel="noopener">Забронювати зі знижкою</a>
+              <a class="btn" href="tel:+380961275553">Зателефонувати</a>
             </div>
           </div>
         </div>
@@ -1593,19 +1605,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a class="btn" href="https://go.bookmenow.pro/t/turhouse" target="_blank" rel="noopener">Забронювати зараз</a>
 </div>
 
-<!-- Modal: Weekend Promotion -->
+<!-- Modal: Weekday Promotion -->
 <div class="wk-modal" id="weekendModal" role="dialog" aria-modal="true" aria-labelledby="wkTitle">
   <div class="wk-dialog" tabindex="-1">
     <button type="button" class="wk-close" aria-label="Закрити">&times;</button>
     <span class="wk-badge">Спеціальна пропозиція</span>
-    <h3 id="wkTitle">ТЕПЛІ ВИХІДНІ В <strong>TUR HOUSE</strong></h3>
-    <p class="wk-dates">Проживання 2 ночі та 3 дні в номері або котеджі з пізнім виїздом, сніданки, баня на дровах, Welcome Pizza, снасті для риболовлі, теплий басейн з підігрівом.</p>
+    <h3 id="wkTitle">&minus;20% у будні в <strong>TUR HOUSE</strong></h3>
+    <p class="wk-dates">Знижка на всі варіанти проживання у будні дні. Щоб відновитись, виспатись і просто відпочити.</p>
     <div class="wk-rows">
-      <div><span>Для двох</span><span><span class="n">8 200 грн</span><span class="w">11 200 грн</span></span></div>
-      <div><span>Для чотирьох</span><span><span class="n">15 800 грн</span><span class="w">21 800 грн</span></span></div>
+      <div><span>Стандарт</span><span><span class="n">2 000 грн</span><span class="w">2 500 грн</span></span></div>
+      <div><span>Напівлюкс</span><span><span class="n">2 240 грн</span><span class="w">2 800 грн</span></span></div>
+      <div><span>Люкс</span><span><span class="n">2 400 грн</span><span class="w">3 000 грн</span></span></div>
+      <div><span>Котедж</span><span><span class="n">4 800 грн</span><span class="w">6 000 грн</span></span></div>
     </div>
-    <a class="btn" href="tel:+380961275553">Забронювати вихідні</a>
-    <button type="button" class="wk-more">Що входить у пакет</button>
+    <a class="btn" href="https://ig.me/m/tur_house_" target="_blank" rel="noopener">Забронювати зі знижкою</a>
+    <button type="button" class="wk-more">Деталі акції</button>
   </div>
 </div>
 
@@ -1717,10 +1731,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
   })();
 
-  /* ---------- 5. Tur House Weekend Promotion Logic ---------- */
+  /* ---------- 5. Promotion Logic (-20% у будні; дата кінця не відома - автоприховування вимкнене) ---------- */
   (function () {
-    var WEEKEND_END = new Date('2026-11-30T23:59:59+03:00').getTime();
-    if (Date.now() > WEEKEND_END) {
+    var WEEKEND_END = null; // напр. new Date('2026-12-31T23:59:59+03:00').getTime()
+    if (WEEKEND_END && Date.now() > WEEKEND_END) {
       document.documentElement.classList.add('weekend-over');
       return;
     }
@@ -1729,7 +1743,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var section = document.getElementById('weekend');
     if (!modal || !section) return;
 
-    var KEY = 'th_tepli_vyhidni_seen';
+    var KEY = 'th_budni_20_seen';
     var lastFocus = null;
     var shown = false;
 
@@ -1871,7 +1885,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         if (isPromo) {
           sendMetaPixel('Lead', {
-            content_name: 'Теплі вихідні Booking Call',
+            content_name: 'Знижка у будні Booking Call',
             content_category: placement,
             currency: 'UAH'
           });
@@ -1893,8 +1907,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       // 3. Instagram Direct / Profile (5 links)
-      if (href.indexOf('instagram.com') !== -1) {
-        var isDirect = placement === 'promo_section_weekend' || placement === 'hero_header';
+      if (href.indexOf('instagram.com') !== -1 || href.indexOf('ig.me/') !== -1) {
+        var isDirect = placement === 'promo_section_weekend' || placement === 'promo_modal_weekend' || placement === 'hero_header';
         window.dataLayer.push({
           event: isDirect ? 'instagram_direct_click' : 'instagram_click',
           event_category: 'social',
