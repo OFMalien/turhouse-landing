@@ -202,6 +202,45 @@ for (const f of htmlFiles) {
       }
     } else if (daySpa.length || services.length) fail(`${name}: DaySpa і Service лише на /banya-ta-spa/`);
 
+    // Кафе: CafeOrCoffeeShop з hasMenu із menu.json (розділи, позиції, ціни), без годин роботи і priceRange (в джерелах їх немає)
+    const cafes = graph.filter((n) => n['@type'] === 'CafeOrCoffeeShop');
+    if (name === 'kafe/index.html') {
+      const cafe = JSON.parse(fs.readFileSync(new URL('../src/_data/cafe.json', import.meta.url), 'utf8'));
+      const menu = JSON.parse(fs.readFileSync(new URL('../src/_data/menu.json', import.meta.url), 'utf8'));
+      if (cafes.length !== 1) fail(`${name}: має бути один CafeOrCoffeeShop, є ${cafes.length}`);
+      else {
+        const [c] = cafes;
+        if (c['@id'] !== `${ORIGIN}/kafe/#cafe`) fail(`${name}: CafeOrCoffeeShop['@id'] ${c['@id']}`);
+        for (const k of ['name', 'url', 'telephone', 'address', 'hasMenu']) if (!c[k]) fail(`${name}: CafeOrCoffeeShop без ${k}`);
+        if (c.url && !c.url.startsWith(ORIGIN)) fail(`${name}: CafeOrCoffeeShop.url не на ${ORIGIN}`);
+        if (JSON.stringify(c.servesCuisine) !== JSON.stringify(cafe.cuisine)) fail(`${name}: servesCuisine має збігатися з cafe.json`);
+        for (const k of Object.keys(c)) if (!['@type', '@id', 'name', 'description', 'url', 'telephone', 'address', 'servesCuisine', 'parentOrganization', 'hasMenu'].includes(k)) fail(`${name}: у CafeOrCoffeeShop невідоме поле «${k}» (годин роботи в джерелах немає: openingHours, priceRange, acceptsReservations не пишемо)`);
+        const m = c.hasMenu || {};
+        if (m['@type'] !== 'Menu') fail(`${name}: hasMenu має бути Menu`);
+        if (m.dateModified !== cafe.menuUpdated) fail(`${name}: Menu.dateModified ${m.dateModified} не збігається з cafe.menuUpdated ${cafe.menuUpdated}`);
+        for (const k of Object.keys(m)) if (!['@type', '@id', 'name', 'inLanguage', 'dateModified', 'hasMenuSection'].includes(k)) fail(`${name}: у Menu невідоме поле «${k}»`);
+        const secs = m.hasMenuSection || [];
+        if (secs.length !== menu.sections.length) fail(`${name}: у Menu ${secs.length} розділів, у menu.json ${menu.sections.length}`);
+        menu.sections.forEach((sec, si) => {
+          const el = secs[si] || {};
+          if (el['@type'] !== 'MenuSection' || el.name !== sec.title) fail(`${name}: MenuSection[${si}] має бути «${sec.title}»`);
+          const items = el.hasMenuItem || [];
+          if (items.length !== sec.items.length) fail(`${name}: у MenuSection «${sec.title}» ${items.length} позицій, у menu.json ${sec.items.length}`);
+          sec.items.forEach((it, ii) => {
+            const x = items[ii] || {};
+            if (x['@type'] !== 'MenuItem' || x.name !== it.title) fail(`${name}: MenuItem «${sec.title}»[${ii}] має бути «${it.title}»`);
+            const o = x.offers || {};
+            if (o['@type'] !== 'Offer' || o.priceCurrency !== menu.currency || o.price !== it.price) fail(`${name}: MenuItem «${it.title}»: Offer має бути ${it.price} ${menu.currency}`);
+            const base = [it.details, it.weight].filter(Boolean).join(', ');
+            const want = [base, it.variants?.length ? `Варіанти: ${it.variants.join('; ')}` : ''].filter(Boolean).join('. ') || undefined;
+            if (x.description !== want) fail(`${name}: MenuItem «${it.title}».description має бути ${JSON.stringify(want)}, є ${JSON.stringify(x.description)}`);
+            for (const k of Object.keys(x)) if (!['@type', 'name', 'description', 'offers'].includes(k)) fail(`${name}: у MenuItem «${it.title}» невідоме поле «${k}»`);
+            for (const k of Object.keys(o)) if (!['@type', 'price', 'priceCurrency'].includes(k)) fail(`${name}: в Offer «${it.title}» невідоме поле «${k}»`);
+          });
+        });
+      }
+    } else if (cafes.length) fail(`${name}: CafeOrCoffeeShop лише на /kafe/`);
+
     const crumbs = graph.find((n) => n['@type'] === 'BreadcrumbList');
     if (!crumbs) fail(`${name}: немає BreadcrumbList`);
     else {

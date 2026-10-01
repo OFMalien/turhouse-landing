@@ -791,3 +791,21 @@ html.modal-open { overflow: hidden; }
 .gallery-grid li { margin: 0; }
 @media (min-width: 700px) { .gallery-grid--thirds { grid-template-columns: repeat(3, 1fr); } }
 .gallery-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }
+
+/* ---------- Меню кафе ---------- */
+.menu-columns { margin-top: 40px; }
+@media (min-width: 960px) { .menu-columns { columns: 2; column-gap: 72px; } }
+.menu-section { break-inside: avoid; margin-bottom: 44px; }
+/* Довгий розділ (гарячі страви, 11 позицій) може переходити в другу колонку, інакше колонки вирівнюються як 1480 і 710 px; позиції не розриваємо */
+.menu-section--long { break-inside: auto; }
+.menu-item { break-inside: avoid; }
+.menu-section h3 { break-after: avoid; }
+.menu-section h3 { margin-bottom: 14px; }
+.menu-list { border-top: 1px solid var(--line); }
+.menu-item { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.menu-item__main { min-width: 0; }
+.menu-item__name { font-size: var(--text-body); font-weight: 600; line-height: 1.35; color: var(--text); }
+.menu-item__meta { margin-top: 2px; font-size: var(--text-small); line-height: 1.4; color: var(--text-soft); }
+.menu-item__variants { margin-top: 4px; font-size: var(--text-small); line-height: 1.4; color: var(--text-soft); }
+.menu-item__variants li::before { content: "\00b7\00a0"; }
+.menu-item__price { flex: none; font-weight: 700; white-space: nowrap; color: var(--text); }

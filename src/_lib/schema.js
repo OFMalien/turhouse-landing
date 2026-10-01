@@ -197,6 +197,58 @@ export function spaNodes(data) {
 }
 extras['banya-ta-spa'] = spaNodes;
 
+// Кафе та піца-бар: CafeOrCoffeeShop з меню (Menu > MenuSection > MenuItem з ціною) із menu.json і cafe.json.
+// Годин роботи в джерелах немає (cafe.hours === null), тому openingHours, priceRange і acceptsReservations не пишемо.
+export function menuItemDescription(item) {
+  const base = [item.details, item.weight].filter(Boolean).join(', ');
+  const variants = item.variants?.length ? `Варіанти: ${item.variants.join('; ')}` : '';
+  return [base, variants].filter(Boolean).join('. ') || undefined;
+}
+
+export function cafeNodes(data) {
+  const { site, cafe, menu } = data;
+  const page = data.texts.kafe;
+  const cafeId = abs('/kafe/#cafe');
+  return [
+    {
+      '@type': 'CafeOrCoffeeShop',
+      '@id': cafeId,
+      name: `${cafe.title} ${site.name}`,
+      description: page.hero.lede,
+      url: abs('/kafe/'),
+      telephone: site.phone.tel,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: site.address.street,
+        addressLocality: site.address.locality,
+        addressRegion: site.address.region,
+        addressCountry: site.address.country,
+      },
+      servesCuisine: cafe.cuisine,
+      parentOrganization: { '@id': abs('/#lodging') },
+      hasMenu: {
+        '@type': 'Menu',
+        '@id': abs('/kafe/#menu'),
+        name: page.menu.heading,
+        inLanguage: 'uk',
+        dateModified: cafe.menuUpdated,
+        hasMenuSection: menu.sections.map((sec) => ({
+          '@type': 'MenuSection',
+          name: sec.title,
+          hasMenuItem: sec.items.map((item) => {
+            const node = { '@type': 'MenuItem', name: item.title };
+            const description = menuItemDescription(item);
+            if (description) node.description = description;
+            node.offers = { '@type': 'Offer', price: item.price, priceCurrency: menu.currency };
+            return node;
+          }),
+        })),
+      },
+    },
+  ];
+}
+extras.kafe = cafeNodes;
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), breadcrumbList(data)];

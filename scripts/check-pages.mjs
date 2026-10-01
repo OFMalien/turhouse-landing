@@ -361,7 +361,94 @@ const PAGE_RULES = {
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/kafe/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
   },
+  '/kafe/'(doc, f) {
+    const t = texts('kafe');
+    const file = 'texts/kafe.json';
+    const site = readJson('site.json');
+    const cafe = readJson('cafe.json');
+    const menu = readJson('menu.json');
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    for (const id of ['page-title', 'cafe', 'pizza', 'pizza-title', 'menu', 'menu-title', 'hours', 'hours-title', 'gallery', 'stay']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Кафе» з aria-current на останньому');
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
+    if (!sameText(doc.querySelector('.text-section .lede')?.text, t.intro.text)) f(`вступ не збігається з ${file}`);
+    if (!sameText(doc.querySelector('#pizza-title')?.text, t.pizza.heading) || !sameText(doc.querySelector('#pizza .lede')?.text, t.pizza.text)) f(`блок про піцу не збігається з ${file}`);
+    // меню: усі розділи і всі позиції menu.json, ціни, вага, склад, варіанти
+    if (!sameText(doc.querySelector('#menu-title')?.text, t.menu.heading) || !sameText(doc.querySelector('#menu > .wrap > .lede')?.text, t.menu.note)) f(`заголовок і примітка меню не збігаються з ${file}`);
+    const secs = doc.querySelectorAll('#menu .menu-section');
+    if (secs.length !== menu.sections.length) f(`розділів меню ${secs.length}, у menu.json ${menu.sections.length}`);
+    menu.sections.forEach((sec, si) => {
+      const el = secs[si];
+      if (!el) return;
+      if (!sameText(el.querySelector('h3')?.text, sec.title)) f(`розділ меню ${si + 1} має бути «${sec.title}»`);
+      const items = el.querySelectorAll('.menu-item');
+      if (items.length !== sec.items.length) f(`у розділі «${sec.title}» ${items.length} позицій, у menu.json ${sec.items.length}`);
+      sec.items.forEach((it, ii) => {
+        const li = items[ii];
+        if (!li) return;
+        if (li.getAttribute('id') !== it.id) f(`позиція «${it.title}»: id має бути ${it.id}`);
+        if (!sameText(li.querySelector('.menu-item__name')?.text, it.title)) f(`позиція ${ii + 1} розділу «${sec.title}» має називатися «${it.title}»`);
+        if (!sameText(li.querySelector('.menu-item__price')?.text, `${money(it.price)} грн`)) f(`ціна «${it.title}» має бути ${money(it.price)} грн`);
+        const meta = [it.details, it.weight].filter(Boolean).join(', ');
+        if ((meta || '') !== norm(li.querySelector('.menu-item__meta')?.text)) f(`склад і вага «${it.title}» не збігаються з menu.json (${meta})`);
+        const vs = li.querySelectorAll('.menu-item__variants li').map((v) => norm(v.text));
+        if (!same(vs, (it.variants || []).map(norm))) f(`варіанти «${it.title}» не збігаються з menu.json`);
+      });
+    });
+    if (doc.querySelectorAll('.menu-item').length !== menu.sections.reduce((n, sec) => n + sec.items.length, 0)) f('число позицій меню на сторінці не збігається з menu.json');
+    // години роботи невідомі: тільки відсилання до телефону і Direct (cafe.hours === null)
+    if (!sameText(doc.querySelector('#hours-title')?.text, t.hours.heading) || !sameText(doc.querySelector('#hours .lede')?.text, t.hours.text)) f(`блок годин роботи не збігається з ${file}`);
+    if (!doc.querySelector(`#hours a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#hours a[href="${site.links.instagramDirect}"]`)) f('блок годин роботи: телефон і Instagram Direct');
+    if (cafe.hours === null && /\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}|щодня|цілодобов|з \d{1,2}(:\d{2})? до \d{1,2}/i.test(doc.querySelector('main')?.text || '')) f('години роботи невідомі, на сторінці не має бути розкладу');
+    // галерея: кадри cafe.json без кадру шапки
+    const galExpect = cafe.gallery.filter((id) => id !== cafe.photo);
+    const gal = doc.querySelectorAll('#gallery img');
+    if (gal.length !== galExpect.length) f(`у галереї ${gal.length} кадрів, очікується ${galExpect.length} (cafe.json без кадру шапки)`);
+    for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
+    // проживання, посилання
+    if (!sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`текст «Кафе і проживання» не збігається з ${file}`);
+    for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці проживання немає посилання на ${l.url}`);
+    // акції на сторінці кафе немає, вона на проживання (R9)
+    if (doc.querySelector('[id="promo"], .promo-modal')) f('акція −20% на проживання, на сторінці кафе її немає (R9)');
+    // контекст аналітики
+    const ctx = pageContextOf(doc);
+    const prices = menu.sections.flatMap((sec) => sec.items.map((i) => i.price));
+    const exp = { event: 'page_context', page_type: 'category', item_category: 'cafe', price_range: `${Math.min(...prices)}-${Math.max(...prices)}`, content_ids: [] };
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify(exp)) f(`dataLayer page_context: очікується ${JSON.stringify(exp)}, є ${JSON.stringify(ctx)}`);
+    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
+    for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+  },
 };
+
+// Мета-теги кожної зібраної сторінки з texts/<сторінка>.json: title, description, og і twitter збігаються з текстами, canonical і og:url на своїй адресі
+const ORIGIN_BY_MODE = mode === 'production' ? 'https://turhouse.com.ua' : 'https://ofmalien.github.io/turhouse-multipage-preview';
+const slugOf = (url) => (url === '/' ? 'home' : url === '/404.html' ? '404' : url.replace(/\//g, ''));
+for (const [url, doc] of docs) {
+  const slug = slugOf(url);
+  if (url === '/404.html') continue; // до E4-T11 страница 404 ще заглушка з E1, мета-теги з texts/404.json підключаються в E4-T11 (там цю перевірку вмикаємо)
+  if (!fs.existsSync(path.join(root, 'src/_data/texts', `${slug}.json`))) continue;
+  const meta = texts(slug).meta;
+  const attr = (sel, a = 'content') => doc.querySelector(sel)?.getAttribute(a);
+  const want = { title: meta.title, description: meta.description };
+  const got = {
+    'title': doc.querySelector('title')?.text,
+    'meta description': attr('meta[name="description"]'),
+    'og:title': attr('meta[property="og:title"]'),
+    'og:description': attr('meta[property="og:description"]'),
+    'twitter:title': attr('meta[name="twitter:title"]'),
+    'twitter:description': attr('meta[name="twitter:description"]'),
+  };
+  for (const [k, v] of Object.entries(got)) {
+    const w = k.endsWith('title') ? want.title : want.description;
+    if (!sameText(v, w)) fail(url, `${k} не збігається з texts/${slug}.json (${w})`);
+  }
+  if (url !== '/404.html') {
+    const wantUrl = `${ORIGIN_BY_MODE}${url}`;
+    if (attr('link[rel="canonical"]', 'href') !== wantUrl) fail(url, `canonical має бути ${wantUrl}`);
+    if (attr('meta[property="og:url"]') !== wantUrl) fail(url, `og:url має бути ${wantUrl}`);
+  }
+}
 
 for (const [url, rule] of Object.entries(PAGE_RULES)) {
   const doc = docs.get(url);
