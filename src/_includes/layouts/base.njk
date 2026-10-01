@@ -15,6 +15,7 @@
 {% include "components/sticky-cta.njk" %}
 {% if promoModal %}{% include "components/promo-modal.njk" %}{% endif %}
 <script src="{{ '/assets/js/app.js' | url }}" defer></script>
+<script src="{{ '/assets/js/tracking.js' | url }}" defer></script>
 {%- for s in pageScripts %}
 <script src="{{ s | url }}" defer></script>
 {%- endfor %}

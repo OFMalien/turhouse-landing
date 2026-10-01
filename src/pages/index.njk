@@ -11,7 +11,7 @@ analytics:
   item_category: general
 ---
 {%- set t = texts.home %}
-<section class="hero on-dark" aria-labelledby="hero-title" data-placement="hero">
+<section class="hero on-dark" aria-labelledby="hero-title" data-placement="hero_header">
   <div class="wrap hero__inner">
     <div class="hero__copy">
       <p class="caption">{{ site.address.short }}</p>
@@ -63,7 +63,7 @@ analytics:
   </div>
 </section>
 
-<section class="sauna-band on-dark" id="sauna" aria-labelledby="sauna-title" data-placement="sauna_section">
+<section class="sauna-band on-dark" id="sauna" aria-labelledby="sauna-title" data-placement="spa_section">
   <div class="wrap sauna-band__inner">
     <div class="sauna-band__copy">
       <p class="caption">{{ t.spa.caption }}</p>
@@ -127,7 +127,7 @@ analytics:
   </div>
 </section>
 
-<section class="section section--alt" id="reviews" aria-labelledby="reviews-title">
+<section class="section section--alt" id="reviews" aria-labelledby="reviews-title" data-placement="reviews_section">
   <div class="wrap">
     <p class="caption">{{ reviews.label }}</p>
     <h2 id="reviews-title">{{ reviews.heading }}</h2>

@@ -110,7 +110,12 @@ for (const jsFile of fs.readdirSync(path.join(siteDir, 'assets/js')).filter((x) 
   if (code.includes('sessionStorage') && jsFile !== 'promo.js') fail(`assets/js/${jsFile}`, 'sessionStorage дозволений лише у promo.js (вікно акції)');
 }
 
+// Усі допустимі значення data-placement (місце кліку в аналітиці): імена живого сайту збережено, нові для нових блоків. Невідоме значення це опечатка або забутий запис
+const PLACEMENTS_OK = new Set(['header_nav', 'mobile_drawer', 'footer', 'final_cta_band', 'sticky_mobile_cta', 'promo_section_weekend', 'promo_modal_weekend', 'hero_header', 'formats_section', 'spa_section', 'reviews_section', 'location_section', 'cafe_teaser', 'area_teaser',
+  'rooms_list', 'cottages_list', 'barn_tariffs', 'spa_price', 'spa_cards', 'cafe_hours', 'route_buttons', 'route_help', 'contacts_cards', 'contacts_where', 'page_booking', 'not_found']);
+
 for (const [url, { doc }] of docs) {
+  for (const el of doc.querySelectorAll('[data-placement]')) if (!PLACEMENTS_OK.has(el.getAttribute('data-placement'))) fail(url, `невідоме значення data-placement «${el.getAttribute('data-placement')}»`);
   const f = (m) => fail(url, m);
   const is404 = url === '/404.html';
 
@@ -154,6 +159,7 @@ for (const [url, { doc }] of docs) {
   for (const src of scripts) { if (/^https?:\/\//.test(src)) { if (!HEAD_EXTERNAL_OK.some((h) => src.startsWith(h))) f(`script: зовнішня адреса «${src}» не з дозволеного списку`); } else localFile(url, src, 'script'); }
   if (!scripts.includes(`${prefix}/assets/js/app.js`)) f('немає скрипта app.js');
   if (doc.querySelectorAll('script[src$="app.js"]').length !== 1) f('app.js має бути підключений один раз');
+  if (doc.querySelectorAll('script[src$="tracking.js"]').length !== 1 || !scripts.includes(`${prefix}/assets/js/tracking.js`)) f('tracking.js (аналітика кліків) має бути підключений один раз на кожній сторінці');
   const hasMapJs = scripts.includes(`${prefix}/assets/js/map.js`);
   if (url === '/yak-distatysya/' && !hasMapJs) f('на сторінці «Як дістатися» має бути скрипт map.js (карта по кліку)');
   if (url !== '/yak-distatysya/' && (hasMapJs || doc.querySelector('#map-box'))) f('карта по кліку лише на сторінці «Як дістатися»');
