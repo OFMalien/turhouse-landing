@@ -39,7 +39,9 @@
     "caption": "Спокій чекає на тебе",
     "heading": "Tur House",
     "booking": "Перевірити вільні дати",
-    "instagram": "Написати в Instagram"
+    "instagram": "Написати в Instagram",
+    "routeGoogle": "Відкрити в Google Maps",
+    "routeWaze": "Відкрити у Waze"
   },
   "ogImage": {
     "file": "og-default.jpg",

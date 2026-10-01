@@ -64,6 +64,20 @@ export function breadcrumbList(data) {
 // schemaType з front matter сторінки: extras.home = (data) => [ ... ].
 export const extras = {};
 
+// FAQPage: питання і відповіді беруться з src/_data/faq.json, тих самих даних, що й видимий FAQ на головній (правило T2).
+export function faqPage(data) {
+  return {
+    '@type': 'FAQPage',
+    '@id': abs('/#faq'),
+    mainEntity: (data.faq || []).map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  };
+}
+extras.home = (data) => [faqPage(data)];
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), breadcrumbList(data)];

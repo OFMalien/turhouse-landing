@@ -80,6 +80,25 @@ for (const f of htmlFiles) {
       if (lodging.image && !lodging.image.startsWith(ORIGIN)) fail(`${name}: LodgingBusiness.image не на ${ORIGIN}`);
     }
 
+    // FAQPage: тільки на головній, питання і відповіді дослівно з faq.json (правило T2: розмітка = видимий текст), без HTML у відповідях
+    const faqNode = graph.find((n) => n['@type'] === 'FAQPage');
+    if (name === 'index.html' && !faqNode) fail(`${name}: на головній має бути FAQPage`);
+    if (name !== 'index.html' && faqNode) fail(`${name}: FAQPage є лише на головній (питання тільки з faq.json)`);
+    if (faqNode) {
+      const expected = JSON.parse(fs.readFileSync(new URL('../src/_data/faq.json', import.meta.url), 'utf8'));
+      const ents = faqNode.mainEntity || [];
+      if (ents.length !== expected.length) fail(`${name}: у FAQPage ${ents.length} питань, у faq.json ${expected.length}`);
+      expected.forEach((q, i) => {
+        const e = ents[i];
+        if (!e || e['@type'] !== 'Question') return fail(`${name}: FAQPage[${i}] не Question`);
+        if (e.name !== q.q) fail(`${name}: FAQPage[${i}].name не збігається з faq.json (${q.id})`);
+        const a = e.acceptedAnswer || {};
+        if (a['@type'] !== 'Answer' || !a.text) fail(`${name}: FAQPage[${i}] без acceptedAnswer.text`);
+        else if (a.text !== q.a) fail(`${name}: FAQPage[${i}].acceptedAnswer.text не збігається з faq.json (${q.id})`);
+        else if (/<[a-z][^>]*>/i.test(a.text)) fail(`${name}: у відповіді FAQPage[${i}] є HTML`);
+      });
+    }
+
     const crumbs = graph.find((n) => n['@type'] === 'BreadcrumbList');
     if (!crumbs) fail(`${name}: немає BreadcrumbList`);
     else {

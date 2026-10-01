@@ -125,8 +125,55 @@ const PAGE_RULES = {
     // посилання на інші розділи: номери, котеджі, Барн-хаус, баня
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+    // друга половина головної (E4-T2): територія, кафе, околиці, відгуки, FAQ, локація
+    for (const id of ['territory', 'cafe', 'area', 'reviews', 'faq', 'location']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    const sameText = (a, b) => (a || '').replace(/[\s  ]+/g, ' ').trim() === (b || '').replace(/[\s  ]+/g, ' ').trim();
+    const terr = doc.querySelectorAll('#territory .feature-grid__item');
+    if (terr.length !== t.territory.items.length) f(`у блоці території ${terr.length} пунктів, у texts/home.json ${t.territory.items.length}`);
+    t.territory.items.forEach((it, i) => { if (terr[i] && (!sameText(terr[i].querySelector('h3')?.text, it.title) || !sameText(terr[i].querySelector('p')?.text, it.text))) f(`пункт території «${it.title}» не збігається з texts/home.json`); });
+    if (!doc.querySelector(`#cafe a[href$="/kafe/"]`)) f('тизер кафе має вести на /kafe/ (R7)');
+    if (!sameText(doc.querySelector('#cafe .lede')?.text, t.cafe.text)) f('текст тизера кафе не збігається з texts/home.json');
+    if (!doc.querySelector(`#area a[href$="/okolitsi/"]`)) f('блок околиць має вести на /okolitsi/');
+    // відгуки: дослівно з reviews.json, підпис «Відгук з Google», без рейтингу
+    const revs = readJson('reviews.json');
+    const revCards = doc.querySelectorAll('#reviews .review-card');
+    if (revCards.length !== revs.items.length) f(`відгуків ${revCards.length}, у reviews.json ${revs.items.length}`);
+    revs.items.forEach((r, i) => {
+      const c = revCards[i];
+      if (!c) return;
+      if (!sameText(c.querySelector('.review-card__text')?.text, `«${r.text}»`)) f(`відгук ${r.id} не збігається з reviews.json`);
+      if (!sameText(c.querySelector('.review-card__name')?.text, r.author)) f(`автор відгуку ${r.id} не збігається`);
+      if (!sameText(c.querySelector('.review-card__src')?.text, revs.label)) f(`підпис відгуку ${r.id}: має бути «${revs.label}»`);
+    });
+    if (/aggregateRating|ratingValue|reviewCount|4,2 \/ 5|8 600/.test(doc.toString())) f('у сторінці є агрегований рейтинг або непідтверджені цифри (ТЗ §7.2, питання 11)');
+    if (!doc.querySelector(`#reviews a[href="${readJson('site.json').links.googleMaps}"][rel~="noopener"]`)) f('посилання на відгуки в Google має вести на картку Google Карт з rel=noopener');
+    // FAQ: питання і відповіді дослівно з faq.json
+    const faqData = readJson('faq.json');
+    const items = doc.querySelectorAll('#faq details.faq-item');
+    if (items.length !== faqData.length) f(`у FAQ ${items.length} питань, у faq.json ${faqData.length}`);
+    faqData.forEach((q, i) => {
+      const it = items[i];
+      if (!it) return;
+      if (!sameText(it.querySelector('summary')?.text, q.q)) f(`питання FAQ ${q.id} не збігається з faq.json`);
+      if (!sameText(it.querySelector('.faq-item__answer > p')?.text, q.a)) f(`відповідь FAQ ${q.id} не збігається з faq.json`);
+      for (const l of q.links || []) if (!it.querySelector(`a[href$="${l.url}"]`)) f(`у відповіді FAQ ${q.id} немає посилання ${l.url}`);
+    });
+    if (items.some((it) => it.getAttribute('open') !== undefined)) f('FAQ має бути згорнутим за замовчуванням');
+    // локація: адреса і кнопки маршруту з site.json
+    const siteJson = readJson('site.json');
+    if (!sameText(doc.querySelector('#location address')?.text, siteJson.address.full)) f('адреса в блоці локації має збігатися з site.json');
+    if (!doc.querySelector(`#location a[href="${siteJson.links.googleMapsRoute}"][rel~="noopener"]`)) f('немає кнопки маршруту Google Maps з site.json');
+    if (!doc.querySelector(`#location a[href="${siteJson.links.waze}"][rel~="noopener"]`)) f('немає кнопки Waze з site.json');
+    if (!doc.querySelector('#location a[href$="/yak-distatysya/"]')) f('локація має вести на /yak-distatysya/');
+    // розділи сайту, на які веде головна
+    for (const u of ['/kafe/', '/okolitsi/', '/yak-distatysya/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+    // кожен блок головної має свій H2 (акція, формати, баня, територія, кафе, околиці, відгуки, FAQ, локація, фінальний CTA)
+    for (const id of [...(promo.enabled ? ['promo-title'] : []), 'formats-title', 'sauna-title', 'territory-title', 'cafe-title', 'area-title', 'reviews-title', 'faq-title', 'location-title', 'cta-title']) {
+      const h = doc.querySelector(`h2[id="${id}"]`);
+      if (!h || !h.text.trim()) f(`немає H2 #${id}`);
+    }
     // у розмітці немає зайвих цифр цін: усі суми в тексті сторінки дозволені (rooms, cottages, barn, spa, акція)
-    const allowed = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next].filter(Boolean).map(money));
+    const allowed = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next, 500 /* тварини, FAQ */].filter(Boolean).map(money));
     for (const m of doc.text.replace(/ /g, ' ').matchAll(/(\d[\d ]*\d|\d)\s*грн/g)) { const n = m[1].replace(/\s+(?=\d{3}$)/, ' ').trim(); const flat = n.replace(/\s/g, ''); if (flat.length >= 3 && !allowed.has(money(Number(flat))) && !allowed.has(n)) f(`у тексті сторінки сума «${m[0].trim()}» поза даними`); }
   },
 };

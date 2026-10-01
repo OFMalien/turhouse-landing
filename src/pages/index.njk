@@ -5,6 +5,7 @@ eleventyComputed:
   description: "{{ texts.home.meta.description | safe }}"
   breadcrumbTitle: "{{ texts.home.meta.breadcrumbTitle | safe }}"
 promoModal: true
+schemaType: home
 analytics:
   page_type: home
   item_category: general
@@ -75,6 +76,106 @@ analytics:
     </div>
     <div class="sauna-band__media">
       {% photo t.spa.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="territory" aria-labelledby="territory-title">
+  <div class="wrap">
+    <p class="caption">{{ t.territory.caption }}</p>
+    <h2 id="territory-title">{{ t.territory.heading }}</h2>
+    <div class="feature-grid">
+      {%- for item in t.territory.items %}
+      <article class="feature-grid__item" id="territory-{{ item.id }}">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.text }}</p>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="cafe" aria-labelledby="cafe-title" data-placement="cafe_teaser">
+  <div class="wrap split">
+    <div class="split__media">
+      {% photo t.cafe.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
+    </div>
+    <div class="split__copy">
+      <p class="caption">{{ t.cafe.caption }}</p>
+      <h2 id="cafe-title">{{ t.cafe.heading }}</h2>
+      <p class="lede">{{ t.cafe.text }}</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="{{ t.cafe.link.url | url }}">{{ t.cafe.link.label }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="area" aria-labelledby="area-title" data-placement="area_teaser">
+  <div class="wrap split split--reverse">
+    <div class="split__media">
+      {% photo t.area.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
+    </div>
+    <div class="split__copy">
+      <p class="caption">{{ t.area.caption }}</p>
+      <h2 id="area-title">{{ t.area.heading }}</h2>
+      <p class="lede">{{ t.area.text }}</p>
+      <div class="btn-row">
+        <a class="btn" href="{{ t.area.link.url | url }}">{{ t.area.link.label }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="reviews" aria-labelledby="reviews-title">
+  <div class="wrap">
+    <p class="caption">{{ reviews.label }}</p>
+    <h2 id="reviews-title">{{ reviews.heading }}</h2>
+    <div class="review-grid">
+      {%- for r in reviews.items %}
+      <figure class="review-card">
+        <p class="review-card__stars" role="img" aria-label="Оцінка {{ r.rating }} з 5"><span aria-hidden="true">{% for i in range(0, r.rating) %}★{% endfor %}</span></p>
+        <blockquote class="review-card__text"><p>«{{ r.text }}»</p></blockquote>
+        <figcaption class="review-card__who"><span class="review-card__name">{{ r.author }}</span> <span class="review-card__src">{{ reviews.label }}</span></figcaption>
+      </figure>
+      {%- endfor %}
+    </div>
+    <p class="reviews-more"><a class="btn" href="{{ site.links.googleMaps }}" target="_blank" rel="noopener">{{ reviews.moreLabel }}</a></p>
+  </div>
+</section>
+
+<section class="section" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <p class="caption">{{ t.faq.caption }}</p>
+    <h2 id="faq-title">{{ t.faq.heading }}</h2>
+    <div class="faq-list">
+      {%- for item in faq %}
+      <details class="faq-item" id="faq-{{ item.id }}">
+        <summary>{{ item.q }}</summary>
+        <div class="faq-item__answer">
+          <p>{{ item.a }}</p>
+          {%- if item.links and item.links.length %}
+          <p class="faq-item__links">
+            {%- for l in item.links %}<a href="{{ l.url | url }}">{{ l.label }}</a>{% if not loop.last %} {% endif %}{% endfor %}
+          </p>
+          {%- endif %}
+        </div>
+      </details>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="location" aria-labelledby="location-title" data-placement="location_section">
+  <div class="wrap">
+    <p class="caption">{{ t.location.caption }}</p>
+    <h2 id="location-title">{{ t.location.heading }}</h2>
+    <address class="location-address">{{ site.address.full }}</address>
+    <p class="lede">{{ t.location.text }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.googleMapsRoute }}" target="_blank" rel="noopener">{{ site.cta.routeGoogle }}</a>
+      <a class="btn" href="{{ site.links.waze }}" target="_blank" rel="noopener">{{ site.cta.routeWaze }}</a>
+      <a class="btn" href="{{ t.location.link.url | url }}">{{ t.location.link.label }}</a>
     </div>
   </div>
 </section>
