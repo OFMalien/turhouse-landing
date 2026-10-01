@@ -21,7 +21,8 @@
     "instagramDirect": "https://ig.me/m/tur_house_",
     "googleMaps": "https://www.google.com/maps/place/TUR+House",
     "googleMapsRoute": "https://www.google.com/maps/dir/?api=1&destination=TUR+House%2C+%D0%9B%D1%83%D0%B3%D0%BE%D0%B2%D0%B0%2C+%D0%91%D0%B5%D1%80%D0%B5%D0%BC%D0%B8%D1%86%D1%8C%D0%BA%D0%B5",
-    "waze": "https://waze.com/ul?q=TUR+House+Беремицьке"
+    "waze": "https://waze.com/ul?q=TUR+House+Беремицьке",
+    "mapEmbed": "https://maps.google.com/maps?q=TUR%20House%2C%20%D0%9B%D1%83%D0%B3%D0%BE%D0%B2%D0%B0%2C%20%D0%91%D0%B5%D1%80%D0%B5%D0%BC%D0%B8%D1%86%D1%8C%D0%BA%D0%B5&z=12&hl=uk&output=embed"
   },
   "analytics": {
     "gtm": [

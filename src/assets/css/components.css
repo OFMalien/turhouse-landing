@@ -817,3 +817,13 @@ html.modal-open { overflow: hidden; }
 main:focus { outline: none; }
 /* У підвалі й панелі меню поточна сторінка позначена не лише кольором (WCAG 1.4.1) */
 .footer-col a[aria-current="page"], .drawer-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- Карта по кліку ---------- */
+.map-box { position: relative; min-height: 360px; margin-top: 32px; border: 1px solid var(--line); background: var(--color-parchment-light); }
+.map-box__inner { display: grid; place-content: center; justify-items: center; gap: 18px; min-height: 360px; padding: 32px; text-align: center; }
+.map-box__note { max-width: 44ch; font-size: var(--text-body); color: var(--text-soft); }
+.map-box__frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.map-box.is-loaded .map-box__inner { display: none; }
+/* без JavaScript карту не показати: кнопка прихована, маршрут відкривають кнопками вище */
+html:not(.js) .map-box__btn { display: none; }
+@media (max-width: 860px) { .map-box, .map-box__inner { min-height: 300px; } }

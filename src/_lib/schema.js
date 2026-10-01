@@ -277,6 +277,41 @@ export function okolitsiNodes(data) {
 }
 extras.okolitsi = okolitsiNodes;
 
+// Як дістатися: WebPage про розташування і Place з адресою і координатами з site.json (координати з публічної картки Google Карт).
+// Координати лише в розмітці, у видимому тексті їх немає. Км, час у дорозі і опис траси в розмітку не потрапляють (C9).
+export function routeNodes(data) {
+  const { site } = data;
+  const page = data.texts['yak-distatysya'];
+  const placeId = abs('/yak-distatysya/#place');
+  return [
+    {
+      '@type': 'WebPage',
+      '@id': abs('/yak-distatysya/#webpage'),
+      url: abs('/yak-distatysya/'),
+      name: page.hero.h1,
+      description: page.meta.description,
+      inLanguage: 'uk',
+      about: { '@id': placeId },
+    },
+    {
+      '@type': 'Place',
+      '@id': placeId,
+      name: site.name,
+      description: page.hero.lede,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: site.address.street,
+        addressLocality: site.address.locality,
+        addressRegion: site.address.region,
+        addressCountry: site.address.country,
+      },
+      geo: { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude },
+      hasMap: site.links.googleMaps,
+    },
+  ];
+}
+extras['yak-distatysya'] = routeNodes;
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), breadcrumbList(data)];

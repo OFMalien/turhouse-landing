@@ -71,7 +71,7 @@ for (const f of htmlFiles) {
     const pageUrl = name === 'index.html' ? '/' : `/${name.replace(/index\.html$/, '')}`;
     const slug = name === 'index.html' ? 'home' : name.replace(/\/index\.html$/, '');
     const textsOf = (s) => readData(`texts/${s}.json`);
-    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction']);
+    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction', 'WebPage', 'Place']);
     const defined = [];
     const referenced = [];
     (function walkLd(node) {
@@ -86,7 +86,7 @@ for (const f of htmlFiles) {
     const dupIds = defined.filter((x, i) => defined.indexOf(x) !== i);
     if (dupIds.length) fail(`${name}: повторні @id: ${[...new Set(dupIds)].join(', ')}`);
     for (const r of referenced) if (!defined.includes(r)) fail(`${name}: посилання на неіснуючий вузол @id ${r}`);
-    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'] };
+    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/yak-distatysya/': ['WebPage', 'Place'] };
     if (!same(graph.map((n) => n['@type']).sort(), ['LodgingBusiness', 'BreadcrumbList', ...(EXPECT_TOP[pageUrl] || [])].sort())) fail(`${name}: склад графа ${JSON.stringify(graph.map((n) => n['@type']))} не збігається з очікуваним для сторінки`);
 
     // LodgingBusiness: усе з site.json і даних цін, без сторонніх полів (petsAllowed, openingHours, priceValidUntil тощо)
@@ -367,6 +367,31 @@ for (const f of htmlFiles) {
         if (/Tur House/.test(`${p.name} ${p.description}`)) fail(`${name}: TouristAttraction описує парк, а не Tur House (ТЗ §6: не називати себе частиною парку)`);
       }
     } else if (articles.length || attractions.length) fail(`${name}: Article і TouristAttraction лише на /okolitsi/`);
+
+    // Як дістатися: WebPage про розташування і Place з адресою і координатами з site.json; нічого про км, час і трасу
+    const webpages = graph.filter((n) => n['@type'] === 'WebPage');
+    const places = graph.filter((n) => n['@type'] === 'Place');
+    if (name === 'yak-distatysya/index.html') {
+      const rp = readData('texts/yak-distatysya.json');
+      if (webpages.length !== 1 || places.length !== 1) fail(`${name}: має бути один WebPage і один Place, є ${webpages.length} і ${places.length}`);
+      else {
+        const wantW = { '@type': 'WebPage', '@id': `${ORIGIN}/yak-distatysya/#webpage`, url: `${ORIGIN}/yak-distatysya/`, name: rp.hero.h1, description: rp.meta.description, inLanguage: 'uk', about: { '@id': `${ORIGIN}/yak-distatysya/#place` } };
+        const wantP = {
+          '@type': 'Place',
+          '@id': `${ORIGIN}/yak-distatysya/#place`,
+          name: site.name,
+          description: rp.hero.lede,
+          address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, addressCountry: site.address.country },
+          geo: { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude },
+          hasMap: site.links.googleMaps,
+        };
+        for (const [label, got, want] of [['WebPage', webpages[0], wantW], ['Place', places[0], wantP]]) {
+          for (const k of Object.keys(got)) if (!(k in want)) fail(`${name}: у ${label} невідоме поле «${k}»`);
+          for (const [k, v] of Object.entries(want)) if (!same(got[k], v)) fail(`${name}: ${label}.${k} має бути ${JSON.stringify(v)}, є ${JSON.stringify(got[k])}`);
+        }
+        if (/\d+\s*(км|хв|год)/i.test(JSON.stringify(graph))) fail(`${name}: у розмітці є кілометри або час у дорозі (C9)`);
+      }
+    } else if (webpages.length || places.length) fail(`${name}: WebPage і Place лише на /yak-distatysya/`);
 
     const crumbs = graph.find((n) => n['@type'] === 'BreadcrumbList');
     if (!crumbs) fail(`${name}: немає BreadcrumbList`);

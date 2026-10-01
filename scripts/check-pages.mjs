@@ -477,6 +477,47 @@ const PAGE_RULES = {
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
   },
+  '/yak-distatysya/'(doc, f) {
+    const t = texts('yak-distatysya');
+    const file = 'texts/yak-distatysya.json';
+    const site = readJson('site.json');
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    for (const id of ['page-title', 'route', 'route-title', 'address', 'address-title', 'navigator', 'navigator-title', 'map', 'map-title', 'map-box', 'map-load', 'help', 'landmark', 'support', 'stay']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Як дістатися» з aria-current на останньому');
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
+    // маршрут дослівно, адреса з site.json (без координат), без км і часу в дорозі (C9)
+    if (!sameText(doc.querySelector('#route-title')?.text, t.route.heading) || !sameText(doc.querySelector('#route .lede')?.text, t.route.text)) f(`блок маршруту не збігається з ${file}`);
+    if (!sameText(doc.querySelector('#address-title')?.text, t.address.heading) || !sameText(doc.querySelector('#address address')?.text, site.address.full)) f('адреса має збігатися з site.json');
+    const mainText = norm(doc.querySelector('main')?.text);
+    if (/\d+\s*(км|хв|год)|\b50[.,]\d{3,}|\b30[.,]\d{3,}/i.test(mainText)) f('на сторінці немає кілометрів, часу в дорозі і координат (C9, координати лише в розмітці)');
+    // навігатор: дві кнопки, адреси з site.json, rel=noopener
+    if (!sameText(doc.querySelector('#navigator-title')?.text, t.navigator.heading) || !sameText(doc.querySelector('#navigator .lede')?.text, t.navigator.text)) f(`блок навігатора не збігається з ${file}`);
+    const nav = doc.querySelectorAll('#navigator a.btn').map((a) => ({ t: norm(a.text), h: a.getAttribute('href'), target: a.getAttribute('target'), rel: a.getAttribute('rel') }));
+    if (!same(nav, [{ t: site.cta.routeGoogle, h: site.links.googleMapsRoute, target: '_blank', rel: 'noopener' }, { t: site.cta.routeWaze, h: site.links.waze, target: '_blank', rel: 'noopener' }])) f('кнопки маршруту: «Відкрити в Google Maps» і «Відкрити у Waze» з адресами site.json, target=_blank, rel=noopener');
+    if (doc.querySelector('#navigator')?.getAttribute('data-placement') !== 'route_buttons') f('блок навігатора: data-placement=route_buttons (подія map_route_click)');
+    // карта по кліку: ніякого iframe до натискання, адреса вбудови з site.json, кнопка керує контейнером
+    if (doc.querySelectorAll('iframe').length) f('до кліку iframe у розмітці бути не повинно');
+    const box = doc.querySelector('#map-box');
+    if (box?.getAttribute('data-src') !== site.links.mapEmbed) f('data-src карти має бути site.links.mapEmbed');
+    if (!/^Мапа проїзду до /.test(box?.getAttribute('data-title') || '')) f('data-title карти (назва для iframe) має починатися з «Мапа проїзду до»');
+    const mb = doc.querySelector('#map-load');
+    if (mb?.tagName.toLowerCase() !== 'button' || mb?.getAttribute('type') !== 'button' || mb?.getAttribute('aria-controls') !== 'map-box' || mb?.getAttribute('aria-expanded') !== 'false' || !sameText(mb?.text, t.map.button)) f(`кнопка карти: button type=button, aria-controls=map-box, aria-expanded=false, підпис «${t.map.button}»`);
+    if (!sameText(doc.querySelector('#map-title')?.text, t.map.heading) || !sameText(doc.querySelector('#map-box .map-box__note')?.text, t.map.note)) f(`заголовок і примітка карти не збігаються з ${file}`);
+    // орієнтир, допомога, куди їдете
+    if (!sameText(doc.querySelector('#landmark-title')?.text, t.landmark.heading) || !sameText(doc.querySelector('#landmark .lede')?.text, t.landmark.text)) f(`блок «Орієнтир» не збігається з ${file}`);
+    if (!doc.querySelector(`#landmark a[href$="${t.landmark.link.url}"]`)) f(`у блоці «Орієнтир» немає посилання на ${t.landmark.link.url}`);
+    if (!sameText(doc.querySelector('#support-title')?.text, t.help.heading) || !sameText(doc.querySelector('#support .lede')?.text, t.help.text)) f(`блок допомоги не збігається з ${file}`);
+    if (!doc.querySelector(`#support a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#support a[href="${site.links.instagramDirect}"]`)) f('блок допомоги: телефон і Instagram Direct');
+    if (!sameText(doc.querySelector('#stay-title')?.text, t.stay.heading) || !sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`блок «Куди їдете» не збігається з ${file}`);
+    for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці «Куди їдете» немає посилання на ${l.url}`);
+    if (photoIdOf(doc.querySelector('.page-hero img')?.getAttribute('src')) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
+    if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці маршруту немає (R9)');
+    const ctx = pageContextOf(doc);
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'info', item_category: 'route' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"info","item_category":"route"}, є ${JSON.stringify(ctx)}`);
+    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
+    for (const u of ['/okolitsi/', '/kontakty/', '/nomery/', '/kotedzhi/', '/barn-house/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+  },
 };
 
 // Мета-теги кожної зібраної сторінки з texts/<сторінка>.json: title, description, og і twitter збігаються з текстами, canonical і og:url на своїй адресі

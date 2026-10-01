@@ -146,6 +146,10 @@ for (const [url, { doc }] of docs) {
   for (const src of scripts) { if (/^https?:\/\//.test(src)) { if (!HEAD_EXTERNAL_OK.some((h) => src.startsWith(h))) f(`script: зовнішня адреса «${src}» не з дозволеного списку`); } else localFile(url, src, 'script'); }
   if (!scripts.includes(`${prefix}/assets/js/app.js`)) f('немає скрипта app.js');
   if (doc.querySelectorAll('script[src$="app.js"]').length !== 1) f('app.js має бути підключений один раз');
+  const hasMapJs = scripts.includes(`${prefix}/assets/js/map.js`);
+  if (url === '/yak-distatysya/' && !hasMapJs) f('на сторінці «Як дістатися» має бути скрипт map.js (карта по кліку)');
+  if (url !== '/yak-distatysya/' && (hasMapJs || doc.querySelector('#map-box'))) f('карта по кліку лише на сторінці «Як дістатися»');
+  if (doc.querySelectorAll('iframe').length) f('iframe у розмітці сторінки не допускається: карта підвантажується скриптом після кліку, сторонні запити до згоди не йдуть');
   if (doc.querySelector('script[src$="promo.js"]') && !doc.querySelector('#promo-modal')) f('promo.js без вікна акції');
 
   // ----- каркас: header, main, footer -----

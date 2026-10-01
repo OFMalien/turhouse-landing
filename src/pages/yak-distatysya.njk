@@ -1,0 +1,85 @@
+---
+permalink: "/yak-distatysya/"
+eleventyComputed:
+  title: "{{ texts['yak-distatysya'].meta.title | safe }}"
+  description: "{{ texts['yak-distatysya'].meta.description | safe }}"
+  breadcrumbTitle: "{{ texts['yak-distatysya'].meta.breadcrumbTitle | safe }}"
+schemaType: yak-distatysya
+analyticsKind: route
+pageScripts:
+  - /assets/js/map.js
+---
+{%- set t = texts['yak-distatysya'] %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section" id="route">
+  <div class="wrap split split--text">
+    <div class="split__copy">
+      <h2 id="route-title">{{ t.route.heading }}</h2>
+      <p class="lede">{{ t.route.text }}</p>
+    </div>
+    <div class="split__copy" id="address">
+      <h2 id="address-title">{{ t.address.heading }}</h2>
+      <address class="location-address">{{ site.address.full }}</address>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="navigator" aria-labelledby="navigator-title" data-placement="route_buttons">
+  <div class="wrap">
+    <h2 id="navigator-title">{{ t.navigator.heading }}</h2>
+    <p class="lede block-note">{{ t.navigator.text }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.googleMapsRoute }}" target="_blank" rel="noopener">{{ site.cta.routeGoogle }}</a>
+      <a class="btn" href="{{ site.links.waze }}" target="_blank" rel="noopener">{{ site.cta.routeWaze }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="map" aria-labelledby="map-title">
+  <div class="wrap">
+    <h2 id="map-title">{{ t.map.heading }}</h2>
+    <div class="map-box" id="map-box" data-src="{{ site.links.mapEmbed }}" data-title="Мапа проїзду до {{ site.name }}, {{ site.address.locality }}">
+      <div class="map-box__inner">
+        <p class="map-box__note">{{ t.map.note }}</p>
+        <button type="button" class="btn btn-primary map-box__btn" id="map-load" aria-controls="map-box" aria-expanded="false">{{ t.map.button }}</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="help">
+  <div class="wrap split split--text">
+    <div class="split__copy" id="landmark">
+      <h2 id="landmark-title">{{ t.landmark.heading }}</h2>
+      <p class="lede">{{ t.landmark.text }}</p>
+      <div class="btn-row">
+        <a class="btn" href="{{ t.landmark.link.url | url }}">{{ t.landmark.link.label }}</a>
+      </div>
+    </div>
+    <div class="split__copy" id="support">
+      <h2 id="support-title">{{ t.help.heading }}</h2>
+      <p class="lede">{{ t.help.text }}</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}"><span class="nowrap">{{ site.phone.display }}</span></a>
+        <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+        {%- for l in t.help.links %}
+        <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+        {%- endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="stay" aria-labelledby="stay-title">
+  <div class="wrap">
+    <h2 id="stay-title">{{ t.stay.heading }}</h2>
+    <p class="lede block-note">{{ t.stay.text }}</p>
+    <div class="btn-row">
+      {%- for l in t.stay.links %}
+      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
