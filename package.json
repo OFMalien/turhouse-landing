@@ -21,11 +21,14 @@
     "check:pages": "node scripts/check-pages.mjs",
     "check:tracking": "node scripts/check-tracking.mjs preview",
     "check:site": "node scripts/check-site.mjs preview",
-    "check:images": "node scripts/check-images.mjs preview"
+    "check:images": "node scripts/check-images.mjs preview",
+    "check:content": "node scripts/check-content.mjs preview",
+    "check:html": "node scripts/check-html.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
     "@11ty/eleventy-img": "^7.0.0",
+    "html-validate": "^11.16.1",
     "jsdom": "^30.1.1",
     "lightningcss": "^1.33.0",
     "node-html-parser": "^9.0.4"

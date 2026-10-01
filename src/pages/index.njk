@@ -53,7 +53,7 @@ analytics:
   <div class="wrap">
     <p class="caption">{{ t.formats.caption }}</p>
     <h2 id="formats-title">{{ t.formats.heading }}</h2>
-    <p class="lede" style="margin-top:20px">{{ t.formats.included }}</p>
+    <p class="lede block-note">{{ t.formats.included }}</p>
     <div class="cards-grid" data-placement="formats_section">
       {%- asyncEach fmt in t.formats.items %}
       {%- set prices = formatPrices[fmt.id] %}

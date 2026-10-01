@@ -847,3 +847,6 @@ html:not(.js) .map-box__btn { display: none; }
 .bullet-list li::before { content: "\2022"; position: absolute; left: 4px; color: var(--text-muted); }
 .not-found { padding-block: clamp(56px, 9vw, 120px) clamp(24px, 4vw, 48px); }
 .not-found .lede { max-width: 56ch; margin-top: 16px; }
+
+/* Тег GTM (noscript iframe) не показується */
+.gtm-noscript { display: none; visibility: hidden; }
