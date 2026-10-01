@@ -14,7 +14,9 @@
   </div>
   <div class="card-object__body">
     <h3>{{ item.title }}</h3>
+    {%- if item.capacity %}
     <p class="card-object__meta">{{ item.capacity }}{% if item.count %} &middot; {{ item.count }}{% endif %}</p>
+    {%- endif %}
     {%- if item.description or item.text %}
     <p class="card-object__desc">{{ item.description or item.text }}</p>
     {%- endif %}

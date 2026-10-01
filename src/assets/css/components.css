@@ -809,3 +809,11 @@ html.modal-open { overflow: hidden; }
 .menu-item__variants { margin-top: 4px; font-size: var(--text-small); line-height: 1.4; color: var(--text-soft); }
 .menu-item__variants li::before { content: "\00b7\00a0"; }
 .menu-item__price { flex: none; font-weight: 700; white-space: nowrap; color: var(--text); }
+
+/* ---------- Доступність: фокус і поточна сторінка ---------- */
+/* Липка кнопка плаває і над світлими, і над темними розділами: двотонне кільце видно на обох */
+.sticky-cta .btn:focus-visible { outline: 2px solid var(--color-parchment); outline-offset: 2px; box-shadow: 0 0 0 5px var(--color-onyx-warm); }
+/* main лише ціль програмного фокуса після «Перейти до змісту», рамка навколо всього змісту не потрібна */
+main:focus { outline: none; }
+/* У підвалі й панелі меню поточна сторінка позначена не лише кольором (WCAG 1.4.1) */
+.footer-col a[aria-current="page"], .drawer-links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }

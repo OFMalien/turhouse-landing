@@ -30,7 +30,7 @@ analyticsKind: cafe
     <p class="lede block-note">{{ t.menu.note }}</p>
     <div class="menu-columns">
       {%- for sec in menu.sections %}
-      <section class="menu-section{% if sec.items.length > 8 %} menu-section--long{% endif %}" id="menu-{{ sec.id }}" aria-labelledby="menu-{{ sec.id }}-title">
+      <div class="menu-section{% if sec.items.length > 8 %} menu-section--long{% endif %}" id="menu-{{ sec.id }}">
         <h3 id="menu-{{ sec.id }}-title">{{ sec.title }}</h3>
         <ul class="menu-list">
           {%- for item in sec.items %}
@@ -52,7 +52,7 @@ analyticsKind: cafe
           </li>
           {%- endfor %}
         </ul>
-      </section>
+      </div>
       {%- endfor %}
     </div>
   </div>

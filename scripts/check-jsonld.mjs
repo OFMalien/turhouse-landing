@@ -21,6 +21,8 @@ const htmlFiles = walk(dir).filter((f) => f.endsWith('.html'));
 const rel = (f) => path.relative(dir, f).split(path.sep).join('/');
 
 const BANNED = new Set(['aggregateRating', 'reviewCount', 'ratingValue', 'ratingCount', 'bestRating', 'worstRating']);
+const readData = (n) => JSON.parse(fs.readFileSync(new URL(`../src/_data/${n}`, import.meta.url), 'utf8'));
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const ORIGIN = mode === 'production' ? 'https://turhouse.com.ua' : 'https://ofmalien.github.io/turhouse-multipage-preview';
 const isAbs = (u) => typeof u === 'string' && /^https:\/\//.test(u);
 
@@ -45,6 +47,7 @@ for (const f of htmlFiles) {
     continue;
   }
   const canonical = (html.match(/<link rel="canonical" href="([^"]+)"/) || [])[1];
+  if (found.length !== 1) fail(`${name}: має бути один блок JSON-LD, є ${found.length}`);
   for (const m of found) {
     blocks++;
     let data;
@@ -62,6 +65,98 @@ for (const f of htmlFiles) {
     }
     scanBanned(data, name);
     for (const node of graph) if (!node['@type']) fail(`${name}: вузол без @type`);
+
+    // ---- загальні правила розмітки: типи, id, посилання, склад графа ----
+    const site = readData('site.json');
+    const pageUrl = name === 'index.html' ? '/' : `/${name.replace(/index\.html$/, '')}`;
+    const slug = name === 'index.html' ? 'home' : name.replace(/\/index\.html$/, '');
+    const textsOf = (s) => readData(`texts/${s}.json`);
+    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem']);
+    const defined = [];
+    const referenced = [];
+    (function walkLd(node) {
+      if (Array.isArray(node)) return node.forEach(walkLd);
+      if (!node || typeof node !== 'object') return;
+      if (node['@type'] !== undefined) {
+        if (typeof node['@type'] !== 'string' || !ALLOWED_TYPES.has(node['@type'])) fail(`${name}: невідомий @type «${JSON.stringify(node['@type'])}» (опечатка?)`);
+        if (node['@id']) defined.push(node['@id']);
+      } else if (node['@id'] && Object.keys(node).length === 1) referenced.push(node['@id']);
+      for (const v of Object.values(node)) walkLd(v);
+    })(graph);
+    const dupIds = defined.filter((x, i) => defined.indexOf(x) !== i);
+    if (dupIds.length) fail(`${name}: повторні @id: ${[...new Set(dupIds)].join(', ')}`);
+    for (const r of referenced) if (!defined.includes(r)) fail(`${name}: посилання на неіснуючий вузол @id ${r}`);
+    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'] };
+    if (!same(graph.map((n) => n['@type']).sort(), ['LodgingBusiness', 'BreadcrumbList', ...(EXPECT_TOP[pageUrl] || [])].sort())) fail(`${name}: склад графа ${JSON.stringify(graph.map((n) => n['@type']))} не збігається з очікуваним для сторінки`);
+
+    // LodgingBusiness: усе з site.json і даних цін, без сторонніх полів (petsAllowed, openingHours, priceValidUntil тощо)
+    const lb = graph.find((n) => n['@type'] === 'LodgingBusiness');
+    if (lb) {
+      const rooms = readData('rooms.json');
+      const cottages = readData('cottages.json');
+      const barnD = readData('barn.json');
+      const nums = [...rooms, ...cottages].flatMap((i) => [i.price, ...(i.tariffs || []).map((t) => t.amount)]).concat(barnD.tariffs.map((t) => t.amount)).filter((x) => typeof x === 'number');
+      const want = {
+        '@type': 'LodgingBusiness',
+        '@id': `${ORIGIN}/#lodging`,
+        name: site.name,
+        description: site.tagline,
+        url: `${ORIGIN}/`,
+        telephone: site.phone.tel,
+        image: `${ORIGIN}/assets/img/static/${site.ogImage.file}`,
+        priceRange: `${Math.min(...nums)}-${Math.max(...nums)} UAH`,
+        address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, addressCountry: site.address.country },
+        hasMap: site.links.googleMaps,
+        sameAs: [site.links.instagram],
+        geo: { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude },
+      };
+      for (const k of Object.keys(lb)) if (!(k in want)) fail(`${name}: у LodgingBusiness невідоме поле «${k}»`);
+      for (const [k, v] of Object.entries(want)) if (!same(lb[k], v)) fail(`${name}: LodgingBusiness.${k} має бути ${JSON.stringify(v)}, є ${JSON.stringify(lb[k])}`);
+      const imgFile = path.join(dir, String(lb.image || '').replace(`${ORIGIN}/`, ''));
+      if (!fs.existsSync(imgFile)) fail(`${name}: LodgingBusiness.image: файлу ${lb.image} немає в збірці`);
+    }
+    // Адреса і телефон інших вузлів (DaySpa, CafeOrCoffeeShop) теж із site.json
+    for (const n of graph.filter((x) => ['DaySpa', 'CafeOrCoffeeShop'].includes(x['@type']))) {
+      if (n.telephone !== site.phone.tel) fail(`${name}: ${n['@type']}.telephone має бути ${site.phone.tel}`);
+      if (!same(n.address, { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, addressCountry: site.address.country })) fail(`${name}: ${n['@type']}.address не збігається з site.json`);
+      if (!n.parentOrganization || n.parentOrganization['@id'] !== `${ORIGIN}/#lodging`) fail(`${name}: ${n['@type']}.parentOrganization має вести на ${ORIGIN}/#lodging`);
+    }
+    // Хлібні крихти: Головна > поточна сторінка, назви з nav.json і texts/<сторінка>.json
+    const bc = graph.find((n) => n['@type'] === 'BreadcrumbList');
+    if (bc) {
+      const items = bc.itemListElement || [];
+      const navJson = readData('nav.json');
+      const want = [{ '@type': 'ListItem', position: 1, name: navJson.find((n) => n.url === '/').title, item: `${ORIGIN}/` }];
+      if (pageUrl !== '/') {
+        const crumbName = fs.existsSync(new URL(`../src/_data/texts/${slug}.json`, import.meta.url)) ? textsOf(slug).meta.breadcrumbTitle : null;
+        want.push({ '@type': 'ListItem', position: 2, name: crumbName, item: `${ORIGIN}${pageUrl}` });
+      }
+      if (!same(items, want)) fail(`${name}: BreadcrumbList має бути ${JSON.stringify(want)}, є ${JSON.stringify(items)}`);
+    }
+    // Текстові поля вузлів страниць дослівно з texts і даних
+    const tx = fs.existsSync(new URL(`../src/_data/texts/${slug}.json`, import.meta.url)) ? textsOf(slug) : null;
+    const vr = graph.find((n) => n['@type'] === 'VacationRental');
+    if (vr && tx && vr.description !== tx.hero.lede) fail(`${name}: VacationRental.description має збігатися з hero.lede у texts/${slug}.json`);
+    const ds = graph.find((n) => n['@type'] === 'DaySpa');
+    if (ds && tx) {
+      if (ds.description !== tx.hero.lede) fail(`${name}: DaySpa.description має збігатися з hero.lede у texts/${slug}.json`);
+      if (ds.name !== `${tx.meta.breadcrumbTitle} ${site.name}`) fail(`${name}: DaySpa.name має бути «${tx.meta.breadcrumbTitle} ${site.name}»`);
+      if (ds.url !== `${ORIGIN}/banya-ta-spa/`) fail(`${name}: DaySpa.url має бути ${ORIGIN}/banya-ta-spa/`);
+    }
+    const svc = graph.find((n) => n['@type'] === 'Service');
+    if (svc) {
+      if (svc.url !== `${ORIGIN}/banya-ta-spa/`) fail(`${name}: Service.url має бути ${ORIGIN}/banya-ta-spa/`);
+      if (svc.offers?.url !== site.links.instagramDirect) fail(`${name}: Service.offers.url має вести в Instagram Direct з site.json`);
+      if (svc.serviceType !== 'Баня') fail(`${name}: Service.serviceType має бути «Баня»`);
+    }
+    const cf = graph.find((n) => n['@type'] === 'CafeOrCoffeeShop');
+    if (cf && tx) {
+      const cafeD = readData('cafe.json');
+      if (cf.description !== tx.hero.lede) fail(`${name}: CafeOrCoffeeShop.description має збігатися з hero.lede у texts/${slug}.json`);
+      if (cf.name !== `${cafeD.title} ${site.name}`) fail(`${name}: CafeOrCoffeeShop.name має бути «${cafeD.title} ${site.name}»`);
+      if (cf.url !== `${ORIGIN}/kafe/`) fail(`${name}: CafeOrCoffeeShop.url має бути ${ORIGIN}/kafe/`);
+      if (cf.hasMenu?.inLanguage !== 'uk' || cf.hasMenu?.name !== tx.menu.heading || cf.hasMenu?.['@id'] !== `${ORIGIN}/kafe/#menu`) fail(`${name}: Menu: inLanguage uk, name з texts і @id ${ORIGIN}/kafe/#menu`);
+    }
 
     const lodging = graph.find((n) => n['@type'] === 'LodgingBusiness');
     if (!lodging) fail(`${name}: немає LodgingBusiness`);
@@ -112,6 +207,10 @@ for (const f of htmlFiles) {
       const expected = JSON.parse(fs.readFileSync(new URL(`../src/_data/${rule.file}`, import.meta.url), 'utf8'));
       const els = listNode.itemListElement || [];
       if (listNode.numberOfItems !== expected.length || els.length !== expected.length) fail(`${name}: у ItemList ${els.length} елементів, у ${rule.file} ${expected.length}`);
+      const listTx = readData(`texts/${name.replace(/\/index\.html$/, '')}.json`);
+      if (listNode.name !== listTx.types.heading) fail(`${name}: ItemList.name має бути «${listTx.types.heading}» (texts)`);
+      if (listNode['@id'] !== `${ORIGIN}${rule.base.replace(/#$/, '')}#list`) fail(`${name}: ItemList['@id'] має бути ${ORIGIN}${rule.base.replace(/#$/, '')}#list`);
+      for (const k of Object.keys(listNode)) if (!['@type', '@id', 'name', 'numberOfItems', 'itemListElement'].includes(k)) fail(`${name}: у ItemList невідоме поле «${k}»`);
       expected.forEach((x, i) => {
         const el = els[i];
         if (!el || el.position !== i + 1) return fail(`${name}: ItemList[${i}] без правильної position`);
@@ -129,6 +228,11 @@ for (const f of htmlFiles) {
         }
         const o = it.offers || {};
         if (o['@type'] !== 'Offer' || o.priceCurrency !== 'UAH') fail(`${name}: ItemList[${i}].offers має бути Offer з priceCurrency UAH`);
+        if (it.url !== it['@id']) fail(`${name}: ItemList[${i}].url має збігатися з @id (${it['@id']})`);
+        if (o.url !== readData('site.json').links.booking) fail(`${name}: ItemList[${i}].offers.url має вести на BookmeNow з site.json`);
+        for (const k of Object.keys(it)) if (!['@type', '@id', 'url', 'name', 'occupancy', 'containedInPlace', 'amenityFeature', 'offers'].includes(k)) fail(`${name}: у ItemList[${i}] невідоме поле «${k}»`);
+        for (const k of Object.keys(o)) if (!['@type', 'price', 'priceCurrency', 'url'].includes(k)) fail(`${name}: в ItemList[${i}].offers невідоме поле «${k}»`);
+        if (!it.containedInPlace || it.containedInPlace['@id'] !== `${ORIGIN}/#lodging`) fail(`${name}: ItemList[${i}].containedInPlace має вести на ${ORIGIN}/#lodging`);
         if (o.price !== x.price) fail(`${name}: ItemList[${i}].offers.price ${o.price} не збігається з ${rule.file} (${x.price})`);
         if (x.promoPrice && JSON.stringify(it).includes(String(x.promoPrice))) fail(`${name}: ціна акції ${x.promoPrice} не має бути в розмітці (R9)`);
       });
@@ -144,6 +248,8 @@ for (const f of htmlFiles) {
         const v = rentals[0];
         if (v['@id'] !== `${ORIGIN}/barn-house/#${barn.id}`) fail(`${name}: VacationRental['@id'] ${v['@id']} не ${ORIGIN}/barn-house/#${barn.id}`);
         if (v.name !== barn.title) fail(`${name}: VacationRental.name не збігається з barn.json`);
+        if (v.url !== v['@id']) fail(`${name}: VacationRental.url має збігатися з @id`);
+        if (!v.containedInPlace || v.containedInPlace['@id'] !== `${ORIGIN}/#lodging`) fail(`${name}: VacationRental.containedInPlace має вести на ${ORIGIN}/#lodging`);
         const maxGuests = Math.max(...barn.tariffs.map((t) => guestsOf(t.label)));
         if (!v.occupancy || v.occupancy.maxValue !== maxGuests) fail(`${name}: VacationRental.occupancy.maxValue має бути ${maxGuests}`);
         const got = (v.amenityFeature || []).map((a) => a.name);
@@ -161,6 +267,8 @@ for (const f of htmlFiles) {
           if (!String(o.name || '').includes(t.label)) fail(`${name}: Offer[${i}].name без підпису тарифу «${t.label}»`);
           if (!o.eligibleQuantity || o.eligibleQuantity.maxValue !== guestsOf(t.label)) fail(`${name}: Offer[${i}].eligibleQuantity.maxValue має бути ${guestsOf(t.label)}`);
           const okOffer = new Set(['@type', 'name', 'price', 'priceCurrency', 'eligibleQuantity', 'url']);
+          if (o.url !== readData('site.json').links.booking) fail(`${name}: Offer[${i}].url має вести на BookmeNow з site.json`);
+          if (o.eligibleQuantity?.unitText !== 'гостей') fail(`${name}: Offer[${i}].eligibleQuantity.unitText має бути «гостей»`);
           for (const k of Object.keys(o)) if (!okOffer.has(k)) fail(`${name}: в Offer[${i}] невідоме поле «${k}» (lowPrice і подібні заборонені: знижки на Барн-хаус не підтверджені)`);
         });
       }
