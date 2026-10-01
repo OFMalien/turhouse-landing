@@ -285,6 +285,7 @@ for (const [url, { doc }] of docs) {
   if (promo.enabled && PROMO_MODAL.has(url) && !modal) f('має бути вікно акції #promo-modal');
   if ((!promo.enabled || !PROMO_BANNER.has(url)) && banner) f('банера акції на цій сторінці бути не повинно');
   if ((!promo.enabled || !PROMO_MODAL.has(url)) && modal) f('вікна акції на цій сторінці бути не повинно');
+  if (modal && !banner) f('вікно акції без банера #promo: посилання «Деталі акції» веде на банер цієї сторінки');
   if (banner) {
     const g = (s) => norm(banner.querySelector(s)?.text);
     if (g('.promo-badge') !== promo.badge || g('#promo-title') !== promo.title || g('.promo-banner__subtitle') !== promo.subtitle || g('.promo-banner__content > .lede') !== promo.lead || g('.promo-banner__note') !== promo.note) f('банер акції: бейдж, заголовок, підзаголовок, текст або примітка не збігаються з promo.json');
@@ -303,7 +304,7 @@ for (const [url, { doc }] of docs) {
     if (!same(rowsOf('.promo-rows li', 'span:first-child'), wantRows)) f(`вікно акції: ціни мають бути ${JSON.stringify(wantRows)}`);
     const cb = modal.querySelector('a.btn-primary');
     if (cb?.getAttribute('href') !== promo.cta.url || norm(cb?.text) !== promo.cta.label) f('вікно акції: кнопка має вести в Instagram Direct з promo.json');
-    if (modal.querySelector('a.promo-modal__more')?.getAttribute('href') !== `${prefix}/#promo`) f('вікно акції: «Деталі акції» має вести на головну #promo');
+    if (modal.querySelector('a.promo-modal__more')?.getAttribute('href') !== '#promo') f('вікно акції: «Деталі акції» має вести на банер #promo цієї ж сторінки');
     if (!modal.querySelector('button.promo-modal__close[aria-label]')) f('вікно акції: немає кнопки закриття з aria-label');
     if (!doc.querySelector(`script[src="${prefix}/assets/js/promo.js"]`)) f('вікно акції без promo.js');
   }

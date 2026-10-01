@@ -130,7 +130,7 @@
 }
 .site-nav a {
   display: inline-block;
-  padding: 10px 2px;
+  padding: 12px 2px;
   border-bottom: 2px solid transparent;
   font-weight: 600;
   font-size: var(--text-small);
@@ -590,10 +590,12 @@ html.nav-open { overflow: hidden; }
 .promo-rows__amounts s { margin-right: 8px; font-size: var(--text-small); color: var(--text-muted); }
 .promo-modal .btn { width: 100%; margin-top: 22px; }
 .promo-modal__more {
-  display: block;
+  display: flex;
+  align-items: center;
   width: fit-content;
-  margin: 16px auto 0;
-  padding: 10px 0 3px;
+  min-height: 44px;
+  margin: 8px auto 0;
+  padding: 0 2px;
   border-bottom: 1px solid var(--line);
   font-size: var(--text-small);
   color: var(--text-soft);
