@@ -1,16 +1,38 @@
 ---
 layout: layouts/base.njk
 permalink: "/404.html"
-title: "Сторінку не знайдено | Tur House"
-description: "Такої сторінки немає. Поверніться на головну Tur House."
+eleventyComputed:
+  title: "{{ texts['404'].meta.title | safe }}"
+  description: "{{ texts['404'].meta.description | safe }}"
 noindex: true
 noCanonical: true
 eleventyExcludeFromCollections: true
-analytics:
-  page_type: error
-  item_category: general
+analyticsKind: notFound
 ---
-<div class="wrap section">
-  <h1>Сторінку не знайдено</h1>
-  <p class="lede" style="margin-top:16px">Можливо, адреса змінилася. Поверніться на <a href="{{ '/' | url }}"><u>головну</u></a>.</p>
-</div>
+{%- set t = texts['404'] %}
+<section class="section not-found" aria-labelledby="page-title">
+  <div class="wrap">
+    <h1 id="page-title">{{ t.hero.h1 }}</h1>
+    <p class="lede">{{ t.hero.lede }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ '/' | url }}">{{ nav[0].title }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="sections" aria-labelledby="sections-title">
+  <div class="wrap">
+    <h2 id="sections-title">{{ t.sections.heading }}</h2>
+    <div class="btn-row">
+      {%- for item in nav %}
+      {%- if item.url != '/' %}
+      <a class="btn" href="{{ item.url | url }}">{{ item.title }}</a>
+      {%- endif %}
+      {%- endfor %}
+    </div>
+    <p class="lede block-note">{{ t.booking.text }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+    </div>
+  </div>
+</section>

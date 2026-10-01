@@ -1,0 +1,82 @@
+---
+permalink: "/pryvatnist/"
+eleventyComputed:
+  title: "{{ texts.pryvatnist.meta.title | safe }}"
+  description: "{{ texts.pryvatnist.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.pryvatnist.meta.breadcrumbTitle | safe }}"
+schemaType: pryvatnist
+analyticsKind: privacy
+---
+{%- set t = texts.pryvatnist %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section legal" aria-label="Текст політики конфіденційності">
+  <div class="wrap legal__wrap">
+    <div class="legal-block" id="owner">
+      <h2 id="owner-title">{{ t.owner.heading }}</h2>
+      <p class="lede">{{ t.owner.text }}</p>
+      <div class="btn-row">
+        <a class="btn" href="{{ t.owner.link.url | url }}">{{ t.owner.link.label }}</a>
+      </div>
+    </div>
+
+    <div class="legal-block" id="collected">
+      <h2 id="collected-title">{{ t.collected.heading }}</h2>
+      <p class="lede">{{ t.collected.lead }}</p>
+      <ul class="legal-list">
+        {%- for item in t.collected.items %}
+        <li id="{{ item.id }}">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.text }}</p>
+        </li>
+        {%- endfor %}
+      </ul>
+    </div>
+
+    <div class="legal-block" id="cookies">
+      <h2 id="cookies-title">{{ t.cookies.heading }}</h2>
+      <p class="lede">{{ t.cookies.text }}</p>
+    </div>
+
+    <div class="legal-block" id="purpose">
+      <h2 id="purpose-title">{{ t.purpose.heading }}</h2>
+      <p class="lede">{{ t.purpose.text }}</p>
+    </div>
+
+    <div class="legal-block" id="yours">
+      <h2 id="yours-title">{{ t.yours.heading }}</h2>
+      <p class="lede">{{ t.yours.text }}</p>
+    </div>
+
+    <div class="legal-block" id="optout">
+      <h2 id="optout-title">{{ t.optout.heading }}</h2>
+      <p class="lede">{{ t.optout.lead }}</p>
+      <ul class="bullet-list">
+        {%- for item in t.optout.items %}
+        <li>{{ item }}</li>
+        {%- endfor %}
+      </ul>
+    </div>
+
+    <div class="legal-block" id="third">
+      <h2 id="third-title">{{ t.third.heading }}</h2>
+      <p class="lede">{{ t.third.text }}</p>
+    </div>
+
+    <div class="legal-block" id="changes">
+      <h2 id="changes-title">{{ t.changes.heading }}</h2>
+      <p class="lede">{{ t.changes.text }}</p>
+    </div>
+
+    <div class="legal-block" id="contact">
+      <h2 id="contact-title">{{ t.contact.heading }}</h2>
+      <p class="lede">{{ t.contact.text }}</p>
+      <div class="btn-row">
+        {%- for l in t.contact.links %}
+        <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+        {%- endfor %}
+      </div>
+    </div>
+  </div>
+</section>

@@ -103,6 +103,13 @@ function photoIdOf(src) {
 const PROMO_BANNER = new Set(['/', '/nomery/', '/kotedzhi/']);
 const PROMO_MODAL = new Set(['/', '/nomery/', '/kotedzhi/']);
 
+// Власні скрипти сайту: жодних cookie, localStorage, fetch, XMLHttpRequest, sendBeacon; sessionStorage лише у вікні акції (так сказано в політиці конфіденційності)
+for (const jsFile of fs.readdirSync(path.join(siteDir, 'assets/js')).filter((x) => x.endsWith('.js'))) {
+  const code = fs.readFileSync(path.join(siteDir, 'assets/js', jsFile), 'utf8');
+  for (const bad of ['document.cookie', 'localStorage', 'XMLHttpRequest', 'fetch(', 'sendBeacon', 'indexedDB']) if (code.includes(bad)) fail(`assets/js/${jsFile}`, `скрипт використовує ${bad}, політика конфіденційності цього не описує`);
+  if (code.includes('sessionStorage') && jsFile !== 'promo.js') fail(`assets/js/${jsFile}`, 'sessionStorage дозволений лише у promo.js (вікно акції)');
+}
+
 for (const [url, { doc }] of docs) {
   const f = (m) => fail(url, m);
   const is404 = url === '/404.html';
@@ -114,6 +121,7 @@ for (const [url, { doc }] of docs) {
   const vps = doc.querySelectorAll('meta[name="viewport"]');
   if (vps.length !== 1 || vps[0].getAttribute('content') !== 'width=device-width, initial-scale=1') f('viewport має бути рівно «width=device-width, initial-scale=1» (без заборони масштабу)');
   if (doc.querySelectorAll('title').length !== 1) f('має бути один <title>');
+  if (is404 && doc.querySelector('meta[property="og:url"]')?.getAttribute('content') !== `${ORIGIN}/404.html`) f(`og:url 404 має бути ${ORIGIN}/404.html`);
   const robots = doc.querySelectorAll('meta[name="robots"]');
   if (robots.length !== 1) f('має бути один <meta name="robots">');
   else {
@@ -152,6 +160,7 @@ for (const [url, { doc }] of docs) {
   if (doc.querySelectorAll('iframe').length) f('iframe у розмітці сторінки не допускається: карта підвантажується скриптом після кліку, сторонні запити до згоди не йдуть');
   if (doc.querySelector('script[src$="promo.js"]') && !doc.querySelector('#promo-modal')) f('promo.js без вікна акції');
 
+  if (doc.querySelectorAll('form, input, textarea, select').length) f('на сайті немає форм і полів вводу (політика конфіденційності це обіцяє)');
   // ----- каркас: header, main, footer -----
   const headers = doc.querySelectorAll('header.site-header');
   const mains = doc.querySelectorAll('main');
@@ -342,7 +351,7 @@ for (const [url, { doc }] of docs) {
 
   // ----- тексти сторінки з texts/<сторінка>.json: кожен рядок є на сторінці -----
   const slug = slugOf(url);
-  if (!is404 && fs.existsSync(textsFile(slug))) {
+  if (fs.existsSync(textsFile(slug))) {
     const t = JSON.parse(fs.readFileSync(textsFile(slug), 'utf8'));
     const mainText = norm(doc.querySelector('main')?.text);
     for (const s of textLeaves(t)) if (!mainText.includes(norm(s))) f(`текст з texts/${slug}.json немає на сторінці: «${norm(s).slice(0, 70)}»`);

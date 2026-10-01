@@ -558,6 +558,65 @@ const PAGE_RULES = {
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/yak-distatysya/', '/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
   },
+  '/pryvatnist/'(doc, f) {
+    const t = texts('pryvatnist');
+    const file = 'texts/pryvatnist.json';
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    for (const id of ['page-title', 'owner', 'collected', 'cookies', 'purpose', 'yours', 'optout', 'third', 'changes', 'contact', ...t.collected.items.map((i) => i.id)]) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Політика конфіденційності» з aria-current на останньому');
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
+    if (doc.querySelector('.page-hero img')) f('у політики конфіденційності немає картинки в шапці');
+    // кожен блок: заголовок h2 і текст з texts
+    for (const k of ['owner', 'collected', 'cookies', 'purpose', 'yours', 'optout', 'third', 'changes', 'contact']) {
+      const b = doc.querySelector(`[id="${k}"]`);
+      if (!b) continue;
+      if (b.querySelector('h2')?.tagName.toLowerCase() !== 'h2' || !sameText(b.querySelector('h2')?.text, t[k].heading)) f(`блок «${k}»: H2 має бути «${t[k].heading}»`);
+      const lede = t[k].text ?? t[k].lead;
+      if (!sameText(b.querySelector('.lede')?.text, lede)) f(`блок «${k}»: текст не збігається з ${file}`);
+    }
+    // які дані збирає сайт: чотири сервіси з назвою (H3) і описом
+    const items = doc.querySelectorAll('#collected .legal-list li');
+    if (items.length !== t.collected.items.length) f(`у блоці збору даних ${items.length} сервісів, у ${file} ${t.collected.items.length}`);
+    t.collected.items.forEach((it, i) => {
+      const li = items[i];
+      if (!li) return;
+      if (li.getAttribute('id') !== it.id || li.querySelector('h3')?.tagName.toLowerCase() !== 'h3' || !sameText(li.querySelector('h3')?.text, it.title) || !sameText(li.querySelector('p')?.text, it.text)) f(`сервіс «${it.title}»: id, H3 і опис з ${file}`);
+    });
+    // як відмовитися: чотири способи
+    if (!same(doc.querySelectorAll('#optout .bullet-list li').map((li) => norm(li.text)), t.optout.items.map(norm))) f('способи відмови від збору не збігаються з texts');
+    // посилання: Контакти, Як дістатися
+    if (!doc.querySelector(`#owner a[href$="${t.owner.link.url}"]`)) f(`у блоці власника немає посилання на ${t.owner.link.url}`);
+    if (!same(doc.querySelectorAll('#contact a').map((a) => ({ t: norm(a.text), h: stripPrefix(a.getAttribute('href')) })), t.contact.links.map((l) => ({ t: l.label, h: l.url })))) f('посилання в блоці «Питання про дані» не збігаються з texts (підпис і адреса)');
+    // політика не розходиться з тим, що сайт робить: без форм (check-site), без акції, без цін
+    if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці політики немає (R9)');
+    const ctx = pageContextOf(doc);
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'info', item_category: 'general' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"info","item_category":"general"}, є ${JSON.stringify(ctx)}`);
+    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
+    for (const u of ['/kontakty/', '/yak-distatysya/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+  },
+  '/404.html'(doc, f) {
+    const t = texts('404');
+    const file = 'texts/404.json';
+    const site = readJson('site.json');
+    const nav = readJson('nav.json');
+    if (doc.querySelectorAll('h1').length !== 1 || doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    if (!sameText(doc.querySelector('main .lede')?.text, t.hero.lede)) f(`лид не збігається з ${file}`);
+    if (doc.querySelector('link[rel="canonical"]')) f('на 404 canonical не потрібен');
+    if (!/noindex/.test(doc.querySelector('meta[name="robots"]')?.getAttribute('content') || '')) f('404 має бути noindex');
+    // кнопка на головну і кнопки всіх розділів з nav.json
+    const first = doc.querySelectorAll('main .not-found a.btn').map((a) => ({ t: norm(a.text), h: a.getAttribute('href') }));
+    if (!same(first, [{ t: nav[0].title, h: `${prefix}/` }])) f('кнопка «Головна» на 404 має вести на головну');
+    if (!sameText(doc.querySelector('#sections-title')?.text, t.sections.heading)) f(`H2 «Розділи сайту» не збігається з ${file}`);
+    const links = doc.querySelectorAll('#sections .btn-row:first-of-type a').map((a) => ({ t: norm(a.text), h: a.getAttribute('href') }));
+    if (!same(links, nav.filter((n) => n.url !== '/').map((n) => ({ t: n.title, h: `${prefix}${n.url}` })))) f('кнопки розділів на 404 мають збігатися з nav.json без головної');
+    if (!sameText(doc.querySelector('#sections .lede')?.text, t.booking.text)) f(`текст про бронювання не збігається з ${file}`);
+    const bk = doc.querySelectorAll('#sections .btn-row:last-of-type a');
+    if (bk.length !== 1 || bk[0].getAttribute('href') !== site.links.booking || !sameText(bk[0].text, site.cta.booking) || !/\bnoopener\b/.test(bk[0].getAttribute('rel') || '')) f('кнопка броні на 404: BookmeNow з site.json, rel=noopener');
+    if (doc.querySelector('section.cta-band, [id="promo"], .promo-modal')) f('на 404 немає фінального CTA і акції');
+    const ctx = pageContextOf(doc);
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'error', item_category: 'general' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"error","item_category":"general"}, є ${JSON.stringify(ctx)}`);
+  },
 };
 
 // Мета-теги кожної зібраної сторінки з texts/<сторінка>.json: title, description, og і twitter збігаються з текстами, canonical і og:url на своїй адресі
@@ -565,7 +624,6 @@ const ORIGIN_BY_MODE = mode === 'production' ? 'https://turhouse.com.ua' : 'http
 const slugOf = (url) => (url === '/' ? 'home' : url === '/404.html' ? '404' : url.replace(/\//g, ''));
 for (const [url, doc] of docs) {
   const slug = slugOf(url);
-  if (url === '/404.html') continue; // до E4-T11 страница 404 ще заглушка з E1, мета-теги з texts/404.json підключаються в E4-T11 (там цю перевірку вмикаємо)
   if (!fs.existsSync(path.join(root, 'src/_data/texts', `${slug}.json`))) continue;
   const meta = texts(slug).meta;
   const attr = (sel, a = 'content') => doc.querySelector(sel)?.getAttribute(a);
@@ -582,11 +640,9 @@ for (const [url, doc] of docs) {
     const w = k.endsWith('title') ? want.title : want.description;
     if (!sameText(v, w)) fail(url, `${k} не збігається з texts/${slug}.json (${w})`);
   }
-  if (url !== '/404.html') {
-    const wantUrl = `${ORIGIN_BY_MODE}${url}`;
-    if (attr('link[rel="canonical"]', 'href') !== wantUrl) fail(url, `canonical має бути ${wantUrl}`);
-    if (attr('meta[property="og:url"]') !== wantUrl) fail(url, `og:url має бути ${wantUrl}`);
-  }
+  const wantUrl = `${ORIGIN_BY_MODE}${url}`;
+  if (url !== '/404.html' && attr('link[rel="canonical"]', 'href') !== wantUrl) fail(url, `canonical має бути ${wantUrl}`);
+  if (attr('meta[property="og:url"]') !== wantUrl) fail(url, `og:url має бути ${wantUrl}`);
 }
 
 for (const [url, rule] of Object.entries(PAGE_RULES)) {
