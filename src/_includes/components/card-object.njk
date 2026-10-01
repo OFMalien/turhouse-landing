@@ -1,7 +1,8 @@
 {#- Карточка об'єкта (номер, котедж, будинок). Очікує змінну item зі схеми:
     title, capacity, count?, price? (число) | tariffs? [{label, amount}], promoPrice?, description?, features? [], photo? (id з photos.json), category.
-    Змінна cardPlacement (необов'язкова) задає місце кліку для аналітики. -#}
-<article class="card-object">
+    Змінна cardPlacement (необов'язкова) задає місце кліку для аналітики.
+    Змінна cardPlainPrice (необов'язкова): показати звичайну ціну, а ціни акції (тільки будні, R9) залишити в банері #promo, з посиланням на нього. -#}
+<article class="card-object"{% if item.id %} id="{{ item.id }}"{% endif %}>
   <div class="card-object__media{% if not item.photo %} card-object__media--empty{% endif %}">
     {%- if item.photo %}
     {% photo item.photo, { sizes: "(min-width: 1000px) 380px, (min-width: 600px) 50vw, 100vw" } %}
@@ -30,7 +31,7 @@
         <li><span>{{ t.label }}</span> <strong>{{ t.amount | price }}&nbsp;грн / доба</strong></li>
         {%- endfor %}
       </ul>
-      {%- elif promo and promo.enabled and item.promoPrice %}
+      {%- elif promo and promo.enabled and item.promoPrice and not cardPlainPrice %}
       <p class="price price--promo">
         <span class="visually-hidden">Звичайна ціна:</span> <s>{{ item.price | price }}&nbsp;грн</s>
         <span class="visually-hidden">Ціна зі знижкою:</span> <strong>{{ item.promoPrice | price }}&nbsp;грн</strong>
@@ -39,10 +40,13 @@
       {%- else %}
       <p class="price"><strong>{{ item.price | price }}&nbsp;грн</strong> <span class="price__unit">/ доба</span></p>
       {%- endif %}
+      {%- if cardPlainPrice and promo and promo.enabled and item.promoPrice %}
+      <a class="format-card__promo" href="#promo">{{ promo.shortLabel }}</a>
+      {%- endif %}
     </div>
 
     <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener"
        aria-label="Забронювати: {{ item.title }}"
-       data-item-name="{{ item.title }}" data-item-category="{{ item.category }}"{% if item.price %} data-value="{{ item.promoPrice if (promo and promo.enabled and item.promoPrice) else item.price }}"{% endif %}>Забронювати</a>
+       data-item-name="{{ item.title }}" data-item-category="{{ item.category }}"{% if item.price %} data-value="{{ item.promoPrice if (promo and promo.enabled and item.promoPrice and not cardPlainPrice) else item.price }}"{% endif %}>Забронювати</a>
   </div>
 </article>

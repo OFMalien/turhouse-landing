@@ -1,0 +1,21 @@
+{#- Блок «Що входить у вартість». Очікує змінну included { heading, items[], note?, links[]? } з texts.<сторінка>.included. -#}
+<section class="section" id="included" aria-labelledby="included-title">
+  <div class="wrap">
+    <h2 id="included-title">{{ included.heading }}</h2>
+    <ul class="check-list">
+      {%- for item in included.items %}
+      <li>{{ item }}</li>
+      {%- endfor %}
+    </ul>
+    {%- if included.note %}
+    <p class="lede block-note">{{ included.note }}</p>
+    {%- endif %}
+    {%- if included.links and included.links.length %}
+    <div class="btn-row">
+      {%- for l in included.links %}
+      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+  </div>
+</section>

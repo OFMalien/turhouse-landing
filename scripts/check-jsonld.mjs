@@ -99,6 +99,32 @@ for (const f of htmlFiles) {
       });
     }
 
+    // ItemList об'єктів (номери: HotelRoom). Дані з rooms.json: назва, місткість, ціна за добу, валюта UAH; ціни акції в розмітку не йдуть (R9)
+    const listNode = graph.find((n) => n['@type'] === 'ItemList');
+    const LIST_RULES = { 'nomery/index.html': { file: 'rooms.json', type: 'HotelRoom', base: '/nomery/#' } };
+    const rule = LIST_RULES[name];
+    if (rule && !listNode) fail(`${name}: має бути ItemList (${rule.type})`);
+    if (!rule && listNode) fail(`${name}: ItemList не передбачений для цієї сторінки`);
+    if (rule && listNode) {
+      const expected = JSON.parse(fs.readFileSync(new URL(`../src/_data/${rule.file}`, import.meta.url), 'utf8'));
+      const els = listNode.itemListElement || [];
+      if (listNode.numberOfItems !== expected.length || els.length !== expected.length) fail(`${name}: у ItemList ${els.length} елементів, у ${rule.file} ${expected.length}`);
+      expected.forEach((x, i) => {
+        const el = els[i];
+        if (!el || el.position !== i + 1) return fail(`${name}: ItemList[${i}] без правильної position`);
+        const it = el.item || {};
+        if (it['@type'] !== rule.type) fail(`${name}: ItemList[${i}].item не ${rule.type}`);
+        if (it.name !== x.title) fail(`${name}: ItemList[${i}].name не збігається з ${rule.file} (${x.id})`);
+        if (it['@id'] !== `${ORIGIN}${rule.base}${x.id}`) fail(`${name}: ItemList[${i}]['@id'] ${it['@id']} не ${ORIGIN}${rule.base}${x.id}`);
+        const guests = Number(String(x.capacity).match(/\d+/)[0]);
+        if (!it.occupancy || it.occupancy.value !== guests) fail(`${name}: ItemList[${i}].occupancy.value має бути ${guests}`);
+        const o = it.offers || {};
+        if (o['@type'] !== 'Offer' || o.priceCurrency !== 'UAH') fail(`${name}: ItemList[${i}].offers має бути Offer з priceCurrency UAH`);
+        if (o.price !== x.price) fail(`${name}: ItemList[${i}].offers.price ${o.price} не збігається з ${rule.file} (${x.price})`);
+        if (x.promoPrice && JSON.stringify(it).includes(String(x.promoPrice))) fail(`${name}: ціна акції ${x.promoPrice} не має бути в розмітці (R9)`);
+      });
+    }
+
     const crumbs = graph.find((n) => n['@type'] === 'BreadcrumbList');
     if (!crumbs) fail(`${name}: немає BreadcrumbList`);
     else {

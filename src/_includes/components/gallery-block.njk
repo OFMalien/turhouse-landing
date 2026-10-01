@@ -1,0 +1,11 @@
+{#- Галерея. Очікує змінні gallery { heading } і galleryPhotos (список id з photos.json). Підписи (alt) беруться з паспорта фото. -#}
+<section class="section section--alt" id="gallery" aria-labelledby="gallery-title">
+  <div class="wrap">
+    <h2 id="gallery-title">{{ gallery.heading }}</h2>
+    <ul class="gallery-grid">
+      {%- asyncEach id in galleryPhotos %}
+      <li>{% photo id, { sizes: "(min-width: 960px) 380px, (min-width: 600px) 50vw, 100vw", class: "media" } %}</li>
+      {%- endeach %}
+    </ul>
+  </div>
+</section>

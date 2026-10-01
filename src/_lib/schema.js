@@ -78,6 +78,34 @@ export function faqPage(data) {
 }
 extras.home = (data) => [faqPage(data)];
 
+// Номери: ItemList з HotelRoom із rooms.json (назва, місткість, ціна за добу). Ціни акції в розмітку не йдуть: вона діє лише по буднях (R9).
+export function roomsItemList(data) {
+  const rooms = data.rooms || [];
+  const url = (id) => abs(`/nomery/#${id}`);
+  return [
+    {
+      '@type': 'ItemList',
+      '@id': abs('/nomery/#rooms'),
+      name: data.texts.nomery.types.heading,
+      numberOfItems: rooms.length,
+      itemListElement: rooms.map((r, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'HotelRoom',
+          '@id': url(r.id),
+          url: url(r.id),
+          name: r.title,
+          occupancy: { '@type': 'QuantitativeValue', value: Number(String(r.capacity).match(/\d+/)[0]) },
+          containedInPlace: { '@id': abs('/#lodging') },
+          offers: { '@type': 'Offer', price: r.price, priceCurrency: 'UAH', url: data.site.links.booking },
+        },
+      })),
+    },
+  ];
+}
+extras.nomery = roomsItemList;
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), breadcrumbList(data)];

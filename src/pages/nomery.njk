@@ -1,0 +1,69 @@
+---
+permalink: "/nomery/"
+eleventyComputed:
+  title: "{{ texts.nomery.meta.title | safe }}"
+  description: "{{ texts.nomery.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.nomery.meta.breadcrumbTitle | safe }}"
+promoModal: true
+schemaType: nomery
+analyticsKind: rooms
+---
+{%- set t = texts.nomery %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section text-section" aria-label="Про готель">
+  <div class="wrap">
+    <p class="lede">{{ t.intro.text }}</p>
+  </div>
+</section>
+
+<section class="section section--tight" id="rooms" aria-labelledby="rooms-title">
+  <div class="wrap">
+    <h2 id="rooms-title">{{ t.types.heading }}</h2>
+    <p class="lede block-note">{{ t.types.lead }}</p>
+    {%- set cardPlainPrice = true %}
+    <div class="cards-grid" data-placement="rooms_list">
+      {%- asyncEach item in rooms %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+    </div>
+    <p class="lede block-note">{{ t.types.note }}</p>
+  </div>
+</section>
+
+{% include "components/promo-banner.njk" %}
+
+<section class="section" id="where" aria-labelledby="where-title">
+  <div class="wrap split">
+    <div class="split__media">
+      {% photo t.where.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
+    </div>
+    <div class="split__copy">
+      <h2 id="where-title">{{ t.where.heading }}</h2>
+      <p class="lede">{{ t.where.text }}</p>
+    </div>
+  </div>
+</section>
+
+{%- set included = t.included %}
+{% include "components/included-block.njk" %}
+
+<section class="section section--alt" id="group" aria-labelledby="group-title">
+  <div class="wrap">
+    <h2 id="group-title">{{ t.group.heading }}</h2>
+    <p class="lede block-note">{{ t.group.text }}</p>
+    <div class="btn-row">
+      {%- for l in t.group.links %}
+      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+{%- set gallery = t.gallery %}
+{%- set galleryPhotos = t.gallery.photos %}
+{% include "components/gallery-block.njk" %}
+
+{%- set booking = t.booking %}
+{% include "components/booking-block.njk" %}

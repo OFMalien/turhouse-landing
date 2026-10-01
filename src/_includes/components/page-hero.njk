@@ -1,0 +1,27 @@
+{#- Шапка внутрішньої сторінки: хлібні крихти, H1, лид, фото. Очікує змінну hero { h1, lede, photo? } (з texts.<сторінка>.hero).
+    Назва в крихтах = breadcrumbTitle сторінки (та сама, що в BreadcrumbList у розмітці). -#}
+<section class="page-hero on-dark" aria-labelledby="page-title">
+  <div class="wrap page-hero__inner{% if not hero.photo %} page-hero__inner--text{% endif %}">
+    <div class="page-hero__copy">
+      <nav class="breadcrumbs" aria-label="Хлібні крихти">
+        <ol>
+          <li><a href="{{ '/' | url }}">{{ nav[0].title }}</a></li>
+          <li aria-current="page">{{ breadcrumbTitle or title }}</li>
+        </ol>
+      </nav>
+      <h1 id="page-title">{{ hero.h1 }}</h1>
+      <p class="lede">{{ hero.lede }}</p>
+      {%- if heroButtons %}
+      <div class="btn-row">
+        <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+        <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+      </div>
+      {%- endif %}
+    </div>
+    {%- if hero.photo %}
+    <div class="page-hero__media">
+      {% photo hero.photo, { priority: true, sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
+    </div>
+    {%- endif %}
+  </div>
+</section>

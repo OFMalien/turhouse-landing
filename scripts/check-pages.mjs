@@ -96,6 +96,29 @@ const barn = readJson('barn.json');
 const spa = readJson('spa.json');
 const texts = (n) => readJson(`texts/${n}.json`);
 
+// Спільні помічники правил сторінок
+const sameText = (a, b) => (a || '').replace(/[\s  ]+/g, ' ').trim() === (b || '').replace(/[\s  ]+/g, ' ').trim();
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const norm = (s) => (s || '').replace(/[\s  ]+/g, ' ').trim();
+// Контекст dataLayer, який сторінка кладе до GTM (ТЗ §9.3): шукаємо push з event page_context
+function pageContextOf(doc) {
+  for (const sc of doc.querySelectorAll('script')) {
+    const m = sc.text.match(/dataLayer\.push\((\{[^;]*"event":"page_context"[^;]*\})\);/);
+    if (m) return JSON.parse(m[1].replace(/\\u003c/g, '<'));
+  }
+  return null;
+}
+// Усі суми «N грн» у тексті сторінки мають бути з даних (rooms, cottages, barn, spa, акція, 500 за тварин, меню кафе)
+const menuPrices = readJson('menu.json').sections.flatMap((s) => s.items.map((i) => i.price));
+const ALLOWED_SUMS = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next, 500, ...menuPrices].filter(Boolean));
+function checkSums(url, doc) {
+  const text = doc.text.replace(/[  ]/g, ' ');
+  for (const m of text.matchAll(/(\d[\d ]*\d|\d)\s*грн/g)) {
+    const flat = Number(m[1].replace(/\s/g, ''));
+    if (!ALLOWED_SUMS.has(flat)) fail(url, `у тексті сторінки сума «${m[0].trim()}» поза даними`);
+  }
+}
+
 const PAGE_RULES = {
   '/'(doc, f) {
     const t = texts('home');
@@ -127,7 +150,6 @@ const PAGE_RULES = {
     for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
     // друга половина головної (E4-T2): територія, кафе, околиці, відгуки, FAQ, локація
     for (const id of ['territory', 'cafe', 'area', 'reviews', 'faq', 'location']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
-    const sameText = (a, b) => (a || '').replace(/[\s  ]+/g, ' ').trim() === (b || '').replace(/[\s  ]+/g, ' ').trim();
     const terr = doc.querySelectorAll('#territory .feature-grid__item');
     if (terr.length !== t.territory.items.length) f(`у блоці території ${terr.length} пунктів, у texts/home.json ${t.territory.items.length}`);
     t.territory.items.forEach((it, i) => { if (terr[i] && (!sameText(terr[i].querySelector('h3')?.text, it.title) || !sameText(terr[i].querySelector('p')?.text, it.text))) f(`пункт території «${it.title}» не збігається з texts/home.json`); });
@@ -172,9 +194,50 @@ const PAGE_RULES = {
       const h = doc.querySelector(`h2[id="${id}"]`);
       if (!h || !h.text.trim()) f(`немає H2 #${id}`);
     }
-    // у розмітці немає зайвих цифр цін: усі суми в тексті сторінки дозволені (rooms, cottages, barn, spa, акція)
-    const allowed = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next, 500 /* тварини, FAQ */].filter(Boolean).map(money));
-    for (const m of doc.text.replace(/ /g, ' ').matchAll(/(\d[\d ]*\d|\d)\s*грн/g)) { const n = m[1].replace(/\s+(?=\d{3}$)/, ' ').trim(); const flat = n.replace(/\s/g, ''); if (flat.length >= 3 && !allowed.has(money(Number(flat))) && !allowed.has(n)) f(`у тексті сторінки сума «${m[0].trim()}» поза даними`); }
+  },
+  '/nomery/'(doc, f) {
+    const t = texts('nomery');
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f('H1 має збігатися з texts/nomery.json');
+    for (const id of ['page-title', 'rooms', 'rooms-title', 'where', 'included', 'group', 'gallery', 'booking', ...(promo.enabled ? ['promo'] : [])]) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    // хлібні крихти: Головна > Номери, збігаються з назвою в розмітці
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Номери» з aria-current на останньому');
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f('лид шапки не збігається з texts/nomery.json');
+    if (!sameText(doc.querySelector('.text-section .lede')?.text, t.intro.text)) f('вступ не збігається з texts/nomery.json');
+    // три картки з rooms.json, звичайні ціни, без викресленої ціни акції
+    const cards = doc.querySelectorAll('#rooms .card-object');
+    if (cards.length !== rooms.length) f(`карток номерів ${cards.length}, у rooms.json ${rooms.length}`);
+    rooms.forEach((r, i) => {
+      const c = cards[i];
+      if (!c) return;
+      if (!sameText(c.querySelector('h3')?.text, r.title)) f(`назва картки ${i + 1} не збігається з rooms.json (${r.title})`);
+      if (!norm(c.querySelector('.card-object__meta')?.text).includes(r.capacity) || !norm(c.querySelector('.card-object__meta')?.text).includes(r.count)) f(`у картці ${r.title} має бути «${r.capacity}» і «${r.count}» (R4)`);
+      if (!norm(c.querySelector('.card-object__price')?.text).includes(`${money(r.price)} грн`)) f(`у картці ${r.title} немає ціни ${money(r.price)} грн`);
+      if (c.querySelector('s')) f(`у картці ${r.title} є викреслена ціна: ціни акції лише в банері #promo (R9)`);
+      if (promo.enabled && r.promoPrice && !c.querySelector('a[href="#promo"]')) f(`у картці ${r.title} немає посилання на #promo`);
+      if (!c.querySelector(`a.btn[href="${readJson('site.json').links.booking}"][data-item-name="${r.title}"][data-item-category="rooms"]`)) f(`кнопка броні картки ${r.title} без data-item-name і data-item-category=rooms`);
+      if (c.getAttribute('id') !== r.id) f(`у картки ${r.title} має бути id="${r.id}" (якір з розмітки)`);
+    });
+    // банер акції і Direct
+    if (promo.enabled && !doc.querySelector('#promo a[href^="https://ig.me/m/tur_house_"]')) f('кнопка акції має вести на Instagram Direct (R9)');
+    // що входить, групи, бронь
+    const inc = doc.querySelectorAll('#included .check-list li').map((li) => norm(li.text));
+    if (!same(inc, t.included.items.map(norm))) f('пункти «Що входить у вартість» не збігаються з texts/nomery.json');
+    for (const u of ['/banya-ta-spa/', '/kafe/']) if (!doc.querySelector(`#included a[href$="${u}"]`)) f(`у блоці «Що входить» немає посилання на ${u}`);
+    for (const u of ['/kotedzhi/', '/barn-house/']) if (!doc.querySelector(`#group a[href$="${u}"]`)) f(`у блоці груп немає посилання на ${u}`);
+    const site = readJson('site.json');
+    if (!doc.querySelector(`#booking a[href="${site.links.booking}"][rel~="noopener"]`) || !doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: BookmeNow, телефон і Instagram Direct');
+    // галерея: стільки кадрів, скільки в texts, кожен з alt
+    const gal = doc.querySelectorAll('#gallery img');
+    if (gal.length !== t.gallery.photos.length) f(`у галереї ${gal.length} кадрів, у texts/nomery.json ${t.gallery.photos.length}`);
+    for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
+    // контекст аналітики з даних
+    const ctx = pageContextOf(doc);
+    const exp = { event: 'page_context', page_type: 'category', item_category: 'rooms', price_range: `${Math.min(...rooms.map((r) => r.price))}-${Math.max(...rooms.map((r) => r.price))}`, content_ids: rooms.map((r) => r.id) };
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ ...exp })) f(`dataLayer page_context: очікується ${JSON.stringify(exp)}, є ${JSON.stringify(ctx)}`);
+    // перелінковка: на інші розділи
+    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
+    for (const u of ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
   },
 };
 
@@ -183,6 +246,8 @@ for (const [url, rule] of Object.entries(PAGE_RULES)) {
   if (!doc) { fail(url, 'сторінки немає в збірці'); continue; }
   rule(doc, (m) => fail(url, m));
 }
+// усі зібрані сторінки: суми «N грн» у тексті лише з даних
+for (const [url, doc] of docs) checkSums(url, doc);
 
 if (errors.length) {
   console.error(`check-pages (${mode}): порушень ${errors.length}`);
