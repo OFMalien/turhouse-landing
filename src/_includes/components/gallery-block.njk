@@ -1,10 +1,15 @@
 {#- Галерея. Очікує змінні gallery { heading } і galleryPhotos (список id з photos.json). Підписи (alt) беруться з паспорта фото.
-    sizes залежить від кількості кадрів: сітка auto-fit розтягує 1-2 кадри на пів контейнера (565px), 3+ кадрів вужчі. -#}
-{%- set gallerySizes = "(min-width: 1260px) 565px, (min-width: 600px) 50vw, 100vw" if (galleryPhotos | length) <= 2 else "(min-width: 960px) 380px, (min-width: 600px) 50vw, 100vw" %}
+    sizes залежить від кількості кадрів: сітка auto-fit розтягує 1-2 кадри на пів контейнера (565px), 3+ кадрів вужчі;
+    коли кадрів 6, 9, 12 (кратно трьом), ставимо рівно 3 колонки, щоб в останньому ряду не лишалося 1-2 кадри. -#}
+{%- set galleryCount = galleryPhotos | length %}
+{%- set galleryThirds = (galleryCount >= 6 and galleryCount % 3 == 0) %}
+{%- if galleryCount <= 2 %}{% set gallerySizes = "(min-width: 1260px) 565px, (min-width: 600px) 50vw, 100vw" %}
+{%- elif galleryThirds %}{% set gallerySizes = "(min-width: 1260px) 376px, (min-width: 700px) 33vw, 100vw" %}
+{%- else %}{% set gallerySizes = "(min-width: 960px) 380px, (min-width: 600px) 50vw, 100vw" %}{% endif %}
 <section class="section section--alt" id="gallery" aria-labelledby="gallery-title">
   <div class="wrap">
     <h2 id="gallery-title">{{ gallery.heading }}</h2>
-    <ul class="gallery-grid">
+    <ul class="gallery-grid{% if galleryThirds %} gallery-grid--thirds{% endif %}">
       {%- asyncEach id in galleryPhotos %}
       <li>{% photo id, { sizes: gallerySizes, class: "media" } %}</li>
       {%- endeach %}

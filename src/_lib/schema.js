@@ -117,6 +117,34 @@ extras.nomery = roomsItemList;
 export const cottagesItemList = (data) => objectItemList(data, { list: data.cottages || [], type: 'VacationRental', pagePath: '/kotedzhi/', listName: data.texts.kotedzhi.types.heading, withAmenities: true });
 extras.kotedzhi = cottagesItemList;
 
+// Барн-хаус: один будинок і два тарифи (R6) -> один VacationRental з двома Offer. Ціна кожного Offer із barn.tariffs,
+// кількість гостей береться з підпису тарифу («до 8 гостей» -> eligibleQuantity.maxValue 8), місткість будинку це найбільший тариф.
+export function barnVacationRental(data) {
+  const barn = data.barn;
+  const guests = (label) => Number(String(label).match(/\d+/)[0]);
+  const id = abs(`/barn-house/#${barn.id}`);
+  const node = {
+    '@type': 'VacationRental',
+    '@id': id,
+    url: id,
+    name: barn.title,
+    description: data.texts['barn-house'].hero.lede,
+    occupancy: { '@type': 'QuantitativeValue', maxValue: Math.max(...barn.tariffs.map((t) => guests(t.label))) },
+    containedInPlace: { '@id': abs('/#lodging') },
+    amenityFeature: (barn.features || []).map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true })),
+    offers: barn.tariffs.map((t) => ({
+      '@type': 'Offer',
+      name: `${barn.title}, ${t.label}`,
+      price: t.amount,
+      priceCurrency: 'UAH',
+      eligibleQuantity: { '@type': 'QuantitativeValue', maxValue: guests(t.label), unitText: 'гостей' },
+      url: data.site.links.booking,
+    })),
+  };
+  return [node];
+}
+extras['barn-house'] = barnVacationRental;
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), breadcrumbList(data)];

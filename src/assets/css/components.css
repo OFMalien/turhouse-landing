@@ -453,6 +453,9 @@ html.nav-open { overflow: hidden; }
 .price-list span { color: var(--text-soft); }
 .price-list strong { font-weight: 700; }
 .card-object .btn { margin-top: 10px; width: 100%; }
+/* Тарифи Барн-хауса: ціна головний елемент картки */
+.tariff-card .price { font-size: 30px; line-height: 1.2; }
+.tariff-card .card-object__body { padding-block: 32px; }
 
 /* ---------- Акція: бейдж, баннер, вікно ---------- */
 .promo-badge {
@@ -705,6 +708,7 @@ html.modal-open { overflow: hidden; }
   .split { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: 64px; }
   .split--reverse .split__media { order: 2; }
 }
+.split--text { align-items: start; }
 
 .review-grid {
   display: grid;
@@ -781,4 +785,5 @@ html.modal-open { overflow: hidden; }
 
 .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 14px; margin-top: 32px; }
 .gallery-grid li { margin: 0; }
+@media (min-width: 700px) { .gallery-grid--thirds { grid-template-columns: repeat(3, 1fr); } }
 .gallery-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }

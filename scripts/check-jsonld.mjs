@@ -134,6 +134,38 @@ for (const f of htmlFiles) {
       });
     }
 
+    // Барн-хаус (R6): один будинок -> один VacationRental з двома Offer (по одному на тариф з barn.json), ціни без акції, ItemList немає
+    const rentals = graph.filter((n) => n['@type'] === 'VacationRental');
+    if (name === 'barn-house/index.html') {
+      const barn = JSON.parse(fs.readFileSync(new URL('../src/_data/barn.json', import.meta.url), 'utf8'));
+      const guestsOf = (label) => Number(String(label).match(/\d+/)[0]);
+      if (rentals.length !== 1) fail(`${name}: має бути один VacationRental (один будинок, R6), є ${rentals.length}`);
+      else {
+        const v = rentals[0];
+        if (v['@id'] !== `${ORIGIN}/barn-house/#${barn.id}`) fail(`${name}: VacationRental['@id'] ${v['@id']} не ${ORIGIN}/barn-house/#${barn.id}`);
+        if (v.name !== barn.title) fail(`${name}: VacationRental.name не збігається з barn.json`);
+        const maxGuests = Math.max(...barn.tariffs.map((t) => guestsOf(t.label)));
+        if (!v.occupancy || v.occupancy.maxValue !== maxGuests) fail(`${name}: VacationRental.occupancy.maxValue має бути ${maxGuests}`);
+        const got = (v.amenityFeature || []).map((a) => a.name);
+        if (JSON.stringify(got) !== JSON.stringify(barn.features)) fail(`${name}: VacationRental.amenityFeature має збігатися з features у barn.json`);
+        if ((v.amenityFeature || []).some((a) => a['@type'] !== 'LocationFeatureSpecification' || a.value !== true)) fail(`${name}: VacationRental.amenityFeature: LocationFeatureSpecification з value true`);
+        // лише відомі поля: жодних lowPrice, highPrice, priceSpecification з невідомою ціною (знижки на Барн-хаус не підтверджені)
+        const okKeys = new Set(['@type', '@id', 'url', 'name', 'description', 'occupancy', 'containedInPlace', 'amenityFeature', 'offers']);
+        for (const k of Object.keys(v)) if (!okKeys.has(k)) fail(`${name}: у VacationRental невідоме поле «${k}»`);
+        const offers = Array.isArray(v.offers) ? v.offers : [];
+        if (offers.length !== barn.tariffs.length) fail(`${name}: у VacationRental ${offers.length} Offer, у barn.json ${barn.tariffs.length} тарифи`);
+        barn.tariffs.forEach((t, i) => {
+          const o = offers[i] || {};
+          if (o['@type'] !== 'Offer' || o.priceCurrency !== 'UAH') fail(`${name}: Offer[${i}] має бути Offer з priceCurrency UAH`);
+          if (o.price !== t.amount) fail(`${name}: Offer[${i}].price ${o.price} не збігається з barn.json (${t.amount})`);
+          if (!String(o.name || '').includes(t.label)) fail(`${name}: Offer[${i}].name без підпису тарифу «${t.label}»`);
+          if (!o.eligibleQuantity || o.eligibleQuantity.maxValue !== guestsOf(t.label)) fail(`${name}: Offer[${i}].eligibleQuantity.maxValue має бути ${guestsOf(t.label)}`);
+          const okOffer = new Set(['@type', 'name', 'price', 'priceCurrency', 'eligibleQuantity', 'url']);
+          for (const k of Object.keys(o)) if (!okOffer.has(k)) fail(`${name}: в Offer[${i}] невідоме поле «${k}» (lowPrice і подібні заборонені: знижки на Барн-хаус не підтверджені)`);
+        });
+      }
+    } else if (rentals.length) fail(`${name}: окремий VacationRental лише на /barn-house/ (у списках номерів і котеджів вони всередині ItemList)`);
+
     const crumbs = graph.find((n) => n['@type'] === 'BreadcrumbList');
     if (!crumbs) fail(`${name}: немає BreadcrumbList`);
     else {

@@ -1,0 +1,76 @@
+---
+permalink: "/barn-house/"
+eleventyComputed:
+  title: "{{ texts['barn-house'].meta.title | safe }}"
+  description: "{{ texts['barn-house'].meta.description | safe }}"
+  breadcrumbTitle: "{{ texts['barn-house'].meta.breadcrumbTitle | safe }}"
+schemaType: barn-house
+analyticsKind: barn
+---
+{%- set t = texts['barn-house'] %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section text-section" aria-label="Про Барн-хаус">
+  <div class="wrap">
+    <p class="lede">{{ t.intro.text }}</p>
+  </div>
+</section>
+
+<section class="section section--tight" id="tariffs" aria-labelledby="tariffs-title">
+  <div class="wrap">
+    <h2 id="tariffs-title">{{ t.tariffs.heading }}</h2>
+    <p class="lede block-note">{{ t.tariffs.text }}</p>
+    <div class="cards-grid" id="{{ barn.id }}" data-placement="barn_tariffs">
+      {%- for tariff in barn.tariffs %}
+      <article class="card-object tariff-card">
+        <div class="card-object__body">
+          <h3>{{ barn.title }}: {{ tariff.label }}</h3>
+          <div class="card-object__price">
+            <p class="price"><strong>{{ tariff.amount | price }}&nbsp;грн</strong> <span class="price__unit">/ доба</span></p>
+          </div>
+          <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener"
+             aria-label="Забронювати: {{ barn.title }}, {{ tariff.label }}"
+             data-item-name="{{ barn.title }}" data-item-category="{{ barn.category }}" data-item-variant="{{ tariff.label }}" data-value="{{ tariff.amount }}">Забронювати</a>
+        </div>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="inside" aria-labelledby="inside-title">
+  <div class="wrap split split--text">
+    <div class="split__copy">
+      <h2 id="inside-title">{{ t.inside.heading }}</h2>
+      <p class="lede">{{ t.inside.lead }}</p>
+      <p class="lede">{{ t.inside.note }}</p>
+    </div>
+    <div class="split__copy" id="outside">
+      <h2 id="outside-title">{{ t.outside.heading }}</h2>
+      <p class="lede">{{ t.outside.text }}</p>
+    </div>
+  </div>
+</section>
+
+{%- set gallery = t.gallery %}
+{%- set galleryPhotos = barn.gallery | reject("equalto", barn.photo) %}
+{% include "components/gallery-block.njk" %}
+
+{%- set included = t.included %}
+{% include "components/included-block.njk" %}
+
+<section class="section section--alt" id="group" aria-labelledby="group-title">
+  <div class="wrap">
+    <h2 id="group-title">{{ t.group.heading }}</h2>
+    <p class="lede block-note">{{ t.group.text }}</p>
+    <div class="btn-row">
+      {%- for l in t.group.links %}
+      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+{%- set booking = t.booking %}
+{% include "components/booking-block.njk" %}
