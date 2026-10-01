@@ -12,9 +12,27 @@
   var PROMO_PLACEMENTS = { promo_modal_weekend: true, promo_section_weekend: true };
   var OBJECT_CATEGORIES = ['rooms', 'cottages', 'barn', 'banya'];
 
+  // Піксель вантажить тег GTM, а GTM стартує при першій дії або через кілька секунд після load: подія кліку може випередити fbq.
+  // Тоді подія чекає в черзі (до 20 секунд, перевірка раз на 250 мс) і відправляється, коли fbq з'явиться. Без пікселя (превью) черга просто згасає.
+  var pixelQueue = [];
+  var pixelTimer = null;
+  var pixelTries = 0;
+  function sendPixel(name, params) {
+    try { window.fbq('track', name, params); } catch (err) { /* помилка пікселя не ламає сайт */ }
+  }
+  function flushPixel() {
+    if (typeof window.fbq === 'function') {
+      while (pixelQueue.length) { var item = pixelQueue.shift(); sendPixel(item[0], item[1]); }
+      pixelTimer = null;
+      return;
+    }
+    if (++pixelTries < 80) pixelTimer = setTimeout(flushPixel, 250);
+    else { pixelQueue = []; pixelTimer = null; }
+  }
   function pixel(name, params) {
-    if (typeof window.fbq !== 'function') return;
-    try { window.fbq('track', name, params); } catch (err) { /* пікселя може не бути, сайт від цього не ламається */ }
+    if (typeof window.fbq === 'function' && !pixelQueue.length) { sendPixel(name, params); return; }
+    pixelQueue.push([name, params]);
+    if (!pixelTimer) { pixelTries = 0; pixelTimer = setTimeout(flushPixel, 250); }
   }
 
   function placementOf(el) {
@@ -121,8 +139,7 @@
   // Клік ловимо на етапі занурення (true), як на живому сайті: подія записується до переходу за посиланням
   document.addEventListener('click', onClick, true);
 
-  // ViewContent для Meta Pixel на сторінках об'єктів. Піксель вантажить тег GTM уже після завантаження сторінки,
-  // тому чекаємо появи fbq до 10 секунд (40 спроб по 250 мс) і відправляємо один раз.
+  // ViewContent для Meta Pixel на сторінках об'єктів: один раз за сторінку, чекає появи fbq у черзі вище.
   function viewContent() {
     var ctx = null;
     for (var i = 0; i < dataLayer.length; i++) {
@@ -132,11 +149,7 @@
     var params = { content_type: 'product', content_category: ctx.item_category, content_ids: ctx.content_ids || [], currency: 'UAH' };
     var from = parseInt(String(ctx.price_range || '').split('-')[0], 10);
     if (from > 0) params.value = from;
-    var tries = 0;
-    (function wait() {
-      if (typeof window.fbq === 'function') { pixel('ViewContent', params); return; }
-      if (++tries < 40) setTimeout(wait, 250);
-    })();
+    pixel('ViewContent', params);
   }
   viewContent();
 })();

@@ -104,8 +104,12 @@ if (mode === 'preview') {
   for (const f of htmlFiles) {
     const h = read(f);
     for (const id of GTM_IDS) {
-      if (!h.includes(`'${id}'`)) fail(`У бойовій збірці немає контейнера ${id}: ${rel(f)}`);
+      if (!h.includes(`"${id}"`)) fail(`У бойовій збірці немає контейнера ${id}: ${rel(f)}`);
     }
+    // GTM стартує при першій дії відвідувача або через site.analytics.gtmDelayMs мс після load (Lighthouse Performance, ТЗ п.16): без цього завантажувача оцінка падає до 45-75
+    const siteJson = JSON.parse(fs.readFileSync(new URL('../src/_data/site.json', import.meta.url), 'utf8'));
+    if (!h.includes(`delay=${siteJson.analytics.gtmDelayMs},`) || !h.includes("['pointerdown','keydown','scroll','touchstart']") || !h.includes("w.addEventListener('load',function(){setTimeout(start,delay);})")) fail(`GTM має запускатися при першій дії або через ${siteJson.analytics.gtmDelayMs} мс після load: ${rel(f)}`);
+    if (/<script>\(function\(w,d,s,l,i\)\{/.test(h)) fail(`Стандартний миттєвий сніпет GTM заборонений (відкладений запуск): ${rel(f)}`);
     // dataLayer і контекст сторінки мають стояти раніше за GTM
     const ctxAt = h.indexOf('page_context');
     const gtmAt = h.indexOf('googletagmanager.com/gtm.js');

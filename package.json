@@ -23,7 +23,8 @@
     "check:site": "node scripts/check-site.mjs preview",
     "check:images": "node scripts/check-images.mjs preview",
     "check:content": "node scripts/check-content.mjs preview",
-    "check:html": "node scripts/check-html.mjs"
+    "check:html": "node scripts/check-html.mjs",
+    "check:weight": "node scripts/check-weight.mjs preview"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",

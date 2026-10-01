@@ -128,6 +128,27 @@ for (const file of pages) {
   window.close();
 }
 
+// Піксель з'являється пізніше за клік (його вантажить GTM, який стартує при першій дії): подія має почекати в черзі і піти, коли з'явиться fbq
+{
+  const file = pages.find((f) => urlOf(f) === '/nomery/');
+  const url = '/nomery/';
+  const dom = new JSDOM(fs.readFileSync(file, 'utf8'), { url: `${ORIGIN}${prefix}${url}`, runScripts: 'dangerously', pretendToBeVisual: true });
+  const { window } = dom;
+  window.eval(trackingCode); // fbq ще не існує
+  const link = window.document.querySelector('a[href^="https://go.bookmenow.pro"]');
+  window.document.addEventListener('click', (e) => e.preventDefault(), { once: true });
+  link.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
+  const calls = [];
+  const events = window.dataLayer.filter((e) => e.event === 'booking_click').length;
+  if (events !== 1) fail(url, `без fbq booking_click у dataLayer має бути одразу, є ${events}`);
+  await new Promise((r) => setTimeout(r, 400));
+  window.fbq = (...a) => calls.push(a);
+  await new Promise((r) => setTimeout(r, 700));
+  const names = calls.map((c) => c[1]);
+  if (!same(names, ['ViewContent', 'InitiateCheckout'])) fail(url, `після появи fbq мають піти по черзі ViewContent і InitiateCheckout, є ${JSON.stringify(names)}`);
+  window.close();
+}
+
 if (errors.length) {
   console.error(`check-tracking (${mode}): порушень ${errors.length}`);
   for (const e of errors.slice(0, 60)) console.error(`  - ${e}`);
