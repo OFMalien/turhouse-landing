@@ -145,6 +145,58 @@ export function barnVacationRental(data) {
 }
 extras['barn-house'] = barnVacationRental;
 
+// Баня та спа: DaySpa (заклад) і Service (відвідування) з двома цінами за годину з spa.json: перша година з особи і кожна наступна.
+// Адреса і телефон ті самі, що в LodgingBusiness; склад комплексу в amenityFeature. Годин роботи в джерелах немає, openingHours не пишемо.
+export function spaNodes(data) {
+  const { site, spa } = data;
+  const page = data.texts['banya-ta-spa'];
+  const spaId = abs('/banya-ta-spa/#spa');
+  const serviceId = abs('/banya-ta-spa/#service');
+  const cap = (x) => x.charAt(0).toUpperCase() + x.slice(1);
+  const spec = (label, amount) => ({
+    '@type': 'UnitPriceSpecification',
+    name: `${cap(label)}, ${spa.price.per}`,
+    price: amount,
+    priceCurrency: 'UAH',
+    unitText: 'година',
+  });
+  return [
+    {
+      '@type': 'DaySpa',
+      '@id': spaId,
+      name: `${page.meta.breadcrumbTitle} ${site.name}`,
+      description: page.hero.lede,
+      url: abs('/banya-ta-spa/'),
+      telephone: site.phone.tel,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: site.address.street,
+        addressLocality: site.address.locality,
+        addressRegion: site.address.region,
+        addressCountry: site.address.country,
+      },
+      parentOrganization: { '@id': abs('/#lodging') },
+      amenityFeature: spa.complex.map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true })),
+      makesOffer: { '@id': serviceId },
+    },
+    {
+      '@type': 'Service',
+      '@id': serviceId,
+      name: `${page.meta.breadcrumbTitle}: відвідування`,
+      serviceType: 'Баня',
+      provider: { '@id': spaId },
+      url: abs('/banya-ta-spa/'),
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'UAH',
+        priceSpecification: [spec(spa.price.firstLabel, spa.price.first), spec(spa.price.nextLabel, spa.price.next)],
+        url: site.links.instagramDirect,
+      },
+    },
+  ];
+}
+extras['banya-ta-spa'] = spaNodes;
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), breadcrumbList(data)];

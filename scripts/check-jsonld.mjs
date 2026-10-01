@@ -166,6 +166,42 @@ for (const f of htmlFiles) {
       }
     } else if (rentals.length) fail(`${name}: окремий VacationRental лише на /barn-house/ (у списках номерів і котеджів вони всередині ItemList)`);
 
+    // Баня та спа: DaySpa + Service з двома цінами за годину (spa.json): 600 перша година з особи, 200 кожна наступна; інших цін немає
+    const daySpa = graph.filter((n) => n['@type'] === 'DaySpa');
+    const services = graph.filter((n) => n['@type'] === 'Service');
+    if (name === 'banya-ta-spa/index.html') {
+      const spa = JSON.parse(fs.readFileSync(new URL('../src/_data/spa.json', import.meta.url), 'utf8'));
+      if (daySpa.length !== 1 || services.length !== 1) fail(`${name}: має бути один DaySpa і один Service, є ${daySpa.length} і ${services.length}`);
+      else {
+        const [d] = daySpa;
+        const [sv] = services;
+        if (d['@id'] !== `${ORIGIN}/banya-ta-spa/#spa`) fail(`${name}: DaySpa['@id'] ${d['@id']}`);
+        for (const k of ['name', 'url', 'telephone', 'address']) if (!d[k]) fail(`${name}: DaySpa без ${k}`);
+        if (d.url && !d.url.startsWith(ORIGIN)) fail(`${name}: DaySpa.url не на ${ORIGIN}`);
+        if (JSON.stringify((d.amenityFeature || []).map((a) => a.name)) !== JSON.stringify(spa.complex)) fail(`${name}: DaySpa.amenityFeature має збігатися зі складом комплексу spa.json`);
+        if ((d.amenityFeature || []).some((a) => a['@type'] !== 'LocationFeatureSpecification' || a.value !== true)) fail(`${name}: DaySpa.amenityFeature: LocationFeatureSpecification з value true`);
+        for (const k of Object.keys(d)) if (!['@type', '@id', 'name', 'description', 'url', 'telephone', 'address', 'parentOrganization', 'amenityFeature', 'makesOffer'].includes(k)) fail(`${name}: у DaySpa невідоме поле «${k}» (годин роботи в джерелах немає: openingHours, priceRange не пишемо)`);
+        if (!sv['@id'] || sv['@id'] !== `${ORIGIN}/banya-ta-spa/#service`) fail(`${name}: Service['@id'] ${sv['@id']}`);
+        if (!sv.provider || sv.provider['@id'] !== d['@id']) fail(`${name}: Service.provider має вести на DaySpa`);
+        if (!d.makesOffer || d.makesOffer['@id'] !== sv['@id']) fail(`${name}: DaySpa.makesOffer має вести на Service`);
+        for (const k of Object.keys(sv)) if (!['@type', '@id', 'name', 'serviceType', 'provider', 'url', 'offers'].includes(k)) fail(`${name}: у Service невідоме поле «${k}»`);
+        const o = sv.offers || {};
+        if (o['@type'] !== 'Offer' || o.priceCurrency !== 'UAH') fail(`${name}: Service.offers має бути Offer з priceCurrency UAH`);
+        const specs = Array.isArray(o.priceSpecification) ? o.priceSpecification : [];
+        const want = [[spa.price.first, spa.price.firstLabel], [spa.price.next, spa.price.nextLabel]];
+        if (specs.length !== 2) fail(`${name}: у Service.offers.priceSpecification ${specs.length} цін, має бути 2`);
+        want.forEach(([amount, label], i) => {
+          const sp = specs[i] || {};
+          if (sp['@type'] !== 'UnitPriceSpecification' || sp.priceCurrency !== 'UAH') fail(`${name}: priceSpecification[${i}] має бути UnitPriceSpecification з UAH`);
+          if (sp.price !== amount) fail(`${name}: priceSpecification[${i}].price ${sp.price} не збігається зі spa.json (${amount})`);
+          if (!String(sp.name || '').toLowerCase().includes(label.toLowerCase()) || !String(sp.name || '').includes(spa.price.per)) fail(`${name}: priceSpecification[${i}].name має містити «${label}» і «${spa.price.per}»`);
+          if (sp.unitText !== 'година') fail(`${name}: priceSpecification[${i}].unitText має бути «година»`);
+          for (const k of Object.keys(sp)) if (!['@type', 'name', 'price', 'priceCurrency', 'unitText'].includes(k)) fail(`${name}: у priceSpecification[${i}] невідоме поле «${k}»`);
+        });
+        for (const k of Object.keys(o)) if (!['@type', 'priceCurrency', 'priceSpecification', 'url'].includes(k)) fail(`${name}: у Service.offers невідоме поле «${k}» (ціни чана і банщика в джерелах немає)`);
+      }
+    } else if (daySpa.length || services.length) fail(`${name}: DaySpa і Service лише на /banya-ta-spa/`);
+
     const crumbs = graph.find((n) => n['@type'] === 'BreadcrumbList');
     if (!crumbs) fail(`${name}: немає BreadcrumbList`);
     else {

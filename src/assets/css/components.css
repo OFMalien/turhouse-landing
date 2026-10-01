@@ -453,6 +453,10 @@ html.nav-open { overflow: hidden; }
 .price-list span { color: var(--text-soft); }
 .price-list strong { font-weight: 700; }
 .card-object .btn { margin-top: 10px; width: 100%; }
+/* Інформаційні карточки (баня, чан, басейн): примітка */
+.card-object__note { font-size: var(--text-small); font-weight: 600; color: var(--text-muted); }
+.complex-list { margin-top: 24px; font-size: var(--text-small); }
+.complex-list li { padding: 8px 14px; }
 /* Тарифи Барн-хауса: ціна головний елемент картки */
 .tariff-card .price { font-size: 30px; line-height: 1.2; }
 .tariff-card .card-object__body { padding-block: 32px; }

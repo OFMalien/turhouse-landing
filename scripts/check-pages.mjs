@@ -301,6 +301,66 @@ const PAGE_RULES = {
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/nomery/', '/kotedzhi/', '/banya-ta-spa/', '/kafe/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
   },
+  '/banya-ta-spa/'(doc, f) {
+    const t = texts('banya-ta-spa');
+    const file = 'texts/banya-ta-spa.json';
+    const site = readJson('site.json');
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    for (const id of ['page-title', 'complex', 'complex-title', 'price', 'price-title', 'cards', 'cards-title', 'gallery', 'stay', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Баня та спа» з aria-current на останньому');
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
+    if (!sameText(doc.querySelector('.text-section .lede')?.text, t.intro.text)) f(`вступ не збігається з ${file}`);
+    // склад комплексу: текст з texts і пункти з spa.json
+    if (!sameText(doc.querySelector('#complex-title')?.text, t.complex.heading) || !sameText(doc.querySelector('#complex .lede')?.text, t.complex.lead)) f(`блок «Що входить у банний комплекс» не збігається з ${file}`);
+    if (!same(doc.querySelectorAll('#complex .complex-list li').map((li) => norm(li.text)), spa.complex.map(norm))) f('пункти складу комплексу не збігаються зі spa.json');
+    // ціна: 600 за першу годину і 200 за кожну наступну, з особи (spa.json), без акції і без знижок
+    if (!sameText(doc.querySelector('#price-title')?.text, t.price.heading) || !sameText(doc.querySelector('#price .lede')?.text, t.price.text)) f(`блок ціни не збігається з ${file}`);
+    const tiles = doc.querySelectorAll('#price .tariff-card');
+    const wantTiles = [[spa.price.firstLabel, spa.price.first], [spa.price.nextLabel, spa.price.next]];
+    if (tiles.length !== 2) f(`у блоці ціни ${tiles.length} плиток, має бути 2 (перша година і наступні)`);
+    wantTiles.forEach(([label, amount], i) => {
+      const c = tiles[i];
+      if (!c) return;
+      if (norm(c.querySelector('.card-object__meta')?.text).toLowerCase() !== label.toLowerCase()) f(`плитка ціни ${i + 1}: підпис має бути «${label}»`);
+      const pr = norm(c.querySelector('.price')?.text);
+      if (!pr.includes(`${money(amount)} грн`) || !pr.includes(spa.price.per)) f(`плитка ціни ${i + 1}: має бути «${money(amount)} грн ${spa.price.per}»`);
+    });
+    if (doc.querySelector('#price s, #price a.btn')) f('у блоці ціни бані немає ні викреслених цін, ні кнопок броні проживання');
+    // карточки: баня, чан, басейн з spa.json, без ціни проживання й без кнопки BookmeNow
+    const cards = doc.querySelectorAll('#cards .card-object');
+    if (cards.length !== spa.cards.length) f(`карточок бані ${cards.length}, у spa.json ${spa.cards.length}`);
+    spa.cards.forEach((c, i) => {
+      const el = cards[i];
+      if (!el) return;
+      if (!sameText(el.querySelector('h3')?.text, c.title)) f(`назва карточки ${i + 1} не збігається зі spa.json (${c.title})`);
+      if (!sameText(el.querySelector('.card-object__desc')?.text, c.text)) f(`текст карточки «${c.title}» не збігається зі spa.json`);
+      if ((c.note || '') !== norm(el.querySelector('.card-object__note')?.text)) f(`примітка карточки «${c.title}» має бути «${c.note || ''}»`);
+      if (el.getAttribute('id') !== c.id) f(`у карточки «${c.title}» має бути id="${c.id}"`);
+      if (!el.querySelector('img')) f(`у карточки «${c.title}» немає фото`);
+      if (el.querySelector('.card-object__price, a.btn')) f(`у карточки «${c.title}» не має бути ціни проживання й кнопки броні`);
+    });
+    // проживання, бронь без BookmeNow: телефон і Direct
+    if (!sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`текст «Баня і проживання» не збігається з ${file}`);
+    for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці проживання немає посилання на ${l.url}`);
+    if (!sameText(doc.querySelector('#booking .lede')?.text, t.booking.text)) f(`текст броні не збігається з ${file}`);
+    if (!doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: телефон і Instagram Direct');
+    if (doc.querySelector(`#booking a[href="${site.links.booking}"]`)) f('баню не бронюють через BookmeNow: у блоці броні немає кнопки BookmeNow');
+    // галерея: кадри spa.json без кадру шапки і карточок
+    const shown = new Set([spa.photo, ...spa.cards.map((c) => c.photo)]);
+    const galExpect = spa.gallery.filter((id) => !shown.has(id));
+    const gal = doc.querySelectorAll('#gallery img');
+    if (gal.length !== galExpect.length) f(`у галереї ${gal.length} кадрів, очікується ${galExpect.length} (spa.json без кадрів шапки і карточок)`);
+    for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
+    // акції на сторінці бані немає: вона на проживання (R9)
+    if (doc.querySelector('[id="promo"], .promo-modal')) f('акція −20% на проживання, на сторінці бані її немає (R9)');
+    // контекст аналітики
+    const ctx = pageContextOf(doc);
+    const exp = { event: 'page_context', page_type: 'category', item_category: 'banya', price_range: `${spa.price.first}-${spa.price.first + spa.price.next}`, content_ids: ['banya-1h'] };
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify(exp)) f(`dataLayer page_context: очікується ${JSON.stringify(exp)}, є ${JSON.stringify(ctx)}`);
+    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
+    for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/kafe/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+  },
 };
 
 for (const [url, rule] of Object.entries(PAGE_RULES)) {

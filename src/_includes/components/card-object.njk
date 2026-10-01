@@ -1,7 +1,9 @@
 {#- Карточка об'єкта (номер, котедж, будинок). Очікує змінну item зі схеми:
     title, capacity, count?, price? (число) | tariffs? [{label, amount}], promoPrice?, description?, features? [], photo? (id з photos.json), category.
     Змінна cardPlacement (необов'язкова) задає місце кліку для аналітики.
-    Змінна cardPlainPrice (необов'язкова): показати звичайну ціну, а ціни акції (тільки будні, R9) залишити в банері #promo, з посиланням на нього. -#}
+    Змінна cardPlainPrice (необов'язкова): показати звичайну ціну, а ціни акції (тільки будні, R9) залишити в банері #promo, з посиланням на нього.
+    Змінна cardInfoOnly (необов'язкова): інформаційна карточка (баня, чан, басейн) без блока ціни й без кнопки броні проживання.
+    Поле лише для таких карточок: note (коротка примітка, напр. «За попереднім бронюванням»); текст береться з description або text. -#}
 <article class="card-object"{% if item.id %} id="{{ item.id }}"{% endif %}>
   <div class="card-object__media{% if not item.photo %} card-object__media--empty{% endif %}">
     {%- if item.photo %}
@@ -13,8 +15,11 @@
   <div class="card-object__body">
     <h3>{{ item.title }}</h3>
     <p class="card-object__meta">{{ item.capacity }}{% if item.count %} &middot; {{ item.count }}{% endif %}</p>
-    {%- if item.description %}
-    <p class="card-object__desc">{{ item.description }}</p>
+    {%- if item.description or item.text %}
+    <p class="card-object__desc">{{ item.description or item.text }}</p>
+    {%- endif %}
+    {%- if item.note %}
+    <p class="card-object__note">{{ item.note }}</p>
     {%- endif %}
     {%- if item.features %}
     <ul class="feature-list">
@@ -24,6 +29,7 @@
     </ul>
     {%- endif %}
 
+    {%- if not cardInfoOnly %}
     <div class="card-object__price{% if cardPlainPrice and promo and promo.enabled and not item.tariffs %} card-object__price--plain{% endif %}">
       {%- if item.tariffs %}
       <ul class="price-list">
@@ -48,5 +54,6 @@
     <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener"
        aria-label="Забронювати: {{ item.title }}"
        data-item-name="{{ item.title }}" data-item-category="{{ item.category }}"{% if item.price %} data-value="{{ item.promoPrice if (promo and promo.enabled and item.promoPrice and not cardPlainPrice) else item.price }}"{% endif %}>Забронювати</a>
+    {%- endif %}
   </div>
 </article>

@@ -1,0 +1,83 @@
+---
+permalink: "/banya-ta-spa/"
+eleventyComputed:
+  title: "{{ texts['banya-ta-spa'].meta.title | safe }}"
+  description: "{{ texts['banya-ta-spa'].meta.description | safe }}"
+  breadcrumbTitle: "{{ texts['banya-ta-spa'].meta.breadcrumbTitle | safe }}"
+schemaType: banya-ta-spa
+analyticsKind: spa
+---
+{%- set t = texts['banya-ta-spa'] %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section text-section" aria-label="Про банний комплекс">
+  <div class="wrap">
+    <p class="lede">{{ t.intro.text }}</p>
+  </div>
+</section>
+
+<section class="section section--tight" id="complex" aria-labelledby="complex-title">
+  <div class="wrap">
+    <h2 id="complex-title">{{ t.complex.heading }}</h2>
+    <p class="lede block-note">{{ t.complex.lead }}</p>
+    <ul class="feature-list complex-list">
+      {%- for c in spa.complex %}
+      <li>{{ c }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="section section--alt" id="price" aria-labelledby="price-title">
+  <div class="wrap">
+    <h2 id="price-title">{{ t.price.heading }}</h2>
+    <p class="lede block-note">{{ t.price.text }}</p>
+    <div class="cards-grid" data-placement="spa_price">
+      <article class="card-object tariff-card" id="price-first">
+        <div class="card-object__body">
+          <p class="card-object__meta">{{ spa.price.firstLabel | capitalize }}</p>
+          <p class="price"><strong>{{ spa.price.first | price }}&nbsp;грн</strong> <span class="price__unit">{{ spa.price.per }}</span></p>
+        </div>
+      </article>
+      <article class="card-object tariff-card" id="price-next">
+        <div class="card-object__body">
+          <p class="card-object__meta">{{ spa.price.nextLabel | capitalize }}</p>
+          <p class="price"><strong>{{ spa.price.next | price }}&nbsp;грн</strong> <span class="price__unit">{{ spa.price.per }}</span></p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight" id="cards" aria-labelledby="cards-title">
+  <div class="wrap">
+    <h2 id="cards-title">{{ t.cards.heading }}</h2>
+    {%- set cardInfoOnly = true %}
+    <div class="cards-grid" data-placement="spa_cards">
+      {%- asyncEach item in spa.cards %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+    </div>
+  </div>
+</section>
+
+{%- set gallery = t.gallery %}
+{%- set galleryPhotos = spaGallery %}
+{% include "components/gallery-block.njk" %}
+
+<section class="section" id="stay" aria-labelledby="stay-title">
+  <div class="wrap">
+    <h2 id="stay-title">{{ t.stay.heading }}</h2>
+    <p class="lede block-note">{{ t.stay.text }}</p>
+    <div class="btn-row">
+      {%- for l in t.stay.links %}
+      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+{%- set booking = t.booking %}
+{%- set bookingNoOnline = true %}
+{% include "components/booking-block.njk" %}
