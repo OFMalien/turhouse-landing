@@ -74,7 +74,7 @@ function localFile(page, ref, what) {
 const srcsetUrls = (v) => (v || '').split(',').map((x) => x.trim().split(/\s+/)[0]).filter(Boolean);
 
 // ---------- тексти сторінки: усі рядки з texts/<сторінка>.json мають бути на сторінці ----------
-const SKIP_KEYS = new Set(['photo', 'photos', 'url', 'id', 'meta']);
+const SKIP_KEYS = new Set(['photo', 'photos', 'url', 'href', 'id', 'meta']);
 function textLeaves(obj, key = '', out = []) {
   if (typeof obj === 'string') { if (!SKIP_KEYS.has(key)) out.push(obj); }
   else if (Array.isArray(obj)) obj.forEach((x) => textLeaves(x, key, out));
@@ -87,6 +87,7 @@ function linkPairs(obj, out = []) {
   if (Array.isArray(obj)) obj.forEach((x) => linkPairs(x, out));
   else if (obj && typeof obj === 'object') {
     if (typeof obj.url === 'string' && typeof obj.label === 'string') out.push({ url: obj.url, label: obj.label });
+    if (typeof obj.href === 'string' && typeof obj.label === 'string') out.push({ href: obj.href, label: obj.label }); // зовнішнє посилання: адреса як є
     for (const [k, v] of Object.entries(obj)) if (k !== 'meta') linkPairs(v, out);
   }
   return out;
@@ -343,7 +344,10 @@ for (const [url, { doc }] of docs) {
     for (const s of textLeaves(t)) if (!mainText.includes(norm(s))) f(`текст з texts/${slug}.json немає на сторінці: «${norm(s).slice(0, 70)}»`);
     // кнопки-посилання: підпис і адреса разом (інакше два посилання з поміняними адресами проходять)
     const anchors = doc.querySelectorAll('main a').map((a) => ({ t: norm(a.text), h: a.getAttribute('href') }));
-    for (const p of linkPairs(t)) if (!anchors.some((a) => a.t === norm(p.label) && a.h === `${prefix}${p.url}`)) f(`texts/${slug}.json: посилання «${p.label}» має вести на ${prefix}${p.url}`);
+    for (const p of linkPairs(t)) {
+      const wantHref = p.href ?? `${prefix}${p.url}`;
+      if (!anchors.some((a) => a.t === norm(p.label) && a.h === wantHref)) f(`texts/${slug}.json: посилання «${p.label}» має вести на ${wantHref}`);
+    }
     // кадр шапки і галерея з texts: ті самі кадри в тому самому порядку
     if (t.hero?.photo) {
       const hi = doc.querySelector('.page-hero img, .hero img');

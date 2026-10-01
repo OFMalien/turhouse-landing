@@ -510,7 +510,7 @@ else {
   if (/\d{1,2}[:.]\d{2}|\d+\s*(га|гектар)/i.test(okJson)) fail('texts/okolitsi.json: годин роботи, площі парку в тексті немає');
   if (/(наш|наші|наше)\s+(парк|тварин|коні|екостежк)/i.test(okJson)) fail('texts/okolitsi.json: Tur House не називає парк і його тварин своїми (ТЗ §6)');
   checkPagePhotos('okolitsi.json', [okolitsi.hero?.photo, ...(okolitsi.gallery?.photos || [])]);
-  if (!same(okolitsi.gallery?.photos, ['home/hammock', 'cottages/cottages-sunset'])) fail('texts/okolitsi.json: у галереї два територіальні кадри TEMP (кадрів парку немає, питання в техборзі)');
+  if (!same(okolitsi.gallery?.photos, ['cottages/cottages-sunset', 'home/evening-pool']) || okolitsi.hero?.photo !== 'home/hammock') fail('texts/okolitsi.json: у шапці гамак, у галереї два інших територіальні кадри TEMP без повтору шапки (кадрів парку немає, питання в техборзі)');
   const linkedO = new Set(collectLinks(okolitsi));
   for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!linkedO.has(u)) fail(`texts/okolitsi.json: немає посилання на ${u} (перелінковка)`);
 }

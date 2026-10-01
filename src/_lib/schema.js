@@ -249,6 +249,34 @@ export function cafeNodes(data) {
 }
 extras.kafe = cafeNodes;
 
+// Околиці: Article про околиці з посиланням (about) на TouristAttraction, тобто парк природи «Беремицьке».
+// Парк окрема сутність: назва і сайт парку з texts, адреси, координат, годин і квитків немає (в джерелах їх немає), Tur House частиною парку не названий.
+export function okolitsiNodes(data) {
+  const page = data.texts.okolitsi;
+  const parkId = abs('/okolitsi/#park');
+  return [
+    {
+      '@type': 'Article',
+      '@id': abs('/okolitsi/#article'),
+      headline: page.hero.h1,
+      description: page.meta.description,
+      url: abs('/okolitsi/'),
+      mainEntityOfPage: abs('/okolitsi/'),
+      inLanguage: 'uk',
+      about: { '@id': parkId },
+      publisher: { '@id': abs('/#lodging') },
+    },
+    {
+      '@type': 'TouristAttraction',
+      '@id': parkId,
+      name: page.park.heading,
+      description: page.park.text,
+      url: page.park.link.href,
+    },
+  ];
+}
+extras.okolitsi = okolitsiNodes;
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), breadcrumbList(data)];

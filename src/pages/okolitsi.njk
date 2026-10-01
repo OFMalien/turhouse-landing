@@ -1,0 +1,64 @@
+---
+permalink: "/okolitsi/"
+eleventyComputed:
+  title: "{{ texts.okolitsi.meta.title | safe }}"
+  description: "{{ texts.okolitsi.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.okolitsi.meta.breadcrumbTitle | safe }}"
+schemaType: okolitsi
+analyticsKind: area
+---
+{%- set t = texts.okolitsi %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section text-section" id="intro" aria-label="Про околиці">
+  <div class="wrap">
+    <p class="lede">{{ t.intro.text }}</p>
+  </div>
+</section>
+
+<section class="section section--tight" id="park" aria-labelledby="park-title">
+  <div class="wrap">
+    <h2 id="park-title">{{ t.park.heading }}</h2>
+    <p class="lede block-note">{{ t.park.text }}</p>
+    <div class="btn-row">
+      <a class="btn" href="{{ t.park.link.href }}" target="_blank" rel="noopener">{{ t.park.link.label }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="nature">
+  <div class="wrap split split--text">
+    <div class="split__copy" id="desna">
+      <h2 id="desna-title">{{ t.desna.heading }}</h2>
+      <p class="lede">{{ t.desna.text }}</p>
+    </div>
+    <div class="split__copy" id="family">
+      <h2 id="family-title">{{ t.family.heading }}</h2>
+      <p class="lede">{{ t.family.text }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="weekend" aria-labelledby="weekend-title">
+  <div class="wrap">
+    <h2 id="weekend-title">{{ t.weekend.heading }}</h2>
+    <p class="lede block-note">{{ t.weekend.text }}</p>
+  </div>
+</section>
+
+{%- set gallery = t.gallery %}
+{%- set galleryPhotos = t.gallery.photos %}
+{% include "components/gallery-block.njk" %}
+
+<section class="section" id="stay" aria-labelledby="stay-title">
+  <div class="wrap">
+    <h2 id="stay-title">{{ t.stay.heading }}</h2>
+    <p class="lede block-note">{{ t.stay.text }}</p>
+    <div class="btn-row">
+      {%- for l in t.stay.links %}
+      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>

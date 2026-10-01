@@ -442,6 +442,41 @@ const PAGE_RULES = {
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
   },
+  '/okolitsi/'(doc, f) {
+    const t = texts('okolitsi');
+    const file = 'texts/okolitsi.json';
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    for (const id of ['page-title', 'intro', 'park', 'park-title', 'nature', 'desna', 'desna-title', 'family', 'family-title', 'weekend', 'weekend-title', 'gallery', 'stay']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Околиці» з aria-current на останньому');
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
+    if (!sameText(doc.querySelector('#intro .lede')?.text, t.intro.text)) f(`вступ не збігається з ${file}`);
+    // парк: текст з джерелом, окреме посилання на сайт парку (єдина зовнішня адреса, rel=noopener), без цін і годин
+    if (!sameText(doc.querySelector('#park-title')?.text, t.park.heading) || !sameText(doc.querySelector('#park .lede')?.text, t.park.text)) f(`блок про парк не збігається з ${file}`);
+    const parkLinks = doc.querySelectorAll('#park a');
+    if (parkLinks.length !== 1 || parkLinks[0].getAttribute('href') !== t.park.link.href || !sameText(parkLinks[0].text, t.park.link.label) || parkLinks[0].getAttribute('target') !== '_blank' || !/\bnoopener\b/.test(parkLinks[0].getAttribute('rel') || '')) f(`посилання на сайт парку: ${t.park.link.href}, підпис «${t.park.link.label}», target=_blank, rel=noopener`);
+    // Десна, діти, вихідні
+    if (!sameText(doc.querySelector('#desna-title')?.text, t.desna.heading) || !sameText(doc.querySelector('#desna .lede')?.text, t.desna.text)) f(`блок про Десну не збігається з ${file}`);
+    if (!sameText(doc.querySelector('#family-title')?.text, t.family.heading) || !sameText(doc.querySelector('#family .lede')?.text, t.family.text)) f(`блок «З дітьми» не збігається з ${file}`);
+    if (!sameText(doc.querySelector('#weekend-title')?.text, t.weekend.heading) || !sameText(doc.querySelector('#weekend .lede')?.text, t.weekend.text)) f(`блок «Як провести вихідні» не збігається з ${file}`);
+    // де зупинитися: шість посилань
+    if (!sameText(doc.querySelector('#stay-title')?.text, t.stay.heading) || !sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`блок «Де зупинитися поруч» не збігається з ${file}`);
+    const stay = doc.querySelectorAll('#stay a').map((a) => ({ t: norm(a.text), h: stripPrefix(a.getAttribute('href')) }));
+    if (!same(stay, t.stay.links.map((l) => ({ t: l.label, h: l.url })))) f('посилання в блоці «Де зупинитися поруч» не збігаються з texts (підпис і адреса)');
+    // кадри: шапка і галерея з texts, без повторів
+    const hero = doc.querySelector('.page-hero img');
+    if (photoIdOf(hero?.getAttribute('src')) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
+    const gal = doc.querySelectorAll('#gallery img').map((i) => photoIdOf(i.getAttribute('src')));
+    if (!same(gal, t.gallery.photos)) f(`галерея: кадри мають бути ${JSON.stringify(t.gallery.photos)}, є ${JSON.stringify(gal)}`);
+    if (gal.includes(t.hero.photo)) f('кадр шапки повторюється в галереї');
+    // на сторінці околиць немає ціни, акції і кнопки броні BookmeNow в межах main
+    if (doc.querySelectorAll('main a[href^="https://go.bookmenow.pro"]').length !== doc.querySelectorAll('.cta-band a[href^="https://go.bookmenow.pro"]').length) f('на сторінці околиць немає кнопки броні BookmeNow (крім фінального блока CTA)');
+    if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці околиць немає (R9)');
+    const ctx = pageContextOf(doc);
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'info', item_category: 'area' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"info","item_category":"area"}, є ${JSON.stringify(ctx)}`);
+    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
+    for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+  },
 };
 
 // Мета-теги кожної зібраної сторінки з texts/<сторінка>.json: title, description, og і twitter збігаються з текстами, canonical і og:url на своїй адресі

@@ -71,7 +71,7 @@ for (const f of htmlFiles) {
     const pageUrl = name === 'index.html' ? '/' : `/${name.replace(/index\.html$/, '')}`;
     const slug = name === 'index.html' ? 'home' : name.replace(/\/index\.html$/, '');
     const textsOf = (s) => readData(`texts/${s}.json`);
-    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem']);
+    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction']);
     const defined = [];
     const referenced = [];
     (function walkLd(node) {
@@ -86,7 +86,7 @@ for (const f of htmlFiles) {
     const dupIds = defined.filter((x, i) => defined.indexOf(x) !== i);
     if (dupIds.length) fail(`${name}: повторні @id: ${[...new Set(dupIds)].join(', ')}`);
     for (const r of referenced) if (!defined.includes(r)) fail(`${name}: посилання на неіснуючий вузол @id ${r}`);
-    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'] };
+    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'] };
     if (!same(graph.map((n) => n['@type']).sort(), ['LodgingBusiness', 'BreadcrumbList', ...(EXPECT_TOP[pageUrl] || [])].sort())) fail(`${name}: склад графа ${JSON.stringify(graph.map((n) => n['@type']))} не збігається з очікуваним для сторінки`);
 
     // LodgingBusiness: усе з site.json і даних цін, без сторонніх полів (petsAllowed, openingHours, priceValidUntil тощо)
@@ -348,6 +348,25 @@ for (const f of htmlFiles) {
         });
       }
     } else if (cafes.length) fail(`${name}: CafeOrCoffeeShop лише на /kafe/`);
+
+    // Околиці: Article з about -> TouristAttraction (парк природи), без Tur House як частини парку, без адреси, гео, годин і квитків парку
+    const articles = graph.filter((n) => n['@type'] === 'Article');
+    const attractions = graph.filter((n) => n['@type'] === 'TouristAttraction');
+    if (name === 'okolitsi/index.html') {
+      const ok = readData('texts/okolitsi.json');
+      if (articles.length !== 1 || attractions.length !== 1) fail(`${name}: має бути один Article і один TouristAttraction, є ${articles.length} і ${attractions.length}`);
+      else {
+        const [a] = articles;
+        const [p] = attractions;
+        const wantA = { '@type': 'Article', '@id': `${ORIGIN}/okolitsi/#article`, headline: ok.hero.h1, description: ok.meta.description, url: `${ORIGIN}/okolitsi/`, mainEntityOfPage: `${ORIGIN}/okolitsi/`, inLanguage: 'uk', about: { '@id': `${ORIGIN}/okolitsi/#park` }, publisher: { '@id': `${ORIGIN}/#lodging` } };
+        const wantP = { '@type': 'TouristAttraction', '@id': `${ORIGIN}/okolitsi/#park`, name: ok.park.heading, description: ok.park.text, url: ok.park.link.href };
+        for (const [label, got, want] of [['Article', a, wantA], ['TouristAttraction', p, wantP]]) {
+          for (const k of Object.keys(got)) if (!(k in want)) fail(`${name}: у ${label} невідоме поле «${k}» (адреси, координат, годин і квитків парку в джерелах немає)`);
+          for (const [k, v] of Object.entries(want)) if (!same(got[k], v)) fail(`${name}: ${label}.${k} має бути ${JSON.stringify(v)}, є ${JSON.stringify(got[k])}`);
+        }
+        if (/Tur House/.test(`${p.name} ${p.description}`)) fail(`${name}: TouristAttraction описує парк, а не Tur House (ТЗ §6: не називати себе частиною парку)`);
+      }
+    } else if (articles.length || attractions.length) fail(`${name}: Article і TouristAttraction лише на /okolitsi/`);
 
     const crumbs = graph.find((n) => n['@type'] === 'BreadcrumbList');
     if (!crumbs) fail(`${name}: немає BreadcrumbList`);
