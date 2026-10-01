@@ -78,33 +78,44 @@ export function faqPage(data) {
 }
 extras.home = (data) => [faqPage(data)];
 
-// Номери: ItemList з HotelRoom із rooms.json (назва, місткість, ціна за добу). Ціни акції в розмітку не йдуть: вона діє лише по буднях (R9).
-export function roomsItemList(data) {
-  const rooms = data.rooms || [];
-  const url = (id) => abs(`/nomery/#${id}`);
+// Місткість з рядка даних: «2 гості» -> value 2 (рівно), «до 4 гостей» -> maxValue 4 (не більше).
+function occupancy(capacity) {
+  const n = Number(String(capacity).match(/\d+/)[0]);
+  return /^до\s/i.test(String(capacity)) ? { '@type': 'QuantitativeValue', maxValue: n } : { '@type': 'QuantitativeValue', value: n };
+}
+
+// ItemList об'єктів проживання з даних (номери: HotelRoom, котеджі: VacationRental): назва, місткість, ціна за добу, UAH, особливості.
+// Ціни акції в розмітку не йдуть: вона діє лише по буднях (R9).
+function objectItemList(data, { list, type, pagePath, listName, withAmenities }) {
+  const url = (id) => abs(`${pagePath}#${id}`);
   return [
     {
       '@type': 'ItemList',
-      '@id': abs('/nomery/#rooms'),
-      name: data.texts.nomery.types.heading,
-      numberOfItems: rooms.length,
-      itemListElement: rooms.map((r, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        item: {
-          '@type': 'HotelRoom',
+      '@id': abs(`${pagePath}#list`),
+      name: listName,
+      numberOfItems: list.length,
+      itemListElement: list.map((r, i) => {
+        const item = {
+          '@type': type,
           '@id': url(r.id),
           url: url(r.id),
           name: r.title,
-          occupancy: { '@type': 'QuantitativeValue', value: Number(String(r.capacity).match(/\d+/)[0]) },
+          occupancy: occupancy(r.capacity),
           containedInPlace: { '@id': abs('/#lodging') },
           offers: { '@type': 'Offer', price: r.price, priceCurrency: 'UAH', url: data.site.links.booking },
-        },
-      })),
+        };
+        if (withAmenities && r.features?.length) item.amenityFeature = r.features.map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true }));
+        return { '@type': 'ListItem', position: i + 1, item };
+      }),
     },
   ];
 }
+
+export const roomsItemList = (data) => objectItemList(data, { list: data.rooms || [], type: 'HotelRoom', pagePath: '/nomery/', listName: data.texts.nomery.types.heading });
 extras.nomery = roomsItemList;
+
+export const cottagesItemList = (data) => objectItemList(data, { list: data.cottages || [], type: 'VacationRental', pagePath: '/kotedzhi/', listName: data.texts.kotedzhi.types.heading, withAmenities: true });
+extras.kotedzhi = cottagesItemList;
 
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;

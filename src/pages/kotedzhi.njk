@@ -1,0 +1,64 @@
+---
+permalink: "/kotedzhi/"
+eleventyComputed:
+  title: "{{ texts.kotedzhi.meta.title | safe }}"
+  description: "{{ texts.kotedzhi.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.kotedzhi.meta.breadcrumbTitle | safe }}"
+promoModal: true
+schemaType: kotedzhi
+analyticsKind: cottages
+---
+{%- set t = texts.kotedzhi %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section text-section" aria-label="Про котеджі">
+  <div class="wrap">
+    <p class="lede">{{ t.intro.text }}</p>
+  </div>
+</section>
+
+<section class="section section--tight" id="cottages" aria-labelledby="cottages-title">
+  <div class="wrap">
+    <h2 id="cottages-title">{{ t.types.heading }}</h2>
+    <p class="lede block-note">{{ t.types.lead }}</p>
+    {%- set cardPlainPrice = true %}
+    <div class="cards-grid" data-placement="cottages_list">
+      {%- asyncEach item in cottages %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+    </div>
+    <p class="lede block-note">{{ t.types.note }}</p>
+  </div>
+</section>
+
+{% include "components/promo-banner.njk" %}
+
+<section class="section" id="kitchen" aria-labelledby="kitchen-title">
+  <div class="wrap">
+    <h2 id="kitchen-title">{{ t.kitchen.heading }}</h2>
+    <p class="lede block-note">{{ t.kitchen.text }}</p>
+  </div>
+</section>
+
+{%- set included = t.included %}
+{% include "components/included-block.njk" %}
+
+<section class="section section--alt" id="group" aria-labelledby="group-title">
+  <div class="wrap">
+    <h2 id="group-title">{{ t.group.heading }}</h2>
+    <p class="lede block-note">{{ t.group.text }}</p>
+    <div class="btn-row">
+      {%- for l in t.group.links %}
+      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+{%- set gallery = t.gallery %}
+{%- set galleryPhotos = t.gallery.photos %}
+{% include "components/gallery-block.njk" %}
+
+{%- set booking = t.booking %}
+{% include "components/booking-block.njk" %}

@@ -24,7 +24,7 @@
     </ul>
     {%- endif %}
 
-    <div class="card-object__price">
+    <div class="card-object__price{% if cardPlainPrice and promo and promo.enabled and not item.tariffs %} card-object__price--plain{% endif %}">
       {%- if item.tariffs %}
       <ul class="price-list">
         {%- for t in item.tariffs %}

@@ -119,6 +119,63 @@ function checkSums(url, doc) {
   }
 }
 
+// Сторінка зі списком об'єктів (номери, котеджі): однакова структура, дані з відповідного JSON і texts/<slug>.json
+function listPage(cfg) {
+  return (doc, f) => {
+    const { slug, list, category } = cfg;
+    const t = texts(slug);
+    const file = `texts/${slug}.json`;
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    for (const id of ['page-title', cfg.cardsId, `${cfg.cardsId}-title`, ...cfg.blocks, 'included', 'group', 'gallery', 'booking', ...(promo.enabled ? ['promo'] : [])]) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    // хлібні крихти: Головна > поточний розділ, збігаються з назвою в розмітці
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f(`хлібні крихти мають бути «Головна / ${cfg.crumb}» з aria-current на останньому`);
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
+    if (!sameText(doc.querySelector('.text-section .lede')?.text, t.intro.text)) f(`вступ не збігається з ${file}`);
+    if (!sameText(doc.querySelector(`[id="${cfg.cardsId}-title"]`)?.text, t.types.heading)) f(`H2 списку не збігається з ${file}`);
+    if (cfg.kitchen && !sameText(doc.querySelector('#kitchen .lede')?.text, t.kitchen.text)) f(`текст про кухню не збігається з ${file}`);
+    // картки з JSON даних, звичайні ціни, без викресленої ціни акції
+    const site = readJson('site.json');
+    const cards = doc.querySelectorAll(`#${cfg.cardsId} .card-object`);
+    if (cards.length !== list.length) f(`карток ${cards.length}, у даних ${list.length}`);
+    list.forEach((r, i) => {
+      const c = cards[i];
+      if (!c) return;
+      if (!sameText(c.querySelector('h3')?.text, r.title)) f(`назва картки ${i + 1} не збігається з даними (${r.title})`);
+      const meta = norm(c.querySelector('.card-object__meta')?.text);
+      if (!meta.includes(r.capacity) || !meta.includes(r.count)) f(`у картці ${r.title} має бути «${r.capacity}» і «${r.count}» (R4)`);
+      if (!norm(c.querySelector('.card-object__price')?.text).includes(`${money(r.price)} грн`)) f(`у картці ${r.title} немає ціни ${money(r.price)} грн`);
+      if (c.querySelector('s')) f(`у картці ${r.title} є викреслена ціна: ціни акції лише в банері #promo (R9)`);
+      if (promo.enabled && r.promoPrice && !c.querySelector('a[href="#promo"]')) f(`у картці ${r.title} немає посилання на #promo`);
+      if (!c.querySelector(`a.btn[href="${site.links.booking}"][data-item-name="${r.title}"][data-item-category="${category}"]`)) f(`кнопка броні картки ${r.title} без data-item-name і data-item-category=${category}`);
+      if (c.getAttribute('id') !== r.id) f(`у картки ${r.title} має бути id="${r.id}" (якір з розмітки)`);
+      if (cfg.features) {
+        const got = c.querySelectorAll('.feature-list li').map((li) => norm(li.text));
+        if (!same(got, (r.features || []).map(norm))) f(`особливості картки ${r.title} не збігаються з даними`);
+      }
+    });
+    // банер акції і Direct
+    if (promo.enabled && !doc.querySelector('#promo a[href^="https://ig.me/m/tur_house_"]')) f('кнопка акції має вести на Instagram Direct (R9)');
+    // що входить, групи, бронь
+    const inc = doc.querySelectorAll('#included .check-list li').map((li) => norm(li.text));
+    if (!same(inc, t.included.items.map(norm))) f(`пункти «Що входить у вартість» не збігаються з ${file}`);
+    for (const u of cfg.includedLinks) if (!doc.querySelector(`#included a[href$="${u}"]`)) f(`у блоці «Що входить» немає посилання на ${u}`);
+    for (const u of cfg.groupLinks) if (!doc.querySelector(`#group a[href$="${u}"]`)) f(`у блоці груп немає посилання на ${u}`);
+    if (!doc.querySelector(`#booking a[href="${site.links.booking}"][rel~="noopener"]`) || !doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: BookmeNow, телефон і Instagram Direct');
+    // галерея: стільки кадрів, скільки в texts, кожен з alt
+    const gal = doc.querySelectorAll('#gallery img');
+    if (gal.length !== t.gallery.photos.length) f(`у галереї ${gal.length} кадрів, у ${file} ${t.gallery.photos.length}`);
+    for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
+    // контекст аналітики з даних
+    const ctx = pageContextOf(doc);
+    const exp = { event: 'page_context', page_type: 'category', item_category: category, price_range: `${Math.min(...list.map((r) => r.price))}-${Math.max(...list.map((r) => r.price))}`, content_ids: list.map((r) => r.id) };
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify(exp)) f(`dataLayer page_context: очікується ${JSON.stringify(exp)}, є ${JSON.stringify(ctx)}`);
+    // перелінковка: на інші розділи
+    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
+    for (const u of cfg.crossLinks) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+  };
+}
+
 const PAGE_RULES = {
   '/'(doc, f) {
     const t = texts('home');
@@ -195,50 +252,8 @@ const PAGE_RULES = {
       if (!h || !h.text.trim()) f(`немає H2 #${id}`);
     }
   },
-  '/nomery/'(doc, f) {
-    const t = texts('nomery');
-    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f('H1 має збігатися з texts/nomery.json');
-    for (const id of ['page-title', 'rooms', 'rooms-title', 'where', 'included', 'group', 'gallery', 'booking', ...(promo.enabled ? ['promo'] : [])]) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
-    // хлібні крихти: Головна > Номери, збігаються з назвою в розмітці
-    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
-    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Номери» з aria-current на останньому');
-    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f('лид шапки не збігається з texts/nomery.json');
-    if (!sameText(doc.querySelector('.text-section .lede')?.text, t.intro.text)) f('вступ не збігається з texts/nomery.json');
-    // три картки з rooms.json, звичайні ціни, без викресленої ціни акції
-    const cards = doc.querySelectorAll('#rooms .card-object');
-    if (cards.length !== rooms.length) f(`карток номерів ${cards.length}, у rooms.json ${rooms.length}`);
-    rooms.forEach((r, i) => {
-      const c = cards[i];
-      if (!c) return;
-      if (!sameText(c.querySelector('h3')?.text, r.title)) f(`назва картки ${i + 1} не збігається з rooms.json (${r.title})`);
-      if (!norm(c.querySelector('.card-object__meta')?.text).includes(r.capacity) || !norm(c.querySelector('.card-object__meta')?.text).includes(r.count)) f(`у картці ${r.title} має бути «${r.capacity}» і «${r.count}» (R4)`);
-      if (!norm(c.querySelector('.card-object__price')?.text).includes(`${money(r.price)} грн`)) f(`у картці ${r.title} немає ціни ${money(r.price)} грн`);
-      if (c.querySelector('s')) f(`у картці ${r.title} є викреслена ціна: ціни акції лише в банері #promo (R9)`);
-      if (promo.enabled && r.promoPrice && !c.querySelector('a[href="#promo"]')) f(`у картці ${r.title} немає посилання на #promo`);
-      if (!c.querySelector(`a.btn[href="${readJson('site.json').links.booking}"][data-item-name="${r.title}"][data-item-category="rooms"]`)) f(`кнопка броні картки ${r.title} без data-item-name і data-item-category=rooms`);
-      if (c.getAttribute('id') !== r.id) f(`у картки ${r.title} має бути id="${r.id}" (якір з розмітки)`);
-    });
-    // банер акції і Direct
-    if (promo.enabled && !doc.querySelector('#promo a[href^="https://ig.me/m/tur_house_"]')) f('кнопка акції має вести на Instagram Direct (R9)');
-    // що входить, групи, бронь
-    const inc = doc.querySelectorAll('#included .check-list li').map((li) => norm(li.text));
-    if (!same(inc, t.included.items.map(norm))) f('пункти «Що входить у вартість» не збігаються з texts/nomery.json');
-    for (const u of ['/banya-ta-spa/', '/kafe/']) if (!doc.querySelector(`#included a[href$="${u}"]`)) f(`у блоці «Що входить» немає посилання на ${u}`);
-    for (const u of ['/kotedzhi/', '/barn-house/']) if (!doc.querySelector(`#group a[href$="${u}"]`)) f(`у блоці груп немає посилання на ${u}`);
-    const site = readJson('site.json');
-    if (!doc.querySelector(`#booking a[href="${site.links.booking}"][rel~="noopener"]`) || !doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: BookmeNow, телефон і Instagram Direct');
-    // галерея: стільки кадрів, скільки в texts, кожен з alt
-    const gal = doc.querySelectorAll('#gallery img');
-    if (gal.length !== t.gallery.photos.length) f(`у галереї ${gal.length} кадрів, у texts/nomery.json ${t.gallery.photos.length}`);
-    for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
-    // контекст аналітики з даних
-    const ctx = pageContextOf(doc);
-    const exp = { event: 'page_context', page_type: 'category', item_category: 'rooms', price_range: `${Math.min(...rooms.map((r) => r.price))}-${Math.max(...rooms.map((r) => r.price))}`, content_ids: rooms.map((r) => r.id) };
-    if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ ...exp })) f(`dataLayer page_context: очікується ${JSON.stringify(exp)}, є ${JSON.stringify(ctx)}`);
-    // перелінковка: на інші розділи
-    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
-    for (const u of ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
-  },
+  '/nomery/': listPage({ slug: 'nomery', list: rooms, category: 'rooms', cardsId: 'rooms', crumb: 'Номери', blocks: ['where'], crossLinks: ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/'], groupLinks: ['/kotedzhi/', '/barn-house/'], includedLinks: ['/banya-ta-spa/', '/kafe/'] }),
+  '/kotedzhi/': listPage({ slug: 'kotedzhi', list: cottages, category: 'cottages', cardsId: 'cottages', crumb: 'Котеджі', blocks: ['kitchen'], crossLinks: ['/nomery/', '/barn-house/', '/banya-ta-spa/', '/kafe/'], groupLinks: ['/nomery/', '/barn-house/'], includedLinks: ['/banya-ta-spa/', '/kafe/'], features: true, kitchen: true }),
 };
 
 for (const [url, rule] of Object.entries(PAGE_RULES)) {
