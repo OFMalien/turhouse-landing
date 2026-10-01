@@ -410,6 +410,28 @@ for (const [url, { doc }] of docs) {
   }
 }
 
+// ---------- перелінковка (E4-T14): у змісті (main) кожної сторінки не менше 2 посилань на інші розділи, на кожен розділ не менше 2 посилань зі змісту інших сторінок ----------
+{
+  const sectionUrls = new Set([...nav.map((n) => n.url), '/pryvatnist/']);
+  const outgoing = new Map();
+  for (const [url, { doc }] of docs) {
+    const targets = new Set();
+    for (const a of doc.querySelectorAll('main a[href]')) {
+      let h = a.getAttribute('href').split('#')[0].split('?')[0];
+      if (prefix && h.startsWith(`${prefix}/`)) h = h.slice(prefix.length);
+      if (sectionUrls.has(h) && h !== url) targets.add(h);
+    }
+    outgoing.set(url, targets);
+    if (targets.size < 2) fail(url, `у змісті сторінки менше 2 посилань на інші розділи (є ${targets.size}: ${[...targets].join(', ') || 'жодного'})`);
+  }
+  for (const u of nav.map((n) => n.url)) {
+    if (u === '/') continue; // на головну веде логотип і крихти, окремо не лічимо
+    const from = [...outgoing.entries()].filter(([page, t]) => page !== u && page !== '/404.html' && t.has(u)).map(([page]) => page); // 404 не рахуємо: на неї ніхто не потрапляє по перелінковці
+    if (from.length < 2) fail(u, `на розділ ведуть менше 2 сторінок зі змісту (є ${from.length}: ${from.join(', ') || 'жодної'})`);
+  }
+  // політика: посилання в підвалі кожної сторінки (перевірено вище в підвалі) і зі змісту хоча б однієї сторінки не потрібно
+}
+
 if (errors.length) {
   console.error(`check-site (${mode}): порушень ${errors.length}`);
   for (const e of errors.slice(0, 80)) console.error(`  - ${e}`);

@@ -20,7 +20,8 @@
     "check:data": "node scripts/check-data.mjs",
     "check:pages": "node scripts/check-pages.mjs",
     "check:tracking": "node scripts/check-tracking.mjs preview",
-    "check:site": "node scripts/check-site.mjs preview"
+    "check:site": "node scripts/check-site.mjs preview",
+    "check:images": "node scripts/check-images.mjs preview"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",

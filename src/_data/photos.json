@@ -60,6 +60,7 @@
     "source": "photo/photo_6_2026-07-31_08-03-55.jpg",
     "alt": "Головний корпус Tur House і басейн",
     "uses": [
+      "home",
       "nomery",
       "kontakty"
     ]
