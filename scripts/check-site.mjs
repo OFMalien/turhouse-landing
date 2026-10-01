@@ -103,6 +103,36 @@ function photoIdOf(src) {
 const PROMO_BANNER = new Set(['/', '/nomery/', '/kotedzhi/']);
 const PROMO_MODAL = new Set(['/', '/nomery/', '/kotedzhi/']);
 
+// sitemap.xml і robots.txt: у sitemap рівно адреси всіх зібраних сторінок крім 404 (9 розділів + політика = 10), кожна збігається з canonical сторінки
+{
+  const smFile = path.join(siteDir, 'sitemap.xml');
+  if (!fs.existsSync(smFile)) fail('sitemap.xml', 'файлу немає в збірці');
+  else {
+    const xml = fs.readFileSync(smFile, 'utf8');
+    if (!xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>') || !/<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/.test(xml) || !xml.trimEnd().endsWith('</urlset>')) fail('sitemap.xml', 'очікується XML-заголовок і urlset зі стандартним xmlns');
+    const locs = [...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map((m) => m[1]);
+    const urlCount = (xml.match(/<url>/g) || []).length;
+    if (urlCount !== locs.length) fail('sitemap.xml', 'кожен <url> має містити <loc>');
+    const dupLocs = locs.filter((x, i) => locs.indexOf(x) !== i);
+    if (dupLocs.length) fail('sitemap.xml', `повторні адреси: ${[...new Set(dupLocs)].join(', ')}`);
+    const wantLocs = [...docs.keys()].filter((u) => u !== '/404.html').map((u) => `${ORIGIN}${u}`);
+    if (!same([...locs].sort(), [...wantLocs].sort())) fail('sitemap.xml', `адреси мають збігатися зі зібраними сторінками без 404: зайві ${JSON.stringify(locs.filter((x) => !wantLocs.includes(x)))}, відсутні ${JSON.stringify(wantLocs.filter((x) => !locs.includes(x)))}`);
+    if (locs.length !== 10) fail('sitemap.xml', `у sitemap має бути 10 адрес (9 розділів і політика), є ${locs.length}`);
+    for (const loc of locs) {
+      const page = [...docs.entries()].find(([u]) => `${ORIGIN}${u}` === loc);
+      if (page && page[1].doc.querySelector('link[rel="canonical"]')?.getAttribute('href') !== loc) fail('sitemap.xml', `адреса ${loc} не збігається з canonical сторінки`);
+      if (/\?|#|localhost|\.html$/.test(loc)) fail('sitemap.xml', `адреса ${loc} має містити параметри, якір, localhost або .html`);
+    }
+    if (docs.get('/404.html') && locs.some((x) => x.endsWith('404.html'))) fail('sitemap.xml', 'у sitemap не має бути 404');
+  }
+  const robotsFile = path.join(siteDir, 'robots.txt');
+  const robotsTxt = fs.existsSync(robotsFile) ? fs.readFileSync(robotsFile, 'utf8') : '';
+  if (mode === 'production') {
+    if (!/^Sitemap: https:\/\/turhouse\.com\.ua\/sitemap\.xml$/m.test(robotsTxt)) fail('robots.txt', 'у бойовій збірці має бути рядок «Sitemap: https://turhouse.com.ua/sitemap.xml»');
+    if (!/^User-agent: \*$/m.test(robotsTxt) || !/^Allow: \/$/m.test(robotsTxt) || /^Disallow:\s*\/\s*$/m.test(robotsTxt)) fail('robots.txt', 'у бойовій збірці: User-agent: *, Allow: /, без Disallow: /');
+  } else if (!/^Disallow: \/$/m.test(robotsTxt) || /^Sitemap:/m.test(robotsTxt)) fail('robots.txt', 'у превью: Disallow: / і без рядка Sitemap');
+}
+
 // Власні скрипти сайту: жодних cookie, localStorage, fetch, XMLHttpRequest, sendBeacon; sessionStorage лише у вікні акції (так сказано в політиці конфіденційності)
 for (const jsFile of fs.readdirSync(path.join(siteDir, 'assets/js')).filter((x) => x.endsWith('.js'))) {
   const code = fs.readFileSync(path.join(siteDir, 'assets/js', jsFile), 'utf8');
