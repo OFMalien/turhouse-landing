@@ -71,7 +71,7 @@ for (const f of htmlFiles) {
     const pageUrl = name === 'index.html' ? '/' : `/${name.replace(/index\.html$/, '')}`;
     const slug = name === 'index.html' ? 'home' : name.replace(/\/index\.html$/, '');
     const textsOf = (s) => readData(`texts/${s}.json`);
-    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction', 'WebPage', 'Place']);
+    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction', 'WebPage', 'Place', 'ContactPage']);
     const defined = [];
     const referenced = [];
     (function walkLd(node) {
@@ -86,7 +86,7 @@ for (const f of htmlFiles) {
     const dupIds = defined.filter((x, i) => defined.indexOf(x) !== i);
     if (dupIds.length) fail(`${name}: повторні @id: ${[...new Set(dupIds)].join(', ')}`);
     for (const r of referenced) if (!defined.includes(r)) fail(`${name}: посилання на неіснуючий вузол @id ${r}`);
-    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/yak-distatysya/': ['WebPage', 'Place'] };
+    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/yak-distatysya/': ['WebPage', 'Place'], '/kontakty/': ['ContactPage'] };
     if (!same(graph.map((n) => n['@type']).sort(), ['LodgingBusiness', 'BreadcrumbList', ...(EXPECT_TOP[pageUrl] || [])].sort())) fail(`${name}: склад графа ${JSON.stringify(graph.map((n) => n['@type']))} не збігається з очікуваним для сторінки`);
 
     // LodgingBusiness: усе з site.json і даних цін, без сторонніх полів (petsAllowed, openingHours, priceValidUntil тощо)
@@ -392,6 +392,18 @@ for (const f of htmlFiles) {
         if (/\d+\s*(км|хв|год)/i.test(JSON.stringify(graph))) fail(`${name}: у розмітці є кілометри або час у дорозі (C9)`);
       }
     } else if (webpages.length || places.length) fail(`${name}: WebPage і Place лише на /yak-distatysya/`);
+
+    // Контакти: ContactPage з about і mainEntity -> LodgingBusiness; графіка роботи, e-mail, contactPoint із часом у джерелах немає
+    const contactPages = graph.filter((n) => n['@type'] === 'ContactPage');
+    if (name === 'kontakty/index.html') {
+      const kt = readData('texts/kontakty.json');
+      if (contactPages.length !== 1) fail(`${name}: має бути один ContactPage, є ${contactPages.length}`);
+      else {
+        const want = { '@type': 'ContactPage', '@id': `${ORIGIN}/kontakty/#contact`, url: `${ORIGIN}/kontakty/`, name: kt.hero.h1, description: kt.meta.description, inLanguage: 'uk', about: { '@id': `${ORIGIN}/#lodging` }, mainEntity: { '@id': `${ORIGIN}/#lodging` } };
+        for (const k of Object.keys(contactPages[0])) if (!(k in want)) fail(`${name}: у ContactPage невідоме поле «${k}» (годин роботи і e-mail у джерелах немає)`);
+        for (const [k, v] of Object.entries(want)) if (!same(contactPages[0][k], v)) fail(`${name}: ContactPage.${k} має бути ${JSON.stringify(v)}, є ${JSON.stringify(contactPages[0][k])}`);
+      }
+    } else if (contactPages.length) fail(`${name}: ContactPage лише на /kontakty/`);
 
     const crumbs = graph.find((n) => n['@type'] === 'BreadcrumbList');
     if (!crumbs) fail(`${name}: немає BreadcrumbList`);

@@ -312,6 +312,25 @@ export function routeNodes(data) {
 }
 extras['yak-distatysya'] = routeNodes;
 
+// Контакти: ContactPage з посиланням на LodgingBusiness (телефон, адреса, сайт лежать у самому LodgingBusiness).
+// Годин роботи рецепції, e-mail і реквізитів у джерелах немає, тому contactPoint із часом роботи не пишемо.
+export function contactsNodes(data) {
+  const page = data.texts.kontakty;
+  return [
+    {
+      '@type': 'ContactPage',
+      '@id': abs('/kontakty/#contact'),
+      url: abs('/kontakty/'),
+      name: page.hero.h1,
+      description: page.meta.description,
+      inLanguage: 'uk',
+      about: { '@id': abs('/#lodging') },
+      mainEntity: { '@id': abs('/#lodging') },
+    },
+  ];
+}
+extras.kontakty = contactsNodes;
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), breadcrumbList(data)];

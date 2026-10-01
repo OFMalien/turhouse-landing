@@ -412,6 +412,7 @@ html.nav-open { overflow: hidden; }
   gap: 10px;
   padding: var(--card-padding) 24px;
 }
+.card-object h2,
 .card-object h3 {
   font-weight: 400;
   font-size: 26px;
@@ -827,3 +828,7 @@ main:focus { outline: none; }
 /* без JavaScript карту не показати: кнопка прихована, маршрут відкривають кнопками вище */
 html:not(.js) .map-box__btn { display: none; }
 @media (max-width: 860px) { .map-box, .map-box__inner { min-height: 300px; } }
+
+/* Карточки контактів: кнопки внизу картки, одна під одною */
+.card-object__actions { display: grid; gap: 10px; margin-top: auto; padding-top: 6px; }
+.card-object__actions .btn { margin-top: 0; }

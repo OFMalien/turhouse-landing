@@ -518,6 +518,46 @@ const PAGE_RULES = {
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/okolitsi/', '/kontakty/', '/nomery/', '/kotedzhi/', '/barn-house/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
   },
+  '/kontakty/'(doc, f) {
+    const t = texts('kontakty');
+    const file = 'texts/kontakty.json';
+    const site = readJson('site.json');
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    for (const id of ['page-title', 'channels', 'phone', 'phone-title', 'instagram', 'instagram-title', 'booking', 'booking-title', 'where', 'address', 'address-title', 'maps', 'maps-title', 'more', 'more-title']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Контакти» з aria-current на останньому');
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
+    if (photoIdOf(doc.querySelector('.page-hero img')?.getAttribute('src')) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
+    // три способи зв'язку: телефон, Instagram (Direct і профіль), онлайн-бронювання; усе з site.json
+    const card = (id, key, buttons) => {
+      const c = doc.querySelector(`[id="${id}"]`);
+      if (!c) return;
+      if (!sameText(c.querySelector('h2')?.text, t[key].heading) || !sameText(c.querySelector('.card-object__desc')?.text, t[key].text)) f(`картка «${t[key].heading}» не збігається з ${file}`);
+      const got = c.querySelectorAll('.card-object__actions a').map((a) => ({ t: norm(a.text), h: a.getAttribute('href'), aria: a.getAttribute('aria-label') }));
+      if (!same(got, buttons)) f(`картка «${t[key].heading}»: кнопки мають бути ${JSON.stringify(buttons)}, є ${JSON.stringify(got)}`);
+    };
+    card('phone', 'phone', [{ t: site.phone.display, h: `tel:${site.phone.tel}`, aria: `Зателефонувати: ${site.phone.display}` }]);
+    card('instagram', 'instagram', [{ t: site.cta.instagram, h: site.links.instagramDirect, aria: undefined }, { t: site.cta.instagramProfile, h: site.links.instagram, aria: undefined }]);
+    card('booking', 'booking', [{ t: site.cta.booking, h: site.links.booking, aria: undefined }]);
+    if (doc.querySelectorAll('#channels .card-object').length !== 3) f('на сторінці контактів має бути три картки: телефон, Instagram, бронювання');
+    // адреса з site.json, посилання на «Як дістатися», Google Карти
+    if (!sameText(doc.querySelector('#address-title')?.text, t.address.heading) || !sameText(doc.querySelector('#address address')?.text, site.address.full) || !sameText(doc.querySelector('#address .lede')?.text, t.address.text)) f('блок адреси: заголовок, адреса з site.json і текст з texts');
+    if (!doc.querySelector(`#address a[href$="${t.address.link.url}"]`)) f(`у блоці адреси немає посилання на ${t.address.link.url}`);
+    if (!sameText(doc.querySelector('#maps-title')?.text, t.maps.heading) || !sameText(doc.querySelector('#maps .lede')?.text, t.maps.text)) f(`блок Google Карт не збігається з ${file}`);
+    const mp = doc.querySelectorAll('#maps a');
+    if (mp.length !== 1 || mp[0].getAttribute('href') !== site.links.googleMaps || mp[0].getAttribute('target') !== '_blank' || !/\bnoopener\b/.test(mp[0].getAttribute('rel') || '')) f('блок Google Карт: одна кнопка на site.links.googleMaps, target=_blank, rel=noopener');
+    // перед поїздкою
+    if (!sameText(doc.querySelector('#more-title')?.text, t.more.heading) || !sameText(doc.querySelector('#more .lede')?.text, t.more.text)) f(`блок «Перед поїздкою» не збігається з ${file}`);
+    if (!same(doc.querySelectorAll('#more a').map((a) => ({ t: norm(a.text), h: stripPrefix(a.getAttribute('href')) })), t.more.links.map((l) => ({ t: l.label, h: l.url })))) f('посилання в блоці «Перед поїздкою» не збігаються з texts (підпис і адреса)');
+    // графіка роботи і e-mail у джерелах немає
+    const mainText = norm(doc.querySelector('main')?.text);
+    if (/\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}|графік|щодня|цілодобов|@[a-z0-9.-]+\.[a-z]{2,}|e-?mail|ФОП|ТОВ/i.test(mainText)) f('години роботи, e-mail і реквізити в джерелах невідомі, на сторінці їх немає');
+    if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці контактів немає (R9)');
+    const ctx = pageContextOf(doc);
+    if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'contact', item_category: 'contacts' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"contact","item_category":"contacts"}, є ${JSON.stringify(ctx)}`);
+    const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
+    for (const u of ['/yak-distatysya/', '/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+  },
 };
 
 // Мета-теги кожної зібраної сторінки з texts/<сторінка>.json: title, description, og і twitter збігаються з текстами, canonical і og:url на своїй адресі
