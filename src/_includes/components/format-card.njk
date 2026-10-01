@@ -1,0 +1,28 @@
+{#- Карточка формату проживання на головній (номери, котеджі, Барн-хаус). Очікує змінні:
+    fmt - елемент texts.home.formats.items (id, title, desc, link, photo), prices - formatPrices[fmt.id] (rows, hasPromo).
+    id карточки збігається з якорем (#rooms, #cottages, #barn): на них ведуть зовнішні посилання (ТЗ §6). Показуємо звичайні ціни;
+    ціни акції (тільки будні, R9) лежать у банері #promo, на нього веде посилання під цінами. -#}
+<article class="card-object format-card" id="{{ fmt.id }}" aria-labelledby="{{ fmt.id }}-title">
+  <div class="card-object__media{% if not fmt.photo %} card-object__media--empty{% endif %}">
+    {%- if fmt.photo %}
+    {% photo fmt.photo, { sizes: "(min-width: 1000px) 380px, (min-width: 600px) 50vw, 100vw" } %}
+    {%- else %}
+    <div class="card-object__placeholder" role="img" aria-label="Фото цього формату готуємо"><span>Фото цього формату готуємо</span></div>
+    {%- endif %}
+  </div>
+  <div class="card-object__body">
+    <h3 id="{{ fmt.id }}-title">{{ fmt.title }}</h3>
+    <p class="card-object__desc">{{ fmt.desc }}</p>
+    <div class="card-object__price">
+      <ul class="price-list">
+        {%- for row in prices.rows %}
+        <li><span>{{ row.label }}</span> <strong>{{ row.amount | price }}&nbsp;грн / доба</strong></li>
+        {%- endfor %}
+      </ul>
+      {%- if promo.enabled and prices.hasPromo %}
+      <a class="format-card__promo" href="#promo">{{ promo.shortLabel }}</a>
+      {%- endif %}
+    </div>
+    <a class="btn" href="{{ fmt.link.url | url }}">{{ fmt.link.label }}</a>
+  </div>
+</article>

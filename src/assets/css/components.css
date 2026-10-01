@@ -608,3 +608,66 @@ html.nav-open { overflow: hidden; }
 }
 .promo-modal__close:hover { color: var(--text); }
 html.modal-open { overflow: hidden; }
+
+/* ---------- Головна: hero, теги, вступ, формати, банний блок (E4-T1) ---------- */
+.hero { background: var(--bg-dark); padding-block: clamp(40px, 6vw, 88px); }
+.hero__inner { display: grid; gap: 36px; align-items: center; }
+.hero__copy { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.hero__copy h1 { max-width: 20ch; font-size: clamp(32px, 4.8vw, 58px); }
+.hero__copy .btn-row { margin-top: 6px; }
+.hero__media picture { display: block; }
+.hero__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line-on-dark); }
+@media (min-width: 960px) {
+  .hero__inner { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 64px; }
+}
+
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-list li {
+  padding: 6px 14px;
+  border: 1px solid var(--line-on-dark-strong);
+  border-radius: 999px;
+  font-size: var(--text-small);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-on-dark);
+}
+
+.intro-list { margin-top: 28px; border-top: 1px solid var(--line); }
+.intro-list__item {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 18px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+/* Цифри 01-03 це декор: walnut на parchment (6,56:1), шафран тут давав би 1,88:1 і заборонений */
+.intro-list__num { font-family: var(--font-serif); font-weight: 300; font-size: 40px; line-height: 1; color: var(--text-muted); }
+.intro-list__item p { max-width: 66ch; font-size: var(--text-lede); line-height: 1.55; color: var(--text-soft); }
+@media (min-width: 700px) {
+  .intro-list__item { grid-template-columns: 90px minmax(0, 1fr); gap: 24px; }
+  .intro-list__num { font-size: 42px; }
+}
+
+.format-card__promo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-small);
+  font-weight: 600;
+  color: var(--text-soft);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.format-card__promo:hover { color: var(--text); }
+
+.sauna-band { background: var(--bg-darkest); padding-block: var(--section-gap); }
+.sauna-band__inner { display: grid; gap: 36px; align-items: center; }
+.sauna-band__copy { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.sauna-band__price { font-size: var(--text-body); line-height: 1.5; }
+.sauna-band__price strong { font-weight: 800; white-space: nowrap; }
+.sauna-band__media picture { display: block; }
+.sauna-band__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line-on-dark); }
+@media (min-width: 960px) {
+  .sauna-band__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 64px; }
+}

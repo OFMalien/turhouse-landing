@@ -1,12 +1,80 @@
 ---
 permalink: "/"
-title: "Tur House"
-description: "Сайт Tur House у розробці."
+eleventyComputed:
+  title: "{{ texts.home.meta.title | safe }}"
+  description: "{{ texts.home.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.home.meta.breadcrumbTitle | safe }}"
+promoModal: true
+analytics:
+  page_type: home
+  item_category: general
 ---
-<div class="wrap section">
-  <h1>Tur House</h1>
-  <p class="lede" style="margin-top:16px">Сайт у розробці.</p>
-  <div style="margin-top:32px;max-width:720px">
-    {% photo "home/hero-chan", { priority: true, sizes: "(min-width: 768px) 720px, 100vw", class: "media" } %}
+{%- set t = texts.home %}
+<section class="hero on-dark" aria-labelledby="hero-title" data-placement="hero">
+  <div class="wrap hero__inner">
+    <div class="hero__copy">
+      <p class="caption">{{ site.address.short }}</p>
+      <h1 id="hero-title">{{ t.hero.h1 }}</h1>
+      <ul class="tag-list" aria-label="Коротко про комплекс">
+        {%- for tag in t.hero.tags %}
+        <li>{{ tag }}</li>
+        {%- endfor %}
+      </ul>
+      <p class="lede">{{ t.hero.lede }}</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+        <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+      </div>
+    </div>
+    <div class="hero__media">
+      {% photo t.hero.photo, { priority: true, sizes: "(min-width: 960px) 540px, 100vw", class: "media" } %}
+    </div>
   </div>
-</div>
+</section>
+
+<section class="section intro" aria-label="{{ t.intro.caption }}">
+  <div class="wrap">
+    <p class="caption">{{ t.intro.caption }}</p>
+    <ol class="intro-list">
+      {%- for point in t.intro.points %}
+      <li class="intro-list__item">
+        <span class="intro-list__num" aria-hidden="true">{{ '0' + loop.index }}</span>
+        <p>{{ point }}</p>
+      </li>
+      {%- endfor %}
+    </ol>
+  </div>
+</section>
+
+{% include "components/promo-banner.njk" %}
+
+<section class="section" id="formats" aria-labelledby="formats-title">
+  <div class="wrap">
+    <p class="caption">{{ t.formats.caption }}</p>
+    <h2 id="formats-title">{{ t.formats.heading }}</h2>
+    <p class="lede" style="margin-top:20px">{{ t.formats.included }}</p>
+    <div class="cards-grid" data-placement="formats_section">
+      {%- asyncEach fmt in t.formats.items %}
+      {%- set prices = formatPrices[fmt.id] %}
+      {% include "components/format-card.njk" %}
+      {%- endeach %}
+    </div>
+  </div>
+</section>
+
+<section class="sauna-band on-dark" id="sauna" aria-labelledby="sauna-title" data-placement="sauna_section">
+  <div class="wrap sauna-band__inner">
+    <div class="sauna-band__copy">
+      <p class="caption">{{ t.spa.caption }}</p>
+      <h2 id="sauna-title">{{ t.spa.heading }}</h2>
+      <p class="lede">{{ t.spa.lede }}</p>
+      <p class="sauna-band__price">{{ t.spa.priceLead }} <strong>{{ spa.price.first | price }}&nbsp;грн</strong> {{ spa.price.per }} {{ spa.price.firstLabel }}, {{ spa.price.nextLabel }} <strong>{{ spa.price.next | price }}&nbsp;грн</strong>.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="{{ t.spa.link.url | url }}">{{ t.spa.link.label }}</a>
+      </div>
+    </div>
+    <div class="sauna-band__media">
+      {% photo t.spa.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
+    </div>
+  </div>
+</section>

@@ -17,11 +17,13 @@
     "check:photos": "node scripts/photos.mjs check",
     "make:static": "node scripts/make-static.mjs",
     "check:jsonld": "node scripts/check-jsonld.mjs production",
-    "check:data": "node scripts/check-data.mjs"
+    "check:data": "node scripts/check-data.mjs",
+    "check:pages": "node scripts/check-pages.mjs"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.6",
     "@11ty/eleventy-img": "^7.0.0",
-    "lightningcss": "^1.33.0"
+    "lightningcss": "^1.33.0",
+    "node-html-parser": "^9.0.4"
   }
 }
