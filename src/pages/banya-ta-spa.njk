@@ -34,18 +34,18 @@ analyticsKind: spa
     <h2 id="price-title">{{ t.price.heading }}</h2>
     <p class="lede block-note">{{ t.price.text }}</p>
     <div class="cards-grid" data-placement="spa_price">
-      <article class="card-object tariff-card" id="price-first">
+      <div class="card-object tariff-card" id="price-first">
         <div class="card-object__body">
           <p class="card-object__meta">{{ spa.price.firstLabel | capitalize }}</p>
           <p class="price"><strong>{{ spa.price.first | price }}&nbsp;грн</strong> <span class="price__unit">{{ spa.price.per }}</span></p>
         </div>
-      </article>
-      <article class="card-object tariff-card" id="price-next">
+      </div>
+      <div class="card-object tariff-card" id="price-next">
         <div class="card-object__body">
           <p class="card-object__meta">{{ spa.price.nextLabel | capitalize }}</p>
           <p class="price"><strong>{{ spa.price.next | price }}&nbsp;грн</strong> <span class="price__unit">{{ spa.price.per }}</span></p>
         </div>
-      </article>
+      </div>
     </div>
   </div>
 </section>
