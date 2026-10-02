@@ -20,16 +20,20 @@ function priceRange(data) {
   return `${Math.min(...nums)}-${Math.max(...nums)} UAH`;
 }
 
+// Опис, зручності і тварини беруться з видимого тексту головної (hero.lede, блок «Що є на території») і FAQ (питання про тварин),
+// щоб пошуковики і ІІ-асистенти бачили ті самі факти, що й гість (T2). Без FAQ про тварин petsAllowed не пишемо.
 export function lodgingBusiness(data) {
   const { site } = data;
+  const home = data.texts?.home;
   const node = {
     '@type': 'LodgingBusiness',
     '@id': abs('/#lodging'),
     name: site.name,
-    description: site.tagline,
+    description: home?.hero?.lede || site.tagline,
     url: abs('/'),
     telephone: site.phone.tel,
     image: abs(`/assets/img/static/${site.ogImage.file}`),
+    logo: abs('/assets/img/static/logo.png'),
     priceRange: priceRange(data),
     address: {
       '@type': 'PostalAddress',
@@ -44,7 +48,22 @@ export function lodgingBusiness(data) {
   if (site.geo) {
     node.geo = { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude };
   }
+  const territory = home?.territory?.items || [];
+  if (territory.length) node.amenityFeature = territory.map((t) => ({ '@type': 'LocationFeatureSpecification', name: t.title, value: true }));
+  if ((data.faq || []).some((f) => f.id === 'pets')) node.petsAllowed = true;
   return node;
+}
+
+// WebSite: назва сайту для Google (site name у видачі) і зв'язок сайту з комплексом.
+export function webSite(data) {
+  return {
+    '@type': 'WebSite',
+    '@id': abs('/#website'),
+    url: abs('/'),
+    name: data.site.name,
+    inLanguage: 'uk',
+    publisher: { '@id': abs('/#lodging') },
+  };
 }
 
 // Хлібні крихти: Головна > поточна сторінка. Назва береться з nav (за адресою), інакше з breadcrumbTitle або title.
@@ -332,7 +351,7 @@ extras.kontakty = contactsNodes;
 
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
-  const nodes = [lodgingBusiness(data), breadcrumbList(data)];
+  const nodes = [lodgingBusiness(data), webSite(data), breadcrumbList(data)];
   const extra = data.schemaType && extras[data.schemaType];
   if (extra) nodes.push(...extra(data));
   return { '@context': 'https://schema.org', '@graph': nodes };

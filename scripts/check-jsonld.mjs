@@ -71,7 +71,7 @@ for (const f of htmlFiles) {
     const pageUrl = name === 'index.html' ? '/' : `/${name.replace(/index\.html$/, '')}`;
     const slug = name === 'index.html' ? 'home' : name.replace(/\/index\.html$/, '');
     const textsOf = (s) => readData(`texts/${s}.json`);
-    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction', 'WebPage', 'Place', 'ContactPage']);
+    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction', 'WebPage', 'Place', 'ContactPage', 'WebSite']);
     const defined = [];
     const referenced = [];
     (function walkLd(node) {
@@ -87,9 +87,9 @@ for (const f of htmlFiles) {
     if (dupIds.length) fail(`${name}: повторні @id: ${[...new Set(dupIds)].join(', ')}`);
     for (const r of referenced) if (!defined.includes(r)) fail(`${name}: посилання на неіснуючий вузол @id ${r}`);
     const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/yak-distatysya/': ['WebPage', 'Place'], '/kontakty/': ['ContactPage'] };
-    if (!same(graph.map((n) => n['@type']).sort(), ['LodgingBusiness', 'BreadcrumbList', ...(EXPECT_TOP[pageUrl] || [])].sort())) fail(`${name}: склад графа ${JSON.stringify(graph.map((n) => n['@type']))} не збігається з очікуваним для сторінки`);
+    if (!same(graph.map((n) => n['@type']).sort(), ['LodgingBusiness', 'WebSite', 'BreadcrumbList', ...(EXPECT_TOP[pageUrl] || [])].sort())) fail(`${name}: склад графа ${JSON.stringify(graph.map((n) => n['@type']))} не збігається з очікуваним для сторінки`);
 
-    // LodgingBusiness: усе з site.json і даних цін, без сторонніх полів (petsAllowed, openingHours, priceValidUntil тощо)
+    // LodgingBusiness: усе з site.json, даних цін і видимого тексту головної (опис, «Що є на території», FAQ про тварин), без сторонніх полів (openingHours, priceValidUntil тощо)
     const lb = graph.find((n) => n['@type'] === 'LodgingBusiness');
     if (lb) {
       const rooms = readData('rooms.json');
@@ -100,20 +100,31 @@ for (const f of htmlFiles) {
         '@type': 'LodgingBusiness',
         '@id': `${ORIGIN}/#lodging`,
         name: site.name,
-        description: site.tagline,
+        description: readData('texts/home.json').hero.lede,
         url: `${ORIGIN}/`,
         telephone: site.phone.tel,
         image: `${ORIGIN}/assets/img/static/${site.ogImage.file}`,
+        logo: `${ORIGIN}/assets/img/static/logo.png`,
         priceRange: `${Math.min(...nums)}-${Math.max(...nums)} UAH`,
         address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, addressCountry: site.address.country },
         hasMap: site.links.googleMaps,
         sameAs: [site.links.instagram],
         geo: { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude },
+        amenityFeature: readData('texts/home.json').territory.items.map((t) => ({ '@type': 'LocationFeatureSpecification', name: t.title, value: true })),
+        ...(readData('faq.json').some((f) => f.id === 'pets') ? { petsAllowed: true } : {}),
       };
       for (const k of Object.keys(lb)) if (!(k in want)) fail(`${name}: у LodgingBusiness невідоме поле «${k}»`);
       for (const [k, v] of Object.entries(want)) if (!same(lb[k], v)) fail(`${name}: LodgingBusiness.${k} має бути ${JSON.stringify(v)}, є ${JSON.stringify(lb[k])}`);
       const imgFile = path.join(dir, String(lb.image || '').replace(`${ORIGIN}/`, ''));
       if (!fs.existsSync(imgFile)) fail(`${name}: LodgingBusiness.image: файлу ${lb.image} немає в збірці`);
+      const logoFile = path.join(dir, String(lb.logo || '').replace(`${ORIGIN}/`, ''));
+      if (!fs.existsSync(logoFile)) fail(`${name}: LodgingBusiness.logo: файлу ${lb.logo} немає в збірці`);
+    }
+    // WebSite: назва сайту і publisher -> LodgingBusiness
+    const ws = graph.find((n) => n['@type'] === 'WebSite');
+    if (ws) {
+      const want = { '@type': 'WebSite', '@id': `${ORIGIN}/#website`, url: `${ORIGIN}/`, name: site.name, inLanguage: 'uk', publisher: { '@id': `${ORIGIN}/#lodging` } };
+      if (!same(ws, want)) fail(`${name}: WebSite має бути ${JSON.stringify(want)}, є ${JSON.stringify(ws)}`);
     }
     // Адреса і телефон інших вузлів (DaySpa, CafeOrCoffeeShop) теж із site.json
     for (const n of graph.filter((x) => ['DaySpa', 'CafeOrCoffeeShop'].includes(x['@type']))) {

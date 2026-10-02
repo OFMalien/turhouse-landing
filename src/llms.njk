@@ -1,0 +1,43 @@
+---
+permalink: "/llms.txt"
+eleventyExcludeFromCollections: true
+---
+{#- Коротка довідка для ІІ-асистентів (формат llmstxt.org): ті самі факти, що на сторінках, усе з _data (T2), цифр у шаблоні немає.
+    Ціни акції сюди не йдуть: вона діє лише по буднях (R9). -#}
+{%- set home = texts.home -%}
+# {{ site.name }}
+
+> {{ home.hero.lede | safe }}
+
+{{ home.intro.points[0] | safe }}
+
+## Основне
+
+- Адреса: {{ site.address.full | safe }}
+- Телефон: {{ site.phone.display }}
+- Instagram: {{ site.links.instagram }}
+- Онлайн-бронювання: {{ site.links.booking }}
+{%- for r in rooms %}
+- Номер «{{ r.title | safe }}», {{ r.capacity | safe }}: {{ r.price | price }} грн за добу
+{%- endfor %}
+{%- for c in cottages %}
+- {{ c.title | safe }}: {{ c.price | price }} грн за добу
+{%- endfor %}
+{%- for t in barn.tariffs %}
+- {{ barn.title | safe }}, {{ t.label | safe }}: {{ t.amount | price }} грн за добу
+{%- endfor %}
+- Баня: {{ spa.price.first | price }} грн {{ spa.price.per | safe }} {{ spa.price.firstLabel | safe }}, {{ spa.price.next | price }} грн {{ spa.price.nextLabel | safe }}
+{%- for item in home.territory.items %}
+- {{ item.title | safe }}: {{ item.text | safe }}
+{%- endfor %}
+
+## Сторінки
+{% for item in nav %}
+{%- set slug = 'home' if item.url == '/' else item.url | replace('/', '') %}
+- [{{ item.title | safe }}]({{ item.url | absoluteUrl }}): {{ texts[slug].meta.description | safe }}
+{%- endfor %}
+
+## Часті питання
+{% for f in faq %}
+- {{ f.q | safe }} {{ f.a | safe }}
+{%- endfor %}
