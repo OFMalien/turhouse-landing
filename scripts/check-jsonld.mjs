@@ -113,7 +113,7 @@ for (const f of htmlFiles) {
         image: `${ORIGIN}/assets/img/static/${site.ogImage.file}`,
         logo: `${ORIGIN}/apple-touch-icon.png`,
         priceRange: `${Math.min(...nums)}-${Math.max(...nums)} UAH`,
-        address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, addressCountry: site.address.country },
+        address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, postalCode: site.address.postalCode, addressCountry: site.address.country },
         hasMap: site.links.googleMaps,
         sameAs: [site.links.instagram, site.links.googleMaps],
         geo: { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude },
@@ -136,7 +136,7 @@ for (const f of htmlFiles) {
     // Адреса і телефон інших вузлів (DaySpa, CafeOrCoffeeShop) теж із site.json
     for (const n of graph.filter((x) => ['DaySpa', 'CafeOrCoffeeShop'].includes(x['@type']))) {
       if (n.telephone !== site.phone.tel) fail(`${name}: ${n['@type']}.telephone має бути ${site.phone.tel}`);
-      if (!same(n.address, { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, addressCountry: site.address.country })) fail(`${name}: ${n['@type']}.address не збігається з site.json`);
+      if (!same(n.address, { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, postalCode: site.address.postalCode, addressCountry: site.address.country })) fail(`${name}: ${n['@type']}.address не збігається з site.json`);
       if (!n.parentOrganization || n.parentOrganization['@id'] !== `${ORIGIN}/#lodging`) fail(`${name}: ${n['@type']}.parentOrganization має вести на ${ORIGIN}/#lodging`);
     }
     // Хлібні крихти: Головна > поточна сторінка, назви з nav.json і texts/<сторінка>.json
@@ -182,7 +182,7 @@ for (const f of htmlFiles) {
       for (const k of ['name', 'url', 'telephone', 'address', 'priceRange']) if (!lodging[k]) fail(`${name}: LodgingBusiness без ${k}`);
       if (lodging.priceRange && !/^\d+-\d+ UAH$/.test(lodging.priceRange)) fail(`${name}: priceRange "${lodging.priceRange}" не у форматі "2500-13000 UAH"`);
       const a = lodging.address || {};
-      for (const k of ['streetAddress', 'addressLocality', 'addressRegion', 'addressCountry']) if (!a[k]) fail(`${name}: address без ${k}`);
+      for (const k of ['streetAddress', 'addressLocality', 'addressRegion', 'postalCode', 'addressCountry']) if (!a[k]) fail(`${name}: address без ${k}`);
       if (lodging.geo) {
         const { latitude: la, longitude: lo } = lodging.geo;
         // Грубі межі України: лише щоб зловити переплутані широту й довготу або опечатку.
@@ -401,7 +401,7 @@ for (const f of htmlFiles) {
           '@id': `${ORIGIN}/yak-distatysya/#place`,
           name: site.name,
           description: rp.hero.lede,
-          address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, addressCountry: site.address.country },
+          address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, postalCode: site.address.postalCode, addressCountry: site.address.country },
           geo: { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude },
           hasMap: site.links.googleMaps,
         };

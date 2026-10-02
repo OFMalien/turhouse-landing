@@ -22,13 +22,19 @@ const photos = JSON.parse(fs.readFileSync(out('src/_data/photos.json'), 'utf8'))
 const pageOg = [];
 for (const name of fs.readdirSync(out('src/_data/texts')).filter((f) => f.endsWith('.json'))) {
   const slug = name.replace(/\.json$/, '');
-  const photo = JSON.parse(fs.readFileSync(out('src/_data/texts', name), 'utf8')).hero?.photo;
+  const texts = JSON.parse(fs.readFileSync(out('src/_data/texts', name), 'utf8'));
+  // meta.ogPhoto - інший кадр для обкладинки (наприклад номер замість корпусу); meta.ogPhotoPosition - зсув кадру по вертикалі
+  // від 0 (верх) до 1 (низ), коли автоматичне кадрування губить головне (гамак, петунії). Без них - кадр hero і автокадрування.
+  const photo = texts.meta?.ogPhoto || texts.hero?.photo;
   if (slug === 'home' || !photo) continue;
   const file = `src/assets/img/static/og-${slug}.jpg`;
-  await sharp(out('src/assets/img/source', photos[photo].file))
-    .resize(1200, 630, { fit: 'cover', position: sharp.strategy.attention })
-    .jpeg({ quality: 82, mozjpeg: true })
-    .toFile(out(file));
+  const pos = texts.meta?.ogPhotoPosition;
+  let img = sharp(out('src/assets/img/source', photos[photo].file));
+  if (typeof pos === 'number') {
+    const { data, info } = await img.resize({ width: 1200 }).toBuffer({ resolveWithObject: true });
+    img = sharp(data).extract({ left: 0, top: Math.round((info.height - 630) * pos), width: 1200, height: 630 });
+  } else img = img.resize(1200, 630, { fit: 'cover', position: sharp.strategy.attention });
+  await img.jpeg({ quality: 82, mozjpeg: true }).toFile(out(file));
   pageOg.push(file);
 }
 

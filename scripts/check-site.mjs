@@ -178,7 +178,8 @@ for (const [url, { doc }] of docs) {
   {
     const slug = url === '/' ? 'home' : url.replace(/\//g, '');
     const textsFile = path.join(root, 'src/_data/texts', `${slug}.json`);
-    const heroPhoto = slug !== 'home' && fs.existsSync(textsFile) ? JSON.parse(fs.readFileSync(textsFile, 'utf8')).hero?.photo : null;
+    const pageTexts = slug !== 'home' && fs.existsSync(textsFile) ? JSON.parse(fs.readFileSync(textsFile, 'utf8')) : null;
+    const heroPhoto = pageTexts ? pageTexts.meta?.ogPhoto || pageTexts.hero?.photo : null;
     const own = heroPhoto && fs.existsSync(path.join(root, 'src/assets/img/static', `og-${slug}.jpg`)) ? `og-${slug}.jpg` : null;
     const wantOg = `${ORIGIN}/assets/img/static/${own || site.ogImage.file}`;
     if (doc.querySelector('meta[property="og:image"]')?.getAttribute('content') !== wantOg) f(`og:image має бути ${wantOg}`);
@@ -448,6 +449,27 @@ for (const [url, { doc }] of docs) {
     if (from.length < 2) fail(u, `на розділ ведуть менше 2 сторінок зі змісту (є ${from.length}: ${from.join(', ') || 'жодної'})`);
   }
   // політика: посилання в підвалі кожної сторінки (перевірено вище в підвалі) і зі змісту хоча б однієї сторінки не потрібно
+}
+
+// Розміри картинок для соцмереж і пошуковиків: og:image рівно 1200x630, логотип у JSON-LD (LodgingBusiness.logo) не менше 112x112 (вимога Google)
+{
+  const { default: sharp } = await import('sharp');
+  const fileOf = (u) => path.join(siteDir, decodeURI(u.replace(`${ORIGIN}/`, '')));
+  const ogs = new Set([...docs.values()].map(({ doc }) => doc.querySelector('meta[property="og:image"]')?.getAttribute('content')).filter(Boolean));
+  for (const u of ogs) {
+    if (!fs.existsSync(fileOf(u))) continue; // відсутній файл уже показано вище
+    const m = await sharp(fileOf(u)).metadata();
+    if (m.width !== 1200 || m.height !== 630) fail('og:image', `${u}: розмір ${m.width}x${m.height}, потрібно 1200x630`);
+  }
+  const logos = new Set();
+  for (const { doc } of docs.values()) for (const s of doc.querySelectorAll('script[type="application/ld+json"]')) {
+    for (const n of JSON.parse(s.text)['@graph'] || []) if (n.logo) logos.add(n.logo);
+  }
+  for (const u of logos) {
+    if (!u.startsWith(`${ORIGIN}/`) || !fs.existsSync(fileOf(u))) { fail('logo', `${u}: файлу логотипа немає в збірці`); continue; }
+    const m = await sharp(fileOf(u)).metadata();
+    if (m.width < 112 || m.height < 112) fail('logo', `${u}: розмір ${m.width}x${m.height}, Google вимагає не менше 112x112`);
+  }
 }
 
 if (errors.length) {

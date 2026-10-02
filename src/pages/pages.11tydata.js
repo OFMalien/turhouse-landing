@@ -6,7 +6,7 @@ const slugOf = (url) => (url === '/' ? 'home' : url.replace(/\//g, ''));
 const pageOgFile = (data) => {
   const slug = slugOf(data.page.url);
   const file = `og-${slug}.jpg`;
-  const photo = data.texts?.[slug]?.hero?.photo;
+  const photo = data.texts?.[slug]?.meta?.ogPhoto || data.texts?.[slug]?.hero?.photo;
   if (slug === 'home' || !photo) return null;
   return fs.existsSync(new URL(`../assets/img/static/${file}`, import.meta.url)) ? { file, alt: data.photos?.[photo]?.alt } : null;
 };
