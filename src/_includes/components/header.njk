@@ -15,8 +15,15 @@
     </nav>
 
     <div class="header-actions">
+      {%- if page.url in site.bookingByContactPages %}
+      {#- баню і чан бронюють телефоном або в Direct, не в BookmeNow (питання 29). Іконка веде в Direct, а не в профіль:
+          друга текстова кнопка не вміщується поруч із меню на широкому екрані. #}
+      <a class="icon-btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener" aria-label="{{ site.cta.direct }}" title="{{ site.cta.direct }}">{{ instagram() }}</a>
+      <a class="btn btn-primary btn-compact" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}">{{ site.cta.call }}</a>
+      {%- else %}
       <a class="icon-btn" href="{{ site.links.instagram }}" target="_blank" rel="noopener" aria-label="Instagram {{ site.links.instagramHandle }}">{{ instagram() }}</a>
       <a class="btn btn-primary btn-compact" href="{{ site.links.booking }}" target="_blank" rel="noopener">Забронювати</a>
+      {%- endif %}
       <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Відкрити меню">{{ menu() }}</button>
     </div>
   </div>

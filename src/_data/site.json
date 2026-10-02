@@ -45,8 +45,13 @@
     "instagram": "Написати в Instagram",
     "instagramProfile": "Наш Instagram",
     "routeGoogle": "Відкрити в Google Maps",
-    "routeWaze": "Відкрити у Waze"
+    "routeWaze": "Відкрити у Waze",
+    "call": "Подзвонити",
+    "direct": "Написати в Direct"
   },
+  "bookingByContactPages": [
+    "/banya-ta-spa/"
+  ],
   "ogImage": {
     "file": "og-default.jpg",
     "width": 1200,

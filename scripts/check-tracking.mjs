@@ -1,6 +1,6 @@
 // Перевірка аналітики кліків (E4-T12): кожне посилання кожної зібраної сторінки "натискається" в jsdom з справжнім tracking.js,
 // і порівнюється, що потрапило в dataLayer і в Meta Pixel (fbq). Очікування обчислюються тут окремо від tracking.js за схемою живого сайту
-// (ANALYTICS_AUDIT.md) і рішенням R9 (кнопки акції в Direct -> instagram_click). Також перевіряється ViewContent на сторінках об'єктів.
+// (ANALYTICS_AUDIT.md) і відповіддю Макса на питання 31 (кнопки акції в Direct -> instagram_direct_click, як на живому лендингу). Також перевіряється ViewContent на сторінках об'єктів.
 // Використання: node scripts/check-tracking.mjs preview|production   (спершу зберіть сайт)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -45,7 +45,7 @@ function expectFor(href, placement, link) {
   if (href.includes('go.bookmenow.pro')) return { events: ['booking_click', 'Bron_online_ga4'], pixel: 'InitiateCheckout' };
   if (href.startsWith('tel:')) return PROMO.has(placement) ? { events: ['promo_booking_click', 'click_tel', 'Click_tel_ga4'], pixel: 'Lead' } : { events: ['tel_click', 'click_tel', 'Click_tel_ga4'], pixel: 'Contact' };
   if (href.includes('instagram.com') || href.includes('ig.me/')) {
-    const direct = href.includes('ig.me/') && !PROMO.has(placement);
+    const direct = href.includes('ig.me/');
     return { events: [direct ? 'instagram_direct_click' : 'instagram_click', 'Click_inst_ga4'], pixel: 'Contact' };
   }
   if (href.includes('google.com/maps') || href.includes('waze.com')) return { events: ['map_route_click'], pixel: 'FindLocation' };

@@ -230,7 +230,7 @@ const collectLinks = (node, acc = []) => {
   }
   return acc;
 };
-const ALLOWED_EXTERNAL = ['https://beremytske.com.ua/'];
+const ALLOWED_EXTERNAL = []; // посилання на сайт парку знято (питання 24б: парк конкурент по проживанню)
 const collectHrefs = (node, acc = []) => {
   if (Array.isArray(node)) node.forEach((n) => collectHrefs(n, acc));
   else if (node && typeof node === 'object') {
@@ -254,8 +254,8 @@ for (const f of contentFiles) {
   if (/[–—]/.test(all)) fail(`texts/${f}: у тексті довге тире, пишемо двокрапку, кому або крапку`);
   if ([...all.matchAll(/(?<![\w@./])tur[ \-]?house(?!\.com\.ua|_)/gi)].some((m) => m[0] !== 'Tur House')) fail(`texts/${f}: назва пишеться "Tur House", капс тільки через CSS (C8)`);
   for (const u of collectLinks(data)) if (!NAV_URLS.includes(u) && u !== '/pryvatnist/') fail(`texts/${f}: посилання ${u} не веде на сторінку сайту`);
-  // зовнішні посилання лежать в полі href і дозволені лише на офіційний сайт парку природи
-  for (const h of collectHrefs(data)) if (!ALLOWED_EXTERNAL.includes(h)) fail(`texts/${f}: зовнішнє посилання ${h} не дозволене (дозволено: ${ALLOWED_EXTERNAL.join(', ')})`);
+  // зовнішніх посилань у текстах немає (сайт парку знято, питання 24б)
+  for (const h of collectHrefs(data)) if (!ALLOWED_EXTERNAL.includes(h)) fail(`texts/${f}: зовнішнє посилання ${h} не дозволене`);
   // офіційна назва парку: «Парк природи «Беремицьке»» (сайт парку), а не «Парк дикої природи»; це не заповідник
   if (/парк\S*\s+дикої\s+природи/i.test(all)) fail(`texts/${f}: парк називається «Парк природи «Беремицьке»», не «Парк дикої природи» (сайт парку, питання 12)`);
   if (/заповідник/i.test(all)) fail(`texts/${f}: «Беремицьке» це парк природи, не заповідник`);
@@ -501,7 +501,7 @@ else {
   const parkT = okolitsi.park?.text || '';
   if (!/За інформацією на сайті парку/.test(parkT)) fail('texts/okolitsi.json: факти про парк з посиланням на джерело («За інформацією на сайті парку»)');
   for (const w of ['польські коники', 'кулани', 'муфлони', 'екостежки', 'екскурсії', 'прогулянки на конях', 'години роботи', 'вартість квитків']) if (!parkT.toLowerCase().includes(w)) fail(`texts/okolitsi.json: park.text без "${w}" (підтверджено сайтом парку)`);
-  if (okolitsi.park?.link?.href !== 'https://beremytske.com.ua/' || !okolitsi.park?.link?.label) fail('texts/okolitsi.json: park.link.href має вести на https://beremytske.com.ua/');
+  if (okolitsi.park?.link || /beremytske\.com\.ua|сайт[іу]? парку[^,]/i.test(JSON.stringify(okolitsi.park || {}).replace('За інформацією на сайті парку,', ''))) fail('texts/okolitsi.json: посилання на сайт парку і відсилання «дивіться на сайті парку» знято (питання 24б)');
   if (!/дитячий майданчик/.test(okolitsi.family?.text || '') || !/тварин/.test(okolitsi.family?.text || '')) fail('texts/okolitsi.json: family.text про дитячий майданчик (barn.json) і тварин парку');
   if (!/Десна/.test(okolitsi.desna?.text || '')) fail('texts/okolitsi.json: desna.text про Десну');
   // не вигадувати про парк: інші тварини (зубри, коні Пржевальського, ведмеді, вовки, тури), площа, рік відкриття, ціни, години, відстані, розваги, яких немає в джерелах Tur House

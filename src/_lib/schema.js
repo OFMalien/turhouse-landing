@@ -250,7 +250,7 @@ export function cafeNodes(data) {
 extras.kafe = cafeNodes;
 
 // Околиці: Article про околиці з посиланням (about) на TouristAttraction, тобто парк природи «Беремицьке».
-// Парк окрема сутність: назва і сайт парку з texts, адреси, координат, годин і квитків немає (в джерелах їх немає), Tur House частиною парку не названий.
+// Парк окрема сутність: назва і опис з texts, без посилання на сайт парку (питання 24б: парк конкурент по проживанню), адреси, координат, годин і квитків немає (в джерелах їх немає), Tur House частиною парку не названий.
 export function okolitsiNodes(data) {
   const page = data.texts.okolitsi;
   const parkId = abs('/okolitsi/#park');
@@ -271,7 +271,6 @@ export function okolitsiNodes(data) {
       '@id': parkId,
       name: page.park.heading,
       description: page.park.text,
-      url: page.park.link.href,
     },
   ];
 }

@@ -108,12 +108,11 @@
       return;
     }
 
-    // 3. Instagram. Профіль: instagram_click. Direct (ig.me): instagram_direct_click, окрім кнопок акції: для них за рішенням R9 подія instagram_click.
+    // 3. Instagram. Профіль: instagram_click. Direct (ig.me): instagram_direct_click, і кнопки акції теж (як на живому лендингу, відповідь Макса на питання 31).
     if (href.indexOf('instagram.com') !== -1 || href.indexOf('ig.me/') !== -1) {
       var isDirect = href.indexOf('ig.me/') !== -1;
-      var asDirectEvent = isDirect && !PROMO_PLACEMENTS[placement];
       dataLayer.push({
-        event: asDirectEvent ? 'instagram_direct_click' : 'instagram_click',
+        event: isDirect ? 'instagram_direct_click' : 'instagram_click',
         event_category: 'social',
         event_action: 'click_instagram',
         event_label: placement + ' | ' + text,

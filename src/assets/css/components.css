@@ -353,8 +353,12 @@ html.nav-open { overflow: hidden; }
   background: var(--color-saffron-bright);
   border-color: var(--color-saffron-bright);
 }
+/* Дві кнопки поруч (баня: телефон і Direct, питання 29). */
+.sticky-cta--pair { gap: 8px; }
+.sticky-cta--pair .btn { flex: 1 1 0; min-width: 0; padding: 14px 10px; }
 @media (max-width: 799.98px) {
   .sticky-cta { display: block; }
+  .sticky-cta--pair { display: flex; }
 }
 
 /* ---------- Сітка та карточка об'єкта ---------- */

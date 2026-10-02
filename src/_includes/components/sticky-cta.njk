@@ -1,3 +1,11 @@
+{%- if page.url in site.bookingByContactPages %}
+{#- баню і чан бронюють телефоном або в Direct, не в BookmeNow (питання 29) #}
+<div class="sticky-cta sticky-cta--pair" data-placement="sticky_mobile_cta">
+  <a class="btn btn-primary" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}">{{ site.cta.call }}</a>
+  <a class="btn btn-primary" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.direct }}</a>
+</div>
+{%- else %}
 <div class="sticky-cta" data-placement="sticky_mobile_cta">
   <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">Забронювати зараз</a>
 </div>
+{%- endif %}

@@ -451,10 +451,10 @@ const PAGE_RULES = {
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Околиці» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
     if (!sameText(doc.querySelector('#intro .lede')?.text, t.intro.text)) f(`вступ не збігається з ${file}`);
-    // парк: текст з джерелом, окреме посилання на сайт парку (єдина зовнішня адреса, rel=noopener), без цін і годин
+    // парк: текст з джерелом, без посилання на сайт парку (питання 24б: парк конкурент по проживанню), без цін і годин
     if (!sameText(doc.querySelector('#park-title')?.text, t.park.heading) || !sameText(doc.querySelector('#park .lede')?.text, t.park.text)) f(`блок про парк не збігається з ${file}`);
     const parkLinks = doc.querySelectorAll('#park a');
-    if (parkLinks.length !== 1 || parkLinks[0].getAttribute('href') !== t.park.link.href || !sameText(parkLinks[0].text, t.park.link.label) || parkLinks[0].getAttribute('target') !== '_blank' || !/\bnoopener\b/.test(parkLinks[0].getAttribute('rel') || '')) f(`посилання на сайт парку: ${t.park.link.href}, підпис «${t.park.link.label}», target=_blank, rel=noopener`);
+    if (parkLinks.length) f(`у блоці про парк не має бути посилань (питання 24б), є ${parkLinks.length}`);
     // Десна, діти, вихідні
     if (!sameText(doc.querySelector('#desna-title')?.text, t.desna.heading) || !sameText(doc.querySelector('#desna .lede')?.text, t.desna.text)) f(`блок про Десну не збігається з ${file}`);
     if (!sameText(doc.querySelector('#family-title')?.text, t.family.heading) || !sameText(doc.querySelector('#family .lede')?.text, t.family.text)) f(`блок «З дітьми» не збігається з ${file}`);

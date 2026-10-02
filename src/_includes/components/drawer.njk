@@ -13,7 +13,11 @@
     {%- endfor %}
   </nav>
   <div class="drawer-footer">
+    {%- if page.url in site.bookingByContactPages %}
+    <a class="btn btn-primary" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.direct }}</a>
+    {%- else %}
     <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">Забронювати онлайн</a>
+    {%- endif %}
     <a class="btn" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}"><span class="nowrap">{{ site.phone.display }}</span></a>
   </div>
 </div>

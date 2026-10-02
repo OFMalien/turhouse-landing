@@ -49,7 +49,7 @@ const slugOf = (url) => (url === '/' ? 'home' : url === '/404.html' ? '404' : ur
 // ---------- допустимі адреси ----------
 const EXTERNAL_OK = new Set([
   site.links.booking, site.links.instagram, site.links.instagramDirect, site.links.googleMaps, site.links.googleMapsRoute, site.links.waze,
-  promo.cta.url, 'https://beremytske.com.ua/',
+  promo.cta.url,
 ]);
 const HEAD_EXTERNAL_OK = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://www.googletagmanager.com', 'https://connect.facebook.net', 'https://www.facebook.com'];
 const TEL = `tel:${site.phone.tel}`;
@@ -226,17 +226,20 @@ for (const [url, { doc }] of docs) {
   checkNav('меню в панелі телефона', navLinks('#nav-drawer nav.drawer-links a'));
   const brand = doc.querySelector('header.site-header a.brand');
   if (brand?.getAttribute('href') !== `${prefix}/` || brand?.getAttribute('aria-label') !== `${site.name}, на головну`) f('лого в шапці має вести на головну з aria-label «Tur House, на головну»');
+  const byContact = (site.bookingByContactPages || []).includes(url); // баня: бронь телефоном і в Direct (питання 29)
   const ig = doc.querySelector('header.site-header a.icon-btn');
-  if (ig?.getAttribute('href') !== site.links.instagram || ig?.getAttribute('aria-label') !== `Instagram ${site.links.instagramHandle}` || !/\bnoopener\b/.test(ig?.getAttribute('rel') || '')) f('іконка Instagram у шапці: адреса, aria-label і rel з site.json');
-  const hb = doc.querySelector('header.site-header .header-actions a.btn-primary');
-  if (hb?.getAttribute('href') !== site.links.booking || norm(hb?.text) !== 'Забронювати') f('кнопка «Забронювати» в шапці має вести на BookmeNow з site.json');
+  const wantIg = byContact ? { h: site.links.instagramDirect, aria: site.cta.direct } : { h: site.links.instagram, aria: `Instagram ${site.links.instagramHandle}` };
+  if (ig?.getAttribute('href') !== wantIg.h || ig?.getAttribute('aria-label') !== wantIg.aria || !/\bnoopener\b/.test(ig?.getAttribute('rel') || '')) f(byContact ? 'іконка Instagram у шапці бані має вести в Direct (питання 29)' : 'іконка Instagram у шапці: адреса, aria-label і rel з site.json');
+  const hbs = doc.querySelectorAll('header.site-header .header-actions a.btn').map((a) => ({ t: norm(a.text), h: a.getAttribute('href'), aria: a.getAttribute('aria-label') }));
+  const wantHb = byContact ? [{ t: site.cta.call, h: TEL, aria: TEL_ARIA }] : [{ t: 'Забронювати', h: site.links.booking, aria: undefined }];
+  if (!same(hbs, wantHb)) f(byContact ? 'шапка бані: кнопка «Подзвонити» (телефон) замість BookmeNow' : 'кнопка «Забронювати» в шапці має вести на BookmeNow з site.json');
   const toggle = doc.querySelector('header.site-header button.nav-toggle');
   if (!toggle || toggle.getAttribute('aria-controls') !== 'nav-drawer' || toggle.getAttribute('aria-expanded') !== 'false' || !toggle.getAttribute('aria-label')) f('кнопка меню: aria-controls=nav-drawer, aria-expanded=false, aria-label');
   const drawer = doc.querySelector('#nav-drawer');
   if (!drawer || drawer.getAttribute('role') !== 'dialog' || drawer.getAttribute('aria-modal') !== 'true' || drawer.getAttribute('inert') === undefined) f('панель меню: role=dialog, aria-modal=true і inert, поки закрита');
   if (drawer && !drawer.querySelector('button.drawer-close[aria-label]')) f('у панелі меню немає кнопки закриття з aria-label');
   const db = drawer?.querySelector('.drawer-footer a.btn-primary');
-  if (db?.getAttribute('href') !== site.links.booking) f('кнопка «Забронювати онлайн» у панелі меню має вести на BookmeNow');
+  if (db?.getAttribute('href') !== (byContact ? site.links.instagramDirect : site.links.booking)) f(byContact ? 'головна кнопка в панелі меню має вести в Instagram Direct' : 'кнопка «Забронювати онлайн» у панелі меню має вести на BookmeNow');
 
   // ----- підвал -----
   const foot = footers[0];
@@ -274,7 +277,11 @@ for (const [url, { doc }] of docs) {
   }
   const sticky = doc.querySelectorAll('.sticky-cta');
   if (sticky.length !== 1) f(`липка кнопка: має бути одна, є ${sticky.length}`);
-  else if (sticky[0].querySelector('a')?.getAttribute('href') !== site.links.booking || norm(sticky[0].querySelector('a')?.text) !== 'Забронювати зараз') f('липка кнопка «Забронювати зараз» має вести на BookmeNow');
+  else {
+    const sl = sticky[0].querySelectorAll('a').map((a) => ({ t: norm(a.text), h: a.getAttribute('href') }));
+    const wantS = byContact ? [{ t: site.cta.call, h: TEL }, { t: site.cta.direct, h: site.links.instagramDirect }] : [{ t: 'Забронювати зараз', h: site.links.booking }];
+    if (!same(sl, wantS)) f(byContact ? 'липкі кнопки: «Подзвонити» і «Написати в Direct»' : 'липка кнопка «Забронювати зараз» має вести на BookmeNow');
+  }
 
   // ----- акція: банер і вікно рівно з promo.json -----
   const wantRows = promoItems.map((r) => ({ who: r.label, was: `${money(r.was)} грн`, now: `${money(r.now)} грн` }));
