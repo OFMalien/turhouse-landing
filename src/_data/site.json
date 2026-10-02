@@ -27,7 +27,8 @@
   "analytics": {
     "gtm": [
       "GTM-PRF3SNG",
-      "GTM-T97JFZCZ"
+      "GTM-T97JFZCZ",
+      "GTM-MW9BMZ6F"
     ],
     "gtmDelayMs": 4000,
     "metaPixel": "548259214495555"

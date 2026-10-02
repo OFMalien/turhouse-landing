@@ -100,7 +100,7 @@ if (mode === 'preview') {
     if (rel(f) === '404.html') continue;
     if (/<meta name="robots" content="[^"]*noindex/.test(read(f))) fail(`У бойовій збірці є noindex: ${rel(f)}`);
   }
-  const GTM_IDS = ['GTM-PRF3SNG', 'GTM-T97JFZCZ'];
+  const GTM_IDS = ['GTM-PRF3SNG', 'GTM-T97JFZCZ', 'GTM-MW9BMZ6F'];
   for (const f of htmlFiles) {
     const h = read(f);
     for (const id of GTM_IDS) {
