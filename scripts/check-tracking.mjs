@@ -106,7 +106,7 @@ for (const file of pages) {
       const v = Number(link.getAttribute('data-value'));
       if (v > 0) wantItem.value = v;
       for (const [k, v2] of Object.entries(wantItem)) if (main[k] !== v2) fail(url, `booking_click ${label}: ${k} має бути ${v2}, є ${main[k]}`);
-      for (const k of ['item_name', 'item_category', 'item_variant', 'value']) if (!(k in wantItem) && k in main) fail(url, `booking_click ${label}: зайве поле ${k}`);
+      for (const k of ['item_name', 'item_category', 'item_variant', 'value']) if (!(k in wantItem) && main[k] !== undefined) fail(url, `booking_click ${label}: зайве поле ${k}`);
       const pc = pixelCalls[0];
       if (!pc || pc[2].content_name !== (wantItem.item_name || 'BookmeNow Booking') || pc[2].currency !== 'UAH' || pc[2].content_category !== placement || (wantItem.value ? pc[2].value !== wantItem.value : 'value' in pc[2])) fail(url, `InitiateCheckout ${label}: ${JSON.stringify(pc)}`);
     }

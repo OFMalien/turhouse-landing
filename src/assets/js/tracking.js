@@ -76,7 +76,8 @@
         event_label: placement + ' | ' + text,
         placement: placement,
         link_url: href,
-        page_location: window.location.pathname
+        page_location: window.location.pathname,
+        item_name: undefined // dataLayer v2 пам'ятає минулі значення: скидаємо, якщо bookingItem не дасть назви (так само в подіях нижче)
       };
       for (var k in item) booking[k] = item[k];
       dataLayer.push(booking);
@@ -96,7 +97,9 @@
         event_action: isPromoCall ? 'call_promo_booking' : 'click_phone',
         event_label: placement + ' | ' + text,
         placement: placement,
-        phone_number: href.replace(/^tel:/, '')
+        phone_number: href.replace(/^tel:/, ''),
+        link_url: href,
+        item_name: undefined
       });
       dataLayer.push({ event: 'click_tel', placement: placement });
       dataLayer.push({ event: 'Click_tel_ga4', placement: placement });
@@ -115,7 +118,8 @@
         event_action: 'click_instagram',
         event_label: placement + ' | ' + text,
         placement: placement,
-        link_url: href
+        link_url: href,
+        item_name: undefined
       });
       dataLayer.push({ event: 'Click_inst_ga4', placement: placement });
       pixel('Contact', { content_name: isDirect ? 'Instagram Direct Message' : 'Instagram Profile View', content_category: placement });
@@ -130,7 +134,8 @@
         event_action: 'get_directions',
         event_label: placement + ' | ' + (href.indexOf('waze') !== -1 ? 'waze' : 'google_maps'),
         placement: placement,
-        link_url: href
+        link_url: href,
+        item_name: undefined
       });
       pixel('FindLocation', { content_name: 'Route Directions', content_category: placement });
     }
