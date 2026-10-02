@@ -63,6 +63,7 @@ for (const f of htmlFiles) {
   const h = read(f);
   if (!/dataLayer\.push\(\{"event":"page_context"/.test(h)) fail(`Немає page_context у dataLayer: ${rel(f)}`);
   if (!/<link rel="apple-touch-icon"/.test(h)) fail(`Немає apple-touch-icon: ${rel(f)}`);
+  if (!h.includes(`<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; form-action 'self'">`)) fail(`Немає захисного CSP (base-uri, object-src, form-action): ${rel(f)}`);
 }
 const manifestPath = path.join(dir, 'site.webmanifest');
 if (!fs.existsSync(manifestPath)) fail('Немає site.webmanifest');

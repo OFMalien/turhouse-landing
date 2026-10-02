@@ -2,6 +2,9 @@
 {%- set ogImageUrl = env.origin + '/assets/img/static/' + (ogImage or site.ogImage.file) -%}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{#- Захист без ризику для аналітики (vibe-audit 02.10.2026): без чужого <base>, плагінів і відправки форм на чужі адреси.
+    script-src не обмежуємо: старі контейнери GTM (чиї - невідомо) можуть вставляти теги з інших доменів, і підрахунок броні тихо зламався б. #}
+<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; form-action 'self'">
 <title>{{ pageTitle }}</title>
 {%- if description %}
 <meta name="description" content="{{ description }}">
