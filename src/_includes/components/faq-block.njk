@@ -1,0 +1,23 @@
+{#- Питання та відповіді сторінки: дані з texts/<сторінка>.json -> faq (caption, heading, items). Розмітка як у FAQ головної;
+    ті самі питання йдуть у FAQPage JSON-LD (schema.js, pageFaqPage), тож текст і розмітка не розходяться (T2). -#}
+<section class="section section--alt" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <p class="caption">{{ faqBlock.caption }}</p>
+    <h2 id="faq-title">{{ faqBlock.heading }}</h2>
+    <div class="faq-list">
+      {%- for item in faqBlock.items %}
+      <details class="faq-item" id="faq-{{ item.id }}">
+        <summary>{{ item.q }}</summary>
+        <div class="faq-item__answer">
+          <p>{{ item.a }}</p>
+          {%- if item.links and item.links.length %}
+          <p class="faq-item__links">
+            {%- for l in item.links %}<a href="{{ l.url | url }}">{{ l.label }}</a>{% if not loop.last %} {% endif %}{% endfor %}
+          </p>
+          {%- endif %}
+        </div>
+      </details>
+      {%- endfor %}
+    </div>
+  </div>
+</section>

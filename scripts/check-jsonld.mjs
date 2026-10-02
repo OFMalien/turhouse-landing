@@ -87,7 +87,14 @@ for (const f of htmlFiles) {
     if (dupIds.length) fail(`${name}: повторні @id: ${[...new Set(dupIds)].join(', ')}`);
     for (const r of referenced) if (!defined.includes(r)) fail(`${name}: посилання на неіснуючий вузол @id ${r}`);
     const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/yak-distatysya/': ['WebPage', 'Place'], '/kontakty/': ['ContactPage'] };
-    if (!same(graph.map((n) => n['@type']).sort(), ['LodgingBusiness', 'WebSite', 'BreadcrumbList', ...(EXPECT_TOP[pageUrl] || [])].sort())) fail(`${name}: склад графа ${JSON.stringify(graph.map((n) => n['@type']))} не збігається з очікуваним для сторінки`);
+    // Внутрішні сторінки з блоком «Питання та відповіді» (texts/<сторінка>.json -> faq.items) мають ще FAQPage з тими самими питаннями
+    const pageFaqItems = slug !== 'home' && fs.existsSync(new URL(`../src/_data/texts/${slug}.json`, import.meta.url)) ? textsOf(slug).faq?.items : null;
+    if (pageFaqItems?.length) {
+      const fp = graph.find((n) => n['@type'] === 'FAQPage');
+      const want = { '@type': 'FAQPage', '@id': `${ORIGIN}${pageUrl}#faq`, mainEntity: pageFaqItems.map((i) => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a } })) };
+      if (!same(fp, want)) fail(`${name}: FAQPage має збігатися з texts/${slug}.json -> faq.items`);
+    }
+    if (!same(graph.map((n) => n['@type']).sort(), ['LodgingBusiness', 'WebSite', 'BreadcrumbList', ...(EXPECT_TOP[pageUrl] || []), ...(pageFaqItems?.length ? ['FAQPage'] : [])].sort())) fail(`${name}: склад графа ${JSON.stringify(graph.map((n) => n['@type']))} не збігається з очікуваним для сторінки`);
 
     // LodgingBusiness: усе з site.json, даних цін і видимого тексту головної (опис, «Що є на території», FAQ про тварин), без сторонніх полів (openingHours, priceValidUntil тощо)
     const lb = graph.find((n) => n['@type'] === 'LodgingBusiness');
@@ -104,11 +111,11 @@ for (const f of htmlFiles) {
         url: `${ORIGIN}/`,
         telephone: site.phone.tel,
         image: `${ORIGIN}/assets/img/static/${site.ogImage.file}`,
-        logo: `${ORIGIN}/assets/img/static/logo.png`,
+        logo: `${ORIGIN}/apple-touch-icon.png`,
         priceRange: `${Math.min(...nums)}-${Math.max(...nums)} UAH`,
         address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, addressRegion: site.address.region, addressCountry: site.address.country },
         hasMap: site.links.googleMaps,
-        sameAs: [site.links.instagram],
+        sameAs: [site.links.instagram, site.links.googleMaps],
         geo: { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude },
         amenityFeature: readData('texts/home.json').territory.items.map((t) => ({ '@type': 'LocationFeatureSpecification', name: t.title, value: true })),
         ...(readData('faq.json').some((f) => f.id === 'pets') ? { petsAllowed: true } : {}),
@@ -186,11 +193,13 @@ for (const f of htmlFiles) {
       if (lodging.image && !lodging.image.startsWith(ORIGIN)) fail(`${name}: LodgingBusiness.image не на ${ORIGIN}`);
     }
 
-    // FAQPage: тільки на головній, питання і відповіді дослівно з faq.json (правило T2: розмітка = видимий текст), без HTML у відповідях
+    // FAQPage головної: питання і відповіді дослівно з faq.json (правило T2: розмітка = видимий текст), без HTML у відповідях.
+    // Інші сторінки мають FAQPage лише тоді, коли в texts/<сторінка>.json є faq.items (перевірка вище, біля складу графа).
     const faqNode = graph.find((n) => n['@type'] === 'FAQPage');
     if (name === 'index.html' && !faqNode) fail(`${name}: на головній має бути FAQPage`);
-    if (name !== 'index.html' && faqNode) fail(`${name}: FAQPage є лише на головній (питання тільки з faq.json)`);
-    if (faqNode) {
+    if (name !== 'index.html' && faqNode && !pageFaqItems?.length) fail(`${name}: FAQPage без блоку faq.items у texts/${slug}.json`);
+    if (faqNode && pageFaqItems?.length) for (const [i, e] of (faqNode.mainEntity || []).entries()) if (/<[a-z][^>]*>/i.test(e.acceptedAnswer?.text || '')) fail(`${name}: у відповіді FAQPage[${i}] є HTML`);
+    if (faqNode && name === 'index.html') {
       const expected = JSON.parse(fs.readFileSync(new URL('../src/_data/faq.json', import.meta.url), 'utf8'));
       const ents = faqNode.mainEntity || [];
       if (ents.length !== expected.length) fail(`${name}: у FAQPage ${ents.length} питань, у faq.json ${expected.length}`);

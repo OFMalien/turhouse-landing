@@ -33,7 +33,7 @@ export function lodgingBusiness(data) {
     url: abs('/'),
     telephone: site.phone.tel,
     image: abs(`/assets/img/static/${site.ogImage.file}`),
-    logo: abs('/assets/img/static/logo.png'),
+    logo: abs('/apple-touch-icon.png'),
     priceRange: priceRange(data),
     address: {
       '@type': 'PostalAddress',
@@ -43,7 +43,7 @@ export function lodgingBusiness(data) {
       addressCountry: site.address.country,
     },
     hasMap: site.links.googleMaps,
-    sameAs: [site.links.instagram],
+    sameAs: [site.links.instagram, site.links.googleMaps],
   };
   if (site.geo) {
     node.geo = { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude };
@@ -349,10 +349,24 @@ export function contactsNodes(data) {
 }
 extras.kontakty = contactsNodes;
 
+// FAQPage внутрішньої сторінки: питання і відповіді з texts/<сторінка>.json -> faq.items, тих самих, що у видимому блоці faq-block.njk (T2).
+export function pageFaqPage(data) {
+  const slug = data.page.url.replace(/\//g, '');
+  const items = data.texts?.[slug]?.faq?.items;
+  if (!slug || !items?.length) return null;
+  return {
+    '@type': 'FAQPage',
+    '@id': abs(`${data.page.url}#faq`),
+    mainEntity: items.map((item) => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a } })),
+  };
+}
+
 export function buildJsonLd(data) {
   if (!data.site || !data.page || !data.nav) return undefined;
   const nodes = [lodgingBusiness(data), webSite(data), breadcrumbList(data)];
   const extra = data.schemaType && extras[data.schemaType];
   if (extra) nodes.push(...extra(data));
+  const faqNode = pageFaqPage(data);
+  if (faqNode) nodes.push(faqNode);
   return { '@context': 'https://schema.org', '@graph': nodes };
 }

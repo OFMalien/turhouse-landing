@@ -174,7 +174,17 @@ for (const [url, { doc }] of docs) {
     if (!v.startsWith(`${ORIGIN}/`)) f(`${sel}: адреса має починатися з ${ORIGIN}/ (є «${v}»)`);
     else localFile(url, v, sel);
   }
-  if (doc.querySelector('meta[property="og:image"]')?.getAttribute('content') !== `${ORIGIN}/assets/img/static/${site.ogImage.file}`) f('og:image має бути картинкою з site.json ogImage');
+  // og:image: своя обкладинка сторінки з кадру hero (og-<сторінка>.jpg, make-static.mjs), інакше спільна з site.json; alt з photos.json
+  {
+    const slug = url === '/' ? 'home' : url.replace(/\//g, '');
+    const textsFile = path.join(root, 'src/_data/texts', `${slug}.json`);
+    const heroPhoto = slug !== 'home' && fs.existsSync(textsFile) ? JSON.parse(fs.readFileSync(textsFile, 'utf8')).hero?.photo : null;
+    const own = heroPhoto && fs.existsSync(path.join(root, 'src/assets/img/static', `og-${slug}.jpg`)) ? `og-${slug}.jpg` : null;
+    const wantOg = `${ORIGIN}/assets/img/static/${own || site.ogImage.file}`;
+    if (doc.querySelector('meta[property="og:image"]')?.getAttribute('content') !== wantOg) f(`og:image має бути ${wantOg}`);
+    const wantAlt = own ? JSON.parse(fs.readFileSync(path.join(root, 'src/_data/photos.json'), 'utf8'))[heroPhoto].alt : null;
+    if (wantAlt && doc.querySelector('meta[property="og:image:alt"]')?.getAttribute('content') !== wantAlt) f(`og:image:alt має бути «${wantAlt}»`);
+  }
   if (!doc.querySelectorAll('script').some((s) => /classList\.add\('js'\)/.test(s.text))) f('немає інлайн-скрипта, що ставить клас js на <html>');
   // посилання на CSS, JS, іконки, маніфест: адреси з префіксом, файли існують
   for (const l of doc.querySelectorAll('link[href]')) {
