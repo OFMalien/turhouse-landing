@@ -537,13 +537,13 @@ else {
   for (const u of ['/okolitsi/', '/kontakty/', '/nomery/', '/kotedzhi/', '/barn-house/']) if (!linkedR.has(u)) fail(`texts/yak-distatysya.json: немає посилання на ${u} (перелінковка)`);
 }
 
-// texts/kontakty.json: контакти (E3-T15). Телефон, Instagram, BookmeNow, адреса: з site.json; годин рецепції, e-mail, реквізитів у джерелах немає (FACTS §5), не вигадуємо.
+// texts/kontakty.json: контакти (E3-T15). Телефон, Instagram, BookmeNow, адреса: з site.json; e-mail і реквізитів на сайті немає (Макс 03.10: e-mail не потрібен, юрособу не пишемо); адміністратор на зв'язку в будь-який час (Макс 03.10, відповідь на питання 27 для Олі).
 const contactPage = contentFiles.includes('kontakty.json') ? readContent('kontakty.json') : null;
 if (!contactPage) fail('texts/kontakty.json: немає файлу');
 else {
   checkMeta('kontakty.json', contactPage.meta, { titleHas: ['Контакти', 'Tur House'], descHas: ['Instagram', 'BookmeNow', 'телефон'] });
   if (contactPage.hero?.h1 !== 'Контакти Tur House') fail('texts/kontakty.json: hero.h1 «Контакти Tur House»');
-  if (!/Direct/.test(contactPage.hero?.lede || '') || !/BookmeNow/.test(contactPage.hero?.lede || '') || !/Зателефонуйте/.test(contactPage.hero?.lede || '')) fail('texts/kontakty.json: hero.lede про телефон, Instagram Direct і BookmeNow');
+  if (!/Direct/.test(contactPage.hero?.lede || '') || !/BookmeNow/.test(contactPage.hero?.lede || '') || !/телефонуйте/i.test(contactPage.hero?.lede || '') || !/в будь-який час/.test(contactPage.hero?.lede || '')) fail('texts/kontakty.json: hero.lede про телефон, Instagram Direct, BookmeNow і зв\'язок у будь-який час');
   if (!/Зателефонуйте/.test(contactPage.phone?.text || '')) fail('texts/kontakty.json: phone.text пропонує зателефонувати');
   if (!/Direct/.test(contactPage.instagram?.text || '')) fail('texts/kontakty.json: instagram.text про Direct');
   if (!/BookmeNow/.test(contactPage.booking?.text || '') || !/проживання/.test(contactPage.booking?.text || '')) fail('texts/kontakty.json: booking.text про BookmeNow для проживання (баню через BookmeNow не бронюємо, питання 22)');
