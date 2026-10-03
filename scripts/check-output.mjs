@@ -101,11 +101,16 @@ if (mode === 'preview') {
     if (rel(f) === '404.html') continue;
     if (/<meta name="robots" content="[^"]*noindex/.test(read(f))) fail(`У бойовій збірці є noindex: ${rel(f)}`);
   }
-  const GTM_IDS = ['GTM-PRF3SNG', 'GTM-T97JFZCZ', 'GTM-MW9BMZ6F'];
+  const GTM_IDS = ['GTM-T97JFZCZ', 'GTM-MW9BMZ6F'];
+  // Старий контейнер GTM-PRF3SNG знято 03.10 (на живому лендингу a82fad1): його не має бути
+  const GTM_REMOVED = ['GTM-PRF3SNG'];
   for (const f of htmlFiles) {
     const h = read(f);
     for (const id of GTM_IDS) {
       if (!h.includes(`"${id}"`)) fail(`У бойовій збірці немає контейнера ${id}: ${rel(f)}`);
+    }
+    for (const id of GTM_REMOVED) {
+      if (h.includes(id)) fail(`Знятий контейнер ${id} знову на сторінці: ${rel(f)}`);
     }
     // GTM стартує при першій дії відвідувача або через site.analytics.gtmDelayMs мс після load (Lighthouse Performance, ТЗ п.16): без цього завантажувача оцінка падає до 45-75
     const siteJson = JSON.parse(fs.readFileSync(new URL('../src/_data/site.json', import.meta.url), 'utf8'));
