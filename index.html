@@ -1798,6 +1798,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         } catch (err) {
           console.warn('Meta Pixel track error:', err);
         }
+      } else {
+        /* піксель ще не завантажився (GTM-MW9BMZ6F стартує із затримкою) - тег пікселя в GTM відправить ці події після init */
+        (window._fbqPending = window._fbqPending || []).push([eventName, params]);
       }
     }
 
