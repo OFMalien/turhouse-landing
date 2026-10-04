@@ -12,27 +12,22 @@ analytics:
 ---
 {%- set t = texts.home %}
 <section class="hero on-dark" aria-labelledby="hero-title" data-placement="hero_header">
+  <div class="hero__media">
+    {% photo t.hero.photo, { priority: true, sizes: "100vw", class: "media" } %}
+  </div>
   <div class="wrap hero__inner">
-    <div class="hero__copy">
-      <div class="hero__brand">
-        <img class="hero__logo" src="{{ '/assets/img/static/logo-192.png' | url }}" width="128" height="128" alt="">
-        <p class="hero__name"><span>Tur</span> <span>House</span></p>
-      </div>
-      <p class="caption">{{ site.address.short }}</p>
-      <h1 id="hero-title">{{ t.hero.h1 }}</h1>
-      <ul class="tag-list" aria-label="Коротко про комплекс">
-        {%- for tag in t.hero.tags %}
-        <li>{{ tag }}</li>
-        {%- endfor %}
-      </ul>
-      <p class="lede">{{ t.hero.lede }}</p>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
-        <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
-      </div>
-    </div>
-    <div class="hero__media">
-      {% photo t.hero.photo, { priority: true, sizes: "(min-width: 960px) 540px, 100vw", class: "media" } %}
+    <p class="caption">{{ site.address.short }}</p>
+    <p class="hero__name" aria-hidden="true">Tur House</p>
+    <h1 id="hero-title">{{ t.hero.h1 }}</h1>
+    <ul class="tag-list" aria-label="Коротко про комплекс">
+      {%- for tag in t.hero.tags %}
+      <li>{{ tag }}</li>
+      {%- endfor %}
+    </ul>
+    <p class="lede">{{ t.hero.lede }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+      <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
     </div>
   </div>
 </section>

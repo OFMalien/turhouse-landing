@@ -620,42 +620,62 @@ html.nav-open { overflow: hidden; }
 html.modal-open { overflow: hidden; }
 
 /* ---------- Головна: hero, теги, вступ, формати, банний блок (E4-T1) ---------- */
-.hero { background: var(--bg-dark); padding-block: clamp(40px, 6vw, 88px); }
-.hero__inner { display: grid; gap: 36px; align-items: center; }
-.hero__copy { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
-/* Назва і логотип крупно (рішення Макса 05.10.2026): логотип зліва, «TUR» і «HOUSE» двома рядками справа; H1 нижче як підзаголовок. */
-.hero__brand { display: flex; align-items: center; gap: clamp(16px, 2.4vw, 28px); }
-.hero__logo { width: clamp(88px, 11vw, 128px); height: auto; flex: none; }
+/* Перший екран як на боєвому лендингу (рішення Макса 05.10.2026): фото на весь екран, затемнення знизу, текст по центру внизу.
+   Назва «Tur House» крупно прозорим елементом p (H1 лишається змістовним для пошуку), логотип у шапці сайту. */
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: calc(100svh - 69px);
+  padding: clamp(96px, 14vw, 140px) 0 clamp(40px, 5vw, 64px);
+  background: var(--bg-dark);
+  color: var(--color-parchment);
+  overflow: hidden;
+}
+.hero__media { position: absolute; inset: 0; }
+.hero__media picture { display: block; height: 100%; }
+.hero__media img { width: 100%; height: 100%; object-fit: cover; }
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(41, 38, 34, 0.35) 0%, rgba(41, 38, 34, 0.4) 40%, rgba(41, 38, 34, 0.92) 100%);
+}
+.hero__inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.hero__inner .caption { margin: 0 0 18px; }
 .hero__name {
-  margin: 0;
-  font-family: var(--font-serif);
+  margin: 0 0 8px;
+  font-family: var(--font-sans);
   font-weight: 500;
-  font-size: clamp(52px, 7vw, 88px);
-  line-height: 0.9;
-  letter-spacing: 0.04em;
+  font-size: clamp(56px, 13vw, 178px);
+  line-height: 0.85;
+  letter-spacing: -0.016em;
   text-transform: uppercase;
   color: var(--color-parchment);
 }
-.hero__name span { display: block; }
-.hero__copy h1 { max-width: 28ch; font-size: clamp(22px, 2.5vw, 32px); line-height: 1.12; }
-.hero__copy .btn-row { margin-top: 6px; }
-.hero__media picture { display: block; }
-.hero__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line-on-dark); }
-@media (min-width: 960px) {
-  .hero__inner { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: 64px; }
+.hero__inner h1 { max-width: 30ch; margin: 10px auto 0; font-size: clamp(24px, 3.2vw, 40px); line-height: 1.08; letter-spacing: -0.02em; }
+.hero__inner .lede { max-width: 52ch; margin: 18px auto 0; color: var(--color-linen); }
+/* Текст прижат к низу екрана, тому запасаємо висоту під рядки, щоб підміна шрифту не зсувала блок (CLS): заголовок 3 рядки, теги 3, лід 4 (на широких екранах 3). */
+.hero__inner h1 { min-height: 3.24em; }
+.hero__inner .tag-list { min-height: 4.5em; }
+.hero__inner .lede { min-height: 6.2em; }
+@media (min-width: 700px) {
+  .hero__inner .tag-list { min-height: 1.5em; }
+  .hero__inner .lede { min-height: 4.65em; }
 }
+.hero__inner .btn-row { justify-content: center; margin-top: 28px; }
 
-.tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-list { margin-top: 16px; text-align: center; }
 .tag-list li {
-  padding: 6px 14px;
-  border: 1px solid var(--line-on-dark-strong);
-  border-radius: 999px;
+  display: inline;
   font-size: var(--text-small);
   font-weight: 600;
   letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--text-on-dark);
+  color: var(--color-parchment);
 }
+.tag-list li:not(:last-child)::after { content: "\2022"; margin-inline: 0.7em; }
 
 .intro-list { margin-top: 28px; border-top: 1px solid var(--line); }
 .intro-list__item {
