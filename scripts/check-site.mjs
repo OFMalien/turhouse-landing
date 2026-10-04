@@ -385,9 +385,9 @@ for (const [url, { doc }] of docs) {
     for (const u of srcsetUrls(s.getAttribute('srcset'))) localFile(url, u, 'source srcset');
     if (!/^image\/(avif|webp)$/.test(s.getAttribute('type') || '')) f(`<source>: тип «${s.getAttribute('type')}» не avif і не webp`);
   }
-  const heroImg = doc.querySelector('.page-hero img, .hero img');
+  const heroImg = doc.querySelector('.page-hero img, .hero__media img');
   if (heroImg && (heroImg.getAttribute('loading') !== 'eager' || heroImg.getAttribute('fetchpriority') !== 'high')) f('картинка шапки (LCP) має бути loading=eager і fetchpriority=high');
-  for (const img of doc.querySelectorAll('main img')) if (img !== heroImg && img.getAttribute('loading') !== 'lazy') f(`<img ${path.basename(img.getAttribute('src') || '')}> нижче шапки має бути loading=lazy`);
+  for (const img of doc.querySelectorAll('main img')) if (img !== heroImg && !/(^|\s)hero__logo(\s|$)/.test(img.getAttribute('class') || '') && img.getAttribute('loading') !== 'lazy') f(`<img ${path.basename(img.getAttribute('src') || '')}> нижче шапки має бути loading=lazy`);
 
   // ----- заголовки, id, aria-посилання -----
   const ids = doc.querySelectorAll('[id]').map((e) => e.getAttribute('id'));
@@ -420,7 +420,7 @@ for (const [url, { doc }] of docs) {
     }
     // кадр шапки і галерея з texts: ті самі кадри в тому самому порядку
     if (t.hero?.photo) {
-      const hi = doc.querySelector('.page-hero img, .hero img, .page-hero .photo-placeholder');
+      const hi = doc.querySelector('.page-hero img, .hero__media img, .page-hero .photo-placeholder');
       if (!hi) f(`у шапці немає картинки (texts/${slug}.json hero.photo = ${t.hero.photo})`);
       else if (photoIdOfEl(hi) !== t.hero.photo) f(`картинка шапки має бути ${t.hero.photo}, є ${photoIdOfEl(hi)}`);
     }

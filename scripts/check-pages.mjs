@@ -203,7 +203,7 @@ const PAGE_RULES = {
       if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока/якоря #${id} (зовнішні посилання ТЗ §6)`);
     }
     // hero: перший екран, eager + fetchpriority
-    const heroImg = doc.querySelector('.hero img');
+    const heroImg = doc.querySelector('.hero__media img');
     if (!heroImg || heroImg.getAttribute('loading') !== 'eager' || heroImg.getAttribute('fetchpriority') !== 'high') f('картинка hero має бути loading=eager і fetchpriority=high');
     if (doc.querySelectorAll('.hero .btn').length < 2) f('у hero дві кнопки: бронювання і Instagram');
     // три формати проживання: ціни з даних, формат «2 500 грн / доба»
