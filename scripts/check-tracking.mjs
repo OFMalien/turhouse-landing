@@ -48,7 +48,7 @@ function expectFor(href, placement, link) {
     const direct = href.includes('ig.me/');
     return { events: [direct ? 'instagram_direct_click' : 'instagram_click', 'Click_inst_ga4'], pixel: 'Contact' };
   }
-  if (href.includes('google.com/maps') || href.includes('waze.com')) return { events: ['map_route_click'], pixel: 'FindLocation' };
+  if (href.includes('google.com/maps') || href.includes('maps.google.com') || href.includes('waze.com')) return { events: ['map_route_click'], pixel: 'FindLocation' };
   return null;
 }
 

@@ -11,6 +11,8 @@ const IMG_SOURCE_DIR = 'src/assets/img/source';
 const IMG_CACHE_DIR = '.eleventy-img-cache';
 const IMG_URL_PATH = `${env.pathPrefix}assets/img/`;
 const usedImageFiles = new Set();
+// Сіра заглушка замість відсутнього фото. Знак питання прихований від читачів екрана, опис дає aria-label.
+const PLACEHOLDER_HTML = '<div class="photo-placeholder" role="img" aria-label="Фото буде додано"><span aria-hidden="true">?</span></div>';
 const photos = JSON.parse(fs.readFileSync(new URL('./src/_data/photos.json', import.meta.url), 'utf8'));
 
 export default function (eleventyConfig) {
@@ -75,7 +77,9 @@ export default function (eleventyConfig) {
 
   // {% photo "група/назва", { sizes: "...", priority: true, class: "...", alt: "...(необов'язково)" } %}
   // Файл і опис беруться з паспорта src/_data/photos.json, щоб alt не розходився між сторінками.
+  // Спеціальний id "placeholder": кадру ще немає, замість нього сіра заглушка зі знаком питання (рішення Макса 04.10.2026).
   eleventyConfig.addAsyncShortcode('photo', async function (id, options = {}) {
+    if (id === 'placeholder') return PLACEHOLDER_HTML;
     const p = photos[id];
     if (!p) throw new Error(`photo "${id}": немає запису в src/_data/photos.json`);
     return renderImage(p.file, options.alt ?? p.alt, options);

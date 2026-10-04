@@ -5,11 +5,11 @@
     Змінна cardInfoOnly (необов'язкова): інформаційна карточка (баня, чан, басейн) без блока ціни й без кнопки броні проживання.
     Поле лише для таких карточок: note (коротка примітка, напр. «За попереднім бронюванням»); текст береться з description або text. -#}
 <article class="card-object"{% if item.id %} id="{{ item.id }}"{% endif %}>
-  <div class="card-object__media{% if not item.photo %} card-object__media--empty{% endif %}">
+  <div class="card-object__media">
     {%- if item.photo %}
     {% photo item.photo, { sizes: "(min-width: 1000px) 380px, (min-width: 600px) 50vw, 100vw" } %}
     {%- else %}
-    <div class="card-object__placeholder" role="img" aria-label="Фото цього типу готуємо"><span>Фото цього типу готуємо</span></div>
+    {% photo "placeholder" %}
     {%- endif %}
   </div>
   <div class="card-object__body">

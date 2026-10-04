@@ -98,6 +98,8 @@ function photoIdOf(src) {
   const e = m && Object.entries(photos).find(([, v]) => path.basename(v.file, path.extname(v.file)) === m[1]);
   return e ? e[0] : null;
 }
+// Кадр-елемент: <img> або сіра заглушка «placeholder» (div.photo-placeholder, кадру ще немає).
+const photoIdOfEl = (el) => (/(^|\s)photo-placeholder(\s|$)/.test(el.getAttribute('class') || '') ? 'placeholder' : photoIdOf(el.getAttribute('src')));
 
 // ---------- сторінки з акцією: банер і вікно ----------
 const PROMO_BANNER = new Set(['/', '/nomery/', '/kotedzhi/']);
@@ -418,12 +420,12 @@ for (const [url, { doc }] of docs) {
     }
     // кадр шапки і галерея з texts: ті самі кадри в тому самому порядку
     if (t.hero?.photo) {
-      const hi = doc.querySelector('.page-hero img, .hero img');
+      const hi = doc.querySelector('.page-hero img, .hero img, .page-hero .photo-placeholder');
       if (!hi) f(`у шапці немає картинки (texts/${slug}.json hero.photo = ${t.hero.photo})`);
-      else if (photoIdOf(hi.getAttribute('src')) !== t.hero.photo) f(`картинка шапки має бути ${t.hero.photo}, є ${photoIdOf(hi.getAttribute('src'))}`);
+      else if (photoIdOfEl(hi) !== t.hero.photo) f(`картинка шапки має бути ${t.hero.photo}, є ${photoIdOfEl(hi)}`);
     }
     if (Array.isArray(t.gallery?.photos)) {
-      const got = doc.querySelectorAll('#gallery img').map((i) => photoIdOf(i.getAttribute('src')));
+      const got = doc.querySelectorAll('#gallery img, #gallery .photo-placeholder').map((i) => photoIdOfEl(i));
       if (!same(got, t.gallery.photos)) f(`галерея: кадри мають бути ${JSON.stringify(t.gallery.photos)}, є ${JSON.stringify(got)}`);
     }
   }

@@ -81,6 +81,8 @@ else {
 
 // photos.json: паспорт фото, на нього посилаються дані
 const photos = readJson('photos.json') || {};
+// Id заглушки замість відсутнього фото (шорткод photo в eleventy.config.js): у паспорті photos.json його немає, і так має бути.
+const PLACEHOLDER = 'placeholder';
 
 // barn: один дім, два тарифи (R6), без "дім на 12" як окремої позиції
 const barn = readJson('barn.json');
@@ -164,6 +166,7 @@ else {
   else if (cafe.menuUpdated !== '2026-08-28') fail('cafe.json: меню від 2026-08-28 (змінювати дату тільки після нового меню)');
   for (const k of ['serves', 'cuisine']) if (!Array.isArray(cafe[k]) || !cafe[k].length) fail(`cafe.json: ${k} має бути непустим списком`);
   for (const id of [cafe.photo, ...(cafe.gallery || [])]) {
+    if (id === PLACEHOLDER) continue;
     if (!photos[id]) fail(`cafe.json: фото "${id}" немає в photos.json`);
     else if (photos[id].verify) fail(`cafe.json: фото "${id}" позначене verify`);
   }
@@ -175,7 +178,7 @@ else {
 const site = readJson('site.json');
 const money = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 const plain = (s) => String(s || '').replace(/ /g, ' ');
-const FAQ_IDS = ['stay-prices', 'barn-price', 'banya', 'pool', 'internet', 'pets', 'cafe', 'booking'];
+const FAQ_IDS = ['stay-prices', 'barn-price', 'banya', 'pool', 'internet', 'pets', 'cafe', 'checkin', 'booking'];
 const faq = readJson('faq.json');
 if (!Array.isArray(faq)) fail('faq.json: має бути масив питань');
 else {
@@ -195,6 +198,7 @@ else {
   need('pool', ['весняно-осінній']);
   need('internet', ['Starlink']);
   need('pets', ['10 кг', '500 грн']);
+  need('checkin', ['з 15:00', 'до 12:00']);
   need('booking', [site.phone.display, 'BookmeNow']);
   if (!(faq.find((f) => f.id === 'cafe')?.links || []).some((l) => l.url === '/kafe/')) fail('faq.json cafe: потрібне посилання на /kafe/');
 }
@@ -322,6 +326,7 @@ const checkMeta = (file, m, { titleHas = [], descHas = [] } = {}) => {
 // Фото сторінки: є в паспорті, без verify (окрім явно дозволених id)
 const checkPagePhotos = (file, ids, verifyOk = []) => {
   for (const id of ids.filter(Boolean)) {
+    if (id === PLACEHOLDER) continue;
     if (!photos[id]) fail(`texts/${file}: фото "${id}" немає в photos.json`);
     else if (photos[id].verify && !verifyOk.includes(id)) fail(`texts/${file}: фото "${id}" позначене verify і не дозволене на цій сторінці`);
   }
@@ -514,7 +519,7 @@ else {
   if (/\d{1,2}[:.]\d{2}|\d+\s*(га|гектар)/i.test(okJson)) fail('texts/okolitsi.json: годин роботи, площі парку в тексті немає');
   if (/(наш|наші|наше)\s+(парк|тварин|коні|екостежк)/i.test(okJson)) fail('texts/okolitsi.json: Tur House не називає парк і його тварин своїми (ТЗ §6)');
   checkPagePhotos('okolitsi.json', [okolitsi.hero?.photo, ...(okolitsi.gallery?.photos || [])]);
-  if (!same(okolitsi.gallery?.photos, ['cottages/cottages-sunset', 'home/evening-pool']) || okolitsi.hero?.photo !== 'home/hammock') fail('texts/okolitsi.json: у шапці гамак, у галереї два інших територіальні кадри TEMP без повтору шапки (кадрів парку немає, питання в техборзі)');
+  if (!same(okolitsi.gallery?.photos, [PLACEHOLDER, PLACEHOLDER]) || okolitsi.hero?.photo !== PLACEHOLDER) fail('texts/okolitsi.json: кадрів парку, Десни і лісу немає: шапка і обидва місця в галереї це сіра заглушка «placeholder» (Макс 04.10.2026), поки Оля не пришле фото');
   const linkedO = new Set(collectLinks(okolitsi));
   for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!linkedO.has(u)) fail(`texts/okolitsi.json: немає посилання на ${u} (перелінковка)`);
 }

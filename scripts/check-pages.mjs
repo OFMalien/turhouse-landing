@@ -154,6 +154,8 @@ function listPage(cfg) {
       if (!c.querySelector(`a.btn[href="${site.links.booking}"][data-item-name="${r.title}"][data-item-category="${category}"]`)) f(`кнопка броні картки ${r.title} без data-item-name і data-item-category=${category}`);
       if (c.getAttribute('id') !== r.id) f(`у картки ${r.title} має бути id="${r.id}" (якір з розмітки)`);
       if ((r.photo || null) !== (photoIdOf(c.querySelector('img')?.getAttribute('src')) || null)) f(`кадр картки ${r.title} має бути ${r.photo || 'без фото'}`);
+      if (!r.photo && !c.querySelector('.photo-placeholder')) f(`у картки ${r.title} без фото має бути сіра заглушка зі знаком питання`);
+      if (r.photo && c.querySelector('.photo-placeholder')) f(`у картки ${r.title} є фото, заглушки бути не має`);
       if (cfg.features) {
         const got = c.querySelectorAll('.feature-list li').map((li) => norm(li.text));
         if (!same(got, (r.features || []).map(norm))) f(`особливості картки ${r.title} не збігаються з даними`);
@@ -168,9 +170,9 @@ function listPage(cfg) {
     for (const u of cfg.groupLinks) if (!doc.querySelector(`#group a[href$="${u}"]`)) f(`у блоці груп немає посилання на ${u}`);
     if (!doc.querySelector(`#booking a[href="${site.links.booking}"][rel~="noopener"]`) || !doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: BookmeNow, телефон і Instagram Direct');
     // галерея: стільки кадрів, скільки в texts, кожен з alt
-    const gal = doc.querySelectorAll('#gallery img');
+    const gal = doc.querySelectorAll(IMG_OR_PH('#gallery'));
     if (gal.length !== t.gallery.photos.length) f(`у галереї ${gal.length} кадрів, у ${file} ${t.gallery.photos.length}`);
-    for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
+    for (const img of gal) if (!((photoIdOfEl(img) === 'placeholder' ? img.getAttribute('aria-label') : img.getAttribute('alt')) || '').trim()) f('у кадру галереї порожній alt');
     // контекст аналітики з даних
     const ctx = pageContextOf(doc);
     const exp = { event: 'page_context', page_type: 'category', item_category: category, price_range: `${Math.min(...list.map((r) => r.price))}-${Math.max(...list.map((r) => r.price))}`, content_ids: list.map((r) => r.id) };
@@ -188,6 +190,9 @@ const photoIdOf = (src) => {
   const e = m && Object.entries(photosJson).find(([, v]) => path.basename(v.file, path.extname(v.file)) === m[1]);
   return e ? e[0] : null;
 };
+// Кадр-елемент: або <img>, або сіра заглушка «placeholder» (div.photo-placeholder, кадру ще немає).
+const photoIdOfEl = (el) => (!el ? undefined : /(^|\s)photo-placeholder(\s|$)/.test(el.getAttribute('class') || '') ? 'placeholder' : photoIdOf(el.getAttribute('src')));
+const IMG_OR_PH = (scope) => `${scope} img, ${scope} .photo-placeholder`;
 
 const PAGE_RULES = {
   '/'(doc, f) {
@@ -424,11 +429,11 @@ const PAGE_RULES = {
     if (cafe.hours === null && /\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}|щодня|цілодобов|з \d{1,2}(:\d{2})? до \d{1,2}/i.test(doc.querySelector('main')?.text || '')) f('години роботи невідомі, на сторінці не має бути розкладу');
     // галерея: кадри cafe.json без кадру шапки
     const galExpect = cafe.gallery.filter((id) => id !== cafe.photo);
-    const gal = doc.querySelectorAll('#gallery img');
+    const gal = doc.querySelectorAll(IMG_OR_PH('#gallery'));
     if (gal.length !== galExpect.length) f(`у галереї ${gal.length} кадрів, очікується ${galExpect.length} (cafe.json без кадру шапки)`);
-    if (!same(gal.map((i) => photoIdOf(i.getAttribute('src'))), galExpect)) f(`галерея кафе: кадри мають бути ${JSON.stringify(galExpect)} (cafe.json без кадру шапки) у цьому порядку`);
+    if (!same(gal.map((i) => photoIdOfEl(i)), galExpect)) f(`галерея кафе: кадри мають бути ${JSON.stringify(galExpect)} (cafe.json без кадру шапки) у цьому порядку`);
     if (photoIdOf(doc.querySelector('.page-hero img')?.getAttribute('src')) !== cafe.photo) f(`картинка шапки кафе має бути ${cafe.photo}`);
-    for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
+    for (const img of gal) if (!((photoIdOfEl(img) === 'placeholder' ? img.getAttribute('aria-label') : img.getAttribute('alt')) || '').trim()) f('у кадру галереї порожній alt');
     // проживання, посилання
     if (!sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`текст «Кафе і проживання» не збігається з ${file}`);
     for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці проживання немає посилання на ${l.url}`);
@@ -464,11 +469,11 @@ const PAGE_RULES = {
     const stay = doc.querySelectorAll('#stay a').map((a) => ({ t: norm(a.text), h: stripPrefix(a.getAttribute('href')) }));
     if (!same(stay, t.stay.links.map((l) => ({ t: l.label, h: l.url })))) f('посилання в блоці «Де зупинитися поруч» не збігаються з texts (підпис і адреса)');
     // кадри: шапка і галерея з texts, без повторів
-    const hero = doc.querySelector('.page-hero img');
-    if (photoIdOf(hero?.getAttribute('src')) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
-    const gal = doc.querySelectorAll('#gallery img').map((i) => photoIdOf(i.getAttribute('src')));
+    const hero = doc.querySelector(IMG_OR_PH('.page-hero'));
+    if (photoIdOfEl(hero) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
+    const gal = doc.querySelectorAll(IMG_OR_PH('#gallery')).map((i) => photoIdOfEl(i));
     if (!same(gal, t.gallery.photos)) f(`галерея: кадри мають бути ${JSON.stringify(t.gallery.photos)}, є ${JSON.stringify(gal)}`);
-    if (gal.includes(t.hero.photo)) f('кадр шапки повторюється в галереї');
+    if (t.hero.photo !== 'placeholder' && gal.includes(t.hero.photo)) f('кадр шапки повторюється в галереї');
     // на сторінці околиць немає ціни, акції і кнопки броні BookmeNow в межах main
     if (doc.querySelectorAll('main a[href^="https://go.bookmenow.pro"]').length !== doc.querySelectorAll('.cta-band a[href^="https://go.bookmenow.pro"]').length) f('на сторінці околиць немає кнопки броні BookmeNow (крім фінального блока CTA)');
     if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці околиць немає (R9)');
@@ -511,7 +516,7 @@ const PAGE_RULES = {
     if (!doc.querySelector(`#support a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#support a[href="${site.links.instagramDirect}"]`)) f('блок допомоги: телефон і Instagram Direct');
     if (!sameText(doc.querySelector('#stay-title')?.text, t.stay.heading) || !sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`блок «Куди їдете» не збігається з ${file}`);
     for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці «Куди їдете» немає посилання на ${l.url}`);
-    if (photoIdOf(doc.querySelector('.page-hero img')?.getAttribute('src')) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
+    if (photoIdOfEl(doc.querySelector(IMG_OR_PH('.page-hero'))) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
     if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці маршруту немає (R9)');
     const ctx = pageContextOf(doc);
     if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'info', item_category: 'route' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"info","item_category":"route"}, є ${JSON.stringify(ctx)}`);
@@ -527,7 +532,7 @@ const PAGE_RULES = {
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Контакти» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
-    if (photoIdOf(doc.querySelector('.page-hero img')?.getAttribute('src')) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
+    if (photoIdOfEl(doc.querySelector(IMG_OR_PH('.page-hero'))) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
     // три способи зв'язку: телефон, Instagram (Direct і профіль), онлайн-бронювання; усе з site.json
     const card = (id, key, buttons) => {
       const c = doc.querySelector(`[id="${id}"]`);

@@ -126,7 +126,7 @@
     }
 
     // 4. Маршрут і карти
-    if (href.indexOf('google.com/maps') !== -1 || href.indexOf('waze.com') !== -1) {
+    if (href.indexOf('google.com/maps') !== -1 || href.indexOf('maps.google.com') !== -1 || href.indexOf('waze.com') !== -1) {
       dataLayer.push({
         event: 'map_route_click',
         event_category: 'navigation',
