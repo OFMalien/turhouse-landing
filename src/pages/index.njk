@@ -5,6 +5,7 @@ eleventyComputed:
   description: "{{ texts.home.meta.description | safe }}"
   breadcrumbTitle: "{{ texts.home.meta.breadcrumbTitle | safe }}"
 promoModal: true
+heroOverlay: true
 schemaType: home
 analytics:
   page_type: home
@@ -31,6 +32,14 @@ analytics:
     </div>
   </div>
 </section>
+
+<div class="marquee-band" aria-hidden="true">
+  <div class="marquee-track">
+    {%- for round in [1, 2] %}{% for item in t.marquee %}
+    <span>{{ item }}</span>
+    {%- endfor %}{% endfor %}
+  </div>
+</div>
 
 <section class="section intro" aria-label="{{ t.intro.caption }}">
   <div class="wrap">

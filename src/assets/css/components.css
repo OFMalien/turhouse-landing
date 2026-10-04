@@ -627,7 +627,7 @@ html.modal-open { overflow: hidden; }
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  min-height: calc(100svh - 69px);
+  min-height: 100svh;
   padding: clamp(96px, 14vw, 140px) 0 clamp(40px, 5vw, 64px);
   background: var(--bg-dark);
   color: var(--color-parchment);
@@ -644,7 +644,7 @@ html.modal-open { overflow: hidden; }
   background: linear-gradient(180deg, rgba(41, 38, 34, 0.35) 0%, rgba(41, 38, 34, 0.4) 40%, rgba(41, 38, 34, 0.92) 100%);
 }
 .hero__inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.hero__inner .caption { margin: 0 0 18px; }
+.hero__inner .caption { margin: 0 0 18px; font-size: 13px; }
 .hero__name {
   margin: 0 0 8px;
   font-family: var(--font-sans);
@@ -676,6 +676,50 @@ html.modal-open { overflow: hidden; }
   color: var(--color-parchment);
 }
 .tag-list li:not(:last-child)::after { content: "\2022"; margin-inline: 0.7em; }
+
+/* Шапка поверх фото першого екрана, як на боєвому лендингу: прозора, темніє після прокрутки на 70% висоти екрана (клас is-scrolled ставить app.js). */
+.js .has-hero-overlay .site-header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom-color: transparent;
+  transition: background 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease;
+}
+.js .has-hero-overlay .site-header.is-scrolled,
+.js.nav-open .has-hero-overlay .site-header {
+  background: rgba(26, 24, 22, 0.92);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom-color: var(--line-on-dark);
+}
+
+/* Бігуча стрічка під першим екраном (з боєвого лендингу). Для тих, хто вимкнув анімацію, стоїть на місці. */
+.marquee-band {
+  background: var(--color-onyx-warm);
+  overflow: hidden;
+  padding: 16px 0;
+  border-top: 1px solid rgba(216, 203, 184, 0.15);
+  border-bottom: 1px solid rgba(216, 203, 184, 0.15);
+}
+.marquee-track { display: flex; width: max-content; animation: marquee 32s linear infinite; }
+.marquee-track span {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: -0.12px;
+  color: var(--color-parchment);
+  white-space: nowrap;
+  padding: 0 22px;
+}
+.marquee-track span::after { content: "\2022"; margin-left: 22px; color: var(--color-saffron-bright); }
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
 
 .intro-list { margin-top: 28px; border-top: 1px solid var(--line); }
 .intro-list__item {

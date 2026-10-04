@@ -282,6 +282,9 @@ else {
   if (!m.description || m.description.length < 70 || m.description.length > 160) fail(`texts/home.json: meta.description 70-160 знаків, є ${(m.description || '').length}`);
   if (!home.hero?.h1 || !/Беремицьке/.test(home.hero.h1)) fail('texts/home.json: hero.h1 порожній або без "Беремицьке"');
   if (!same(home.hero?.tags, ['Котеджі', 'Басейн з підігрівом', 'Чан', 'Баня на дровах', 'Starlink'])) fail('texts/home.json: hero.tags як на живому лендингу (C5)');
+  // бігуча стрічка під першим екраном: шість пунктів дослівно з боєвого лендингу (Макс 05.10.2026)
+  const MARQUEE = ['Баня на дровах', 'Чан під відкритим небом', 'Басейн з підігрівом', 'Готельні номери', 'Котеджі для компаній', 'Starlink'];
+  if (!same(home.marquee, MARQUEE)) fail(`texts/home.json: marquee має бути ${JSON.stringify(MARQUEE)} (дослівно з боєвого лендингу)`);
   if (!Array.isArray(home.intro?.points) || home.intro.points.length !== 3) fail('texts/home.json: intro.points має бути 3 пункти');
   const introText = (home.intro?.points || []).join(' ');
   if (!/відпочинок під Києвом/i.test(introText) || !/Чернігівщин/.test(introText)) fail('texts/home.json: у вступі має бути кластер "відпочинок під Києвом" (ТЗ §6) і чесне "Чернігівщина"');

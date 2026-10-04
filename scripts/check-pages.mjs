@@ -205,6 +205,10 @@ const PAGE_RULES = {
     // hero: перший екран, eager + fetchpriority
     const heroImg = doc.querySelector('.hero__media img');
     if (!heroImg || heroImg.getAttribute('loading') !== 'eager' || heroImg.getAttribute('fetchpriority') !== 'high') f('картинка hero має бути loading=eager і fetchpriority=high');
+    // бігуча стрічка: прихована від читачів екрана, шість пунктів двічі (для безшовного кола)
+    const mq = doc.querySelector('.marquee-band');
+    if (!mq || mq.getAttribute('aria-hidden') !== 'true') f('після hero має бути .marquee-band з aria-hidden="true"');
+    else if (!same(mq.querySelectorAll('.marquee-track span').map((x) => norm(x.text)), [...t.marquee, ...t.marquee].map(norm))) f('бігуча стрічка: пункти мають бути texts/home.json marquee двічі підряд');
     if (doc.querySelectorAll('.hero .btn').length < 2) f('у hero дві кнопки: бронювання і Instagram');
     // три формати проживання: ціни з даних, формат «2 500 грн / доба»
     const cards = doc.querySelectorAll('#formats .format-card');

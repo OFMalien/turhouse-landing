@@ -63,3 +63,14 @@
   if (desktop.addEventListener) desktop.addEventListener('change', onResize);
   else if (desktop.addListener) desktop.addListener(onResize);
 })();
+
+/* Шапка над фото першого екрана темнішає, коли прокручено 70% висоти екрана (як на боєвому лендингу). */
+(function () {
+  var header = document.querySelector('.has-hero-overlay .site-header');
+  if (!header) return;
+  function update() {
+    header.classList.toggle('is-scrolled', window.scrollY > window.innerHeight * 0.7);
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
