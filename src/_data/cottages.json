@@ -3,13 +3,13 @@
     "id": "cottage-4",
     "category": "cottages",
     "title": "Котедж на 4 гості",
-    "promoLabel": "Котедж",
+    "promoLabel": "Котедж на 4 гості",
     "capacity": "до 4 гостей",
     "count": "2 котеджі цього типу",
     "price": 6000,
     "promoPrice": 4800,
     "features": ["Двокімнатний", "Кухня", "Зона BBQ", "Власна тераса", "Мангал"],
-    "photo": null
+    "photo": "cottages/cottage-orange"
   },
   {
     "id": "cottage-6",
@@ -17,8 +17,10 @@
     "title": "Котедж на 6 гостей",
     "capacity": "до 6 гостей",
     "count": "2 котеджі цього типу",
+    "promoLabel": "Котедж на 6 гостей",
     "price": 7000,
+    "promoPrice": 5600,
     "features": ["Двокімнатний", "Кухня", "Зона BBQ", "Власна тераса", "Мангал", "Розкладний диван на 2 місця"],
-    "photo": null
+    "photo": "cottages/cottage-lavender"
   }
 ]

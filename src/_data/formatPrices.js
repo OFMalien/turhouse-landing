@@ -22,5 +22,5 @@ const wrap = (items) => ({ rows: items, hasPromo: items.some((i) => i.promo !== 
 export default {
   rooms: wrap(rows(rooms, (r) => r.title)),
   cottages: wrap(rows(cottages, (c) => short(c.title))),
-  barn: wrap(barn.tariffs.map((t) => ({ label: t.label, amount: t.amount, promo: null }))),
+  barn: wrap(barn.tariffs.map((t) => ({ label: t.label, amount: t.amount, promo: t.promoAmount ?? null }))),
 };

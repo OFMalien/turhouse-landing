@@ -8,7 +8,7 @@
     "price": 2500,
     "promoPrice": 2000,
     "features": ["У головному корпусі", "Starlink на території", "Басейн включено"],
-    "photo": null
+    "photo": "rooms/room-white-brown"
   },
   {
     "id": "napivlyuks",
@@ -19,7 +19,7 @@
     "price": 2800,
     "promoPrice": 2240,
     "features": ["У головному корпусі", "Starlink на території", "Басейн включено"],
-    "photo": null
+    "photo": "rooms/room-blue"
   },
   {
     "id": "lyuks",
@@ -30,6 +30,6 @@
     "price": 3000,
     "promoPrice": 2400,
     "features": ["У головному корпусі", "Starlink на території", "Басейн включено"],
-    "photo": null
+    "photo": "rooms/room-panorama-window"
   }
 ]

@@ -4,8 +4,8 @@
   "title": "Барн-хаус",
   "capacity": "до 8 або до 12 гостей",
   "tariffs": [
-    { "label": "до 8 гостей", "amount": 11000 },
-    { "label": "до 12 гостей", "amount": 13000 }
+    { "label": "до 8 гостей", "amount": 11000, "promoAmount": 8800 },
+    { "label": "до 12 гостей", "amount": 13000, "promoAmount": 10400 }
   ],
   "features": ["Окремий будинок", "Зона BBQ", "Басейн включено", "Starlink на території"],
   "highlights": [

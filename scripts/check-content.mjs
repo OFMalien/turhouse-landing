@@ -77,9 +77,11 @@ for (const file of pages) {
   texts.push(doc.querySelector('body')?.text || '');
   for (const t of texts) {
     const norm = t.replace(/\s+/g, ' ');
+    // Макс 05.10.2026: про Десну можна писати «кілька хвилин пішки» (єдиний виняток із C9, без цифр)
+    const c9clean = norm.replace(/кілька хвилин пішки/gi, 'кілька…');
     for (const [name, re] of FORBIDDEN) {
-      const m = norm.match(re);
-      if (m) fail(url, `${name}: «${norm.slice(Math.max(0, m.index - 25), m.index + m[0].length + 25)}»`);
+      const m = c9clean.match(re);
+      if (m) fail(url, `${name}: «${c9clean.slice(Math.max(0, m.index - 25), m.index + m[0].length + 25)}»`);
     }
     for (const m of norm.matchAll(HOURS_WORD)) {
       const ctx = norm.slice(Math.max(0, m.index - 12), m.index + m[0].length + 12);
