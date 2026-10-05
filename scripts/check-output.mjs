@@ -116,6 +116,9 @@ if (mode === 'preview') {
     const siteJson = JSON.parse(fs.readFileSync(new URL('../src/_data/site.json', import.meta.url), 'utf8'));
     if (!h.includes(`delay=${siteJson.analytics.gtmDelayMs},`) || !h.includes("['pointerdown','keydown','scroll','touchstart']") || !h.includes("w.addEventListener('load',function(){setTimeout(start,delay);})")) fail(`GTM має запускатися при першій дії або через ${siteJson.analytics.gtmDelayMs} мс після load: ${rel(f)}`);
     if (/<script>\(function\(w,d,s,l,i\)\{/.test(h)) fail(`Стандартний миттєвий сніпет GTM заборонений (відкладений запуск): ${rel(f)}`);
+    // Meta Pixel іде тільки через GTM: прямий fbevents.js або fbq('init') дав би подвійний PageView
+    if (/fbevents\.js|connect\.facebook\.net|fbq\(\s*['"]init['"]/.test(h)) fail(`Прямий Meta Pixel у сторінці (має йти лише через GTM): ${rel(f)}`);
+    if (!(siteJson.analytics.gtmDelayMs >= 1000)) fail('analytics.gtmDelayMs менше 1000 мс: Lighthouse Performance впаде');
     // dataLayer і контекст сторінки мають стояти раніше за GTM
     const ctxAt = h.indexOf('page_context');
     const gtmAt = h.indexOf('googletagmanager.com/gtm.js');
@@ -129,6 +132,12 @@ if (mode === 'preview') {
     const t = read(f);
     if (/localhost|127\.0\.0\.1|ofmalien\.github\.io|turhouse-multipage-preview/.test(t)) fail(`Адреса розробки або превью у бойовій збірці: ${rel(f)}`);
   }
+}
+
+// Сірі заглушки «?» бачать гості: перед живим запуском це має бути осознане рішення Макса (не помилка, а попередження)
+if (mode === 'production') {
+  const ph = htmlFiles.map((f) => [rel(f), (read(f).match(/class="photo-placeholder"/g) || []).length]).filter(([, n]) => n > 0);
+  if (ph.length) console.warn(`ПОПЕРЕДЖЕННЯ: у бойовій збірці сірі заглушки «?» (${ph.reduce((a, [, n]) => a + n, 0)} шт.): ${ph.map(([f, n]) => `${f} ${n}`).join(', ')}`);
 }
 
 if (errors.length) {

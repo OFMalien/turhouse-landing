@@ -219,7 +219,7 @@ export function spaNodes(data) {
 extras['banya-ta-spa'] = spaNodes;
 
 // Кафе та піца-бар: CafeOrCoffeeShop з меню (Menu > MenuSection > MenuItem з ціною) із menu.json і cafe.json.
-// Годин роботи в джерелах немає (cafe.hours === null), тому openingHours, priceRange і acceptsReservations не пишемо.
+// Години кафе 9:00-21:00 відомі (cafe.json hours), але Оля не підтверджувала дні тижня, тому openingHours, priceRange і acceptsReservations не пишемо.
 export function menuItemDescription(item) {
   const base = [item.details, item.weight].filter(Boolean).join(', ');
   const variants = item.variants?.length ? `Варіанти: ${item.variants.join('; ')}` : '';

@@ -627,6 +627,7 @@ html.modal-open { overflow: hidden; }
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  min-height: 100vh;
   min-height: 100svh;
   padding: clamp(96px, 14vw, 140px) 0 clamp(40px, 5vw, 64px);
   background: var(--bg-dark);
@@ -641,10 +642,13 @@ html.modal-open { overflow: hidden; }
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(41, 38, 34, 0.35) 0%, rgba(41, 38, 34, 0.4) 40%, rgba(41, 38, 34, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(41, 38, 34, 0.35) 0%, rgba(41, 38, 34, 0.5) 35%, rgba(41, 38, 34, 0.68) 65%, rgba(41, 38, 34, 0.92) 100%);
 }
 .hero__inner { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .hero__inner .caption { margin: 0 0 18px; font-size: 13px; }
+.hero__inner h1, .hero__inner .tag-list, .hero__inner .lede { text-shadow: 0 1px 14px rgba(20, 18, 16, 0.65); }
+/* На телефоні нижню липку кнопку не можна ставити на кнопки першого екрана */
+@media (max-width: 799.98px) { .hero { padding-bottom: 104px; } }
 .hero__name {
   margin: 0 0 8px;
   font-family: var(--font-sans);
@@ -874,9 +878,13 @@ html.modal-open { overflow: hidden; }
 .gallery-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }
 /* Портретні графіки (варіанти розміщення) і прайс-афіша з Instagram: без обрізання, по центру */
 .variants-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 32px; }
-.variants-grid li { margin: 0; width: min(100%, 340px); }
+.variants-grid li { margin: 0; width: min(100%, 420px); }
 .variants-grid img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: 1px solid var(--line); }
 .price-poster { margin: 36px auto 0; width: min(100%, 420px); }
+/* Плитки цін бані (4 штуки) в один ряд, а не 3 + 1 */
+#price .cards-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+/* Списки «Що є в номері / котеджі» у дві колонки на широких екранах */
+@media (min-width: 800px) { #in-room .check-list, #in-cottage .check-list { max-width: none; grid-template-columns: 1fr 1fr; column-gap: 56px; } }
 .price-poster img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: 1px solid var(--line); }
 
 /* ---------- Меню кафе ---------- */

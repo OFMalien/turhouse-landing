@@ -11,8 +11,8 @@ const IMG_SOURCE_DIR = 'src/assets/img/source';
 const IMG_CACHE_DIR = '.eleventy-img-cache';
 const IMG_URL_PATH = `${env.pathPrefix}assets/img/`;
 const usedImageFiles = new Set();
-// Сіра заглушка замість відсутнього фото. Знак питання прихований від читачів екрана, опис дає aria-label.
-const PLACEHOLDER_HTML = '<div class="photo-placeholder" role="img" aria-label="Фото буде додано"><span aria-hidden="true">?</span></div>';
+// Сіра заглушка замість відсутнього фото. Для читачів екрана блок прихований повністю (aria-hidden), щоб діктор не читав його кожного разу.
+const PLACEHOLDER_HTML = '<div class="photo-placeholder" aria-hidden="true"><span>?</span></div>';
 const photos = JSON.parse(fs.readFileSync(new URL('./src/_data/photos.json', import.meta.url), 'utf8'));
 
 export default function (eleventyConfig) {

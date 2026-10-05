@@ -15,7 +15,9 @@ const readJson = (name) => {
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 // Дозволені ціни на сайті (п.6 промпта): 2500/2800/3000, 6000/7000, 11000 і 13000 (Барн-хаус), 600+200, 500, ціни акції.
-const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800, 1500, 300]);
+const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800]);
+// суми чана і банщика беремо з spa.extras, а не зі статичного списку: «1500 грн» чи «300 грн» деінде не пройдуть без запису в даних
+for (const x of readJson('spa.json')?.extras || []) ALLOWED_PRICES.add(x.amount);
 const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
 // C9: відстань і час у дорозі не вказувати взагалі (км, "N хвилин їзди", "година в дорозі"). Слово "хвилин" саме по собі дозволене (відгук гостя: "з перших хвилин").
 const CYR_CLASS = 'А-Яа-яІіЇїЄєҐґ';
@@ -108,6 +110,7 @@ for (const [name, list] of [['rooms', rooms], ['cottages', cottages]]) {
 
 // spa: 600 + 200, склад комплексу, картки, фото
 const spa = readJson('spa.json');
+
 if (!spa) fail('spa.json: немає файлу');
 else {
   if (spa.price.first !== 600 || spa.price.next !== 200) fail('spa.json: тариф має бути 600 за першу годину і 200 за кожну наступну');
@@ -336,6 +339,15 @@ const checkPagePhotos = (file, ids, verifyOk = []) => {
   }
 };
 
+
+// Подтверждённые Олей 05.10.2026 фразы вырезаем из страницы перед поиском запрещённых слов: само слово разрешено ТОЛЬКО в этих строках, а не на всей странице.
+const withoutConfirmed = (page, cfg) => {
+  const c = JSON.parse(JSON.stringify(page));
+  for (const k of cfg.dropKeys || []) delete c[k];
+  if (c.faq?.items) c.faq.items = c.faq.items.filter((i) => !(cfg.dropFaq || []).includes(i.id));
+  for (const [a, b] of cfg.blank || []) if (c[a]?.[b] !== undefined) c[a][b] = '';
+  return c;
+};
 // texts/nomery.json: сторінка номерів (E3-T8). Зручності номерів підтверджені Олею 05.10.2026 (відповіді на питання 1); чого вона не називала (площа в цифрах, балкон, санвузол окремо, сніданок), не вигадуємо (C6)
 const nomery = contentFiles.includes('nomery.json') ? readContent('nomery.json') : null;
 if (!nomery) fail('texts/nomery.json: немає файлу');
@@ -360,7 +372,7 @@ else {
   if (!/до 8 або до 12 гостей/.test(nomery.group?.text || '') || !/чотирьох і шести гостей/.test(nomery.group?.text || '')) fail('texts/nomery.json: group.text про котеджі на 4 і 6 гостей і Барн-хаус до 8 або до 12 гостей (R5, R6)');
   if (!/BookmeNow/.test(nomery.booking?.text || '') || !/Direct/.test(nomery.booking?.text || '')) fail('texts/nomery.json: booking.text має згадувати BookmeNow і Instagram Direct');
   // зручності, яких немає в джерелах: площа, санвузол, кондиціонер, чайник, телевізор, сніданок, балкон, вид з вікна
-  if (new RegExp(`(?<![${CYR_CLASS}])(кв\\.?\\s?м|м²|санвуз|ванн|балкон|вид з)`, 'i').test(JSON.stringify(nomery))) fail('texts/nomery.json: у тексті є зручності, яких немає в джерелах (площа, санвузол, кондиціонер, сніданок тощо), C6');
+  if (new RegExp(`(?<![${CYR_CLASS}])(кв\\.?\\s?м|м²|санвуз|ванн|балкон|вид з|вид на|кондиціонер|чайник|телевізор|снідан|холодильник|джакузі|сауна|посуд|фен|мінібар|wi-?fi)`, 'i').test(JSON.stringify(withoutConfirmed(nomery, { dropKeys: ['inRoom'], dropFaq: ['difference', 'in-room', 'breakfast'], blank: [['types', 'lead']] })))) fail('texts/nomery.json: у тексті є зручності, яких немає в джерелах (площа, санвузол, кондиціонер, сніданок тощо), C6');
   // фото: hero і where без verify; галерея номерів 4 кадри, verify дозволений лише для них (тип номера не підтверджено, питання 8)
   const ROOM_GALLERY_OK = ['rooms/room-white-brown', 'rooms/room-blue', 'rooms/room-panorama-window'];
   checkPagePhotos('nomery.json', [nomery.hero?.photo, nomery.where?.photo]);
@@ -395,7 +407,7 @@ else {
   if (!/до 8 або до 12 гостей/.test(kotedzhi.group?.text || '') || !/двох гостей/.test(kotedzhi.group?.text || '')) fail('texts/kotedzhi.json: group.text про номери для двох гостей і Барн-хаус до 8 або до 12 гостей (R4, R6)');
   if (!/BookmeNow/.test(kotedzhi.booking?.text || '') || !/Direct/.test(kotedzhi.booking?.text || '')) fail('texts/kotedzhi.json: booking.text має згадувати BookmeNow і Instagram Direct');
   // комплектація, якої Оля не називала (05.10.2026 підтверджено: обладнана кухня з плитою, мікрохвильовкою і чайником, електричне опалення, камін, постільна білизна, засоби гігієни, своя зона BBQ; посуд, рушники та інше не підтверджено), Wi-Fi у котеджах (тільки "на території"), спальні, площа, вечірній вигляд
-  if (new RegExp(`(?<![${CYR_CLASS}])(посуд|рушник|кондиціонер|телевізор|санвуз|ванн|душ|спальн|спален|снідан|кв\\.?\\s?м|м²|паркін|парковк|дитяч|холодильник|балкон)|wi-?fi|вайфай`, 'i').test(JSON.stringify(kotedzhi))) fail('texts/kotedzhi.json: у тексті є комплектація або зручності, яких немає в джерелах (посуд, опалення, спальні, Wi-Fi тощо), C6');
+  if (new RegExp(`(?<![${CYR_CLASS}])(посуд|опален|постіль|постільн|білизн|камін|рушник|кондиціонер|телевізор|санвуз|ванн|душ|спальн|спален|снідан|кв\\.?\\s?м|м²|паркін|парковк|дитяч|холодильник|балкон|джакузі|сауна)|wi-?fi|вайфай`, 'i').test(JSON.stringify(withoutConfirmed(kotedzhi, { dropKeys: ['inCottage'], dropFaq: ['in-cottage'] })))) fail('texts/kotedzhi.json: у тексті є комплектація або зручності, яких немає в джерелах (посуд, опалення, спальні, Wi-Fi тощо), C6');
   // фото: інтер'єри з фіолетовими стінами (verify, питання 9) на сторінку не ставимо; у галереї два підтверджені фасадні кадри
   checkPagePhotos('kotedzhi.json', [kotedzhi.hero?.photo, ...(kotedzhi.gallery?.photos || [])]);
   if (!same(kotedzhi.gallery?.photos, ['cottages/cottage-orange', 'cottages/cottages-sunset', 'cottages/interior-living-purple', 'cottages/interior-tv-purple'])) fail('texts/kotedzhi.json: у галереї два фасадні кадри і два інтер\'єри (Оля 05.10.2026: фіолетові інтер\'єри це котеджі, котеджі однакові)');
@@ -499,6 +511,8 @@ else {
   if (!/Години роботи/.test(kafePage.hours?.heading || '') || !(kafePage.hours?.text || '').includes(`з ${cafe?.hours?.from} до ${cafe?.hours?.to}`) || !/без проживання/.test(kafePage.hours?.text || '') || !/телефоном/.test(kafePage.hours?.text || '') || !/Direct/.test(kafePage.hours?.text || '')) fail('texts/kafe.json: hours.text: «з 9:00 до 21:00», «без проживання», телефон і Direct (Оля 05.10.2026)');
   // чого в джерелах немає
   const kafeJson = JSON.stringify(kafePage);
+  // єдині підтверджені години кафе: з 9:00 до 21:00 (Оля 05.10.2026); будь-які інші години на сторінці заборонені
+  if (/\d{1,2}[:.]\d{2}/.test(kafeJson.replace(/з 9:00 до 21:00/g, ''))) fail('texts/kafe.json: на сторінці кафе є інші години, ніж підтверджені «з 9:00 до 21:00»');
   if (new RegExp(`(?<![${CYR_CLASS}])(щодня|цілодобов|пізн|зранку|вихідн|будн|доставк|навинос|з собою|столик|резерв|десерт|алкогол|вино|пиво|коктейл|віскі|дитяч|вегетар|веган|безглютен|шеф|кухар|пекарн|дров)`, 'i').test(kafeJson)) fail('texts/kafe.json: у тексті є години, доставка, столики, десерти, алкоголь чи інші умови, яких немає в джерелах (R7, C6)');
   // страви, яких немає в menu.json (типові, які можуть "прийти" з власних знань): суші, стейк, шашлик, риба, торти тощо
   const NOT_ON_MENU = new RegExp(`(?<![${CYR_CLASS}])(суші|ролл?и?|стейк[${CYR_CLASS}]*|шашлик[${CYR_CLASS}]*|шаурм[${CYR_CLASS}]*|хінкал[${CYR_CLASS}]*|плов|пельмен[${CYR_CLASS}]*|млинц[${CYR_CLASS}]*|торт[${CYR_CLASS}]*|морозив[${CYR_CLASS}]*|тірамісу|чізкейк[${CYR_CLASS}]*|лимонад[${CYR_CLASS}]*|смузі|фреш[${CYR_CLASS}]*|риб[аиуі]|лосос[${CYR_CLASS}]*|креветк[${CYR_CLASS}]*|устриц[${CYR_CLASS}]*|гриль-бар|сет[${CYR_CLASS}]*)(?![${CYR_CLASS}])`, 'i');
@@ -644,6 +658,71 @@ else {
   if (/\d{1,2}\.\d{1,2}\.\d{2,4}|до\s+\d{1,2}\s+(жовтня|листопада|грудня|січня)|понеділ|вівтор|середа|четвер|п'ятниц/i.test(all) || dayAbbr.test(all)) fail('promo.json: у тексті акції є дата або дні тижня (R9: не писати)');
   if (!/Це не про втечу від життя\. Це про кілька днів, щоб відновити сили й повернутися до нього трохи спокійнішими/.test(promo.lead)) fail('promo.json: lead без дослівного тексту Олі (R9)');
   if (promo.subtitle !== 'Проживання від 2000 грн на двох') fail('promo.json: subtitle має бути "Проживання від 2000 грн на двох" (R9)');
+}
+
+
+// ---------- красная команда 05.10.2026: выдуманные факты не должны проходить мимо точечных проверок ----------
+{
+  const dataDir = path.join(root, 'src/_data');
+  const files = [];
+  for (const f of fs.readdirSync(dataDir)) if (f.endsWith('.json') && !['reviews.json', 'photos.json', 'menu.json'].includes(f)) files.push([f, JSON.parse(fs.readFileSync(path.join(dataDir, f), 'utf8'))]);
+  for (const f of contentFiles) files.push([`texts/${f}`, readContent(f)]);
+  const GLOBAL_BAN = [
+    ['сніданок «включено»', /снідан[${CYR_CLASS}]*\s+(включен|входить|безкоштовн)|(включен[${CYR_CLASS}]*|безкоштовн[${CYR_CLASS}]*)\s+снідан/i],
+    ['таксі або трансфер', /таксі|трансфер/i],
+    ['джакузі', /джакузі/i],
+    ['мінібар або міні-кухня', /мінібар|міні-кухн/i],
+    ['«цілий рік», «цілорічно»', /цілий рік|цілорічн/i],
+    ['«₴» або «гривн» замість «грн»', /₴|гривн/i],
+    ['російські літери ы, э, ъ, ё (текст має бути українською)', /[ыэъё]/],
+    ['Wi-Fi (підтверджено лише Starlink на території)', /wi-?fi|вайфай/i],
+  ];
+  for (const [file, data] of files) {
+    let copy = data;
+    // єдине дозволене місце для слова Wi-Fi: запитання FAQ головної про Wi-Fi у котеджах
+    if (file === 'faq.json') copy = data.map((i) => (i.id === 'internet' ? { ...i, q: '' } : i));
+    for (const str of collectStrings(copy)) {
+      for (const [name, re] of GLOBAL_BAN) if (re.test(str)) fail(`${file}: ${name}: «${str.slice(0, 90)}»`);
+    }
+  }
+  // вмістимість чана: біля кожного слова «чан» (45 знаків до і 60 після) будь-яке число людей має бути 6; «зал ... до 20 осіб» не рахуємо
+  const allStrings = files.flatMap(([, d]) => collectStrings(d));
+  const NUMW = '(?:двох|трьох|чотирьох|п.яти|шести|семи|восьми|дев.яти|десяти|дванадцяти)';
+  const PEOPLE = new RegExp(`(\\d+)(?:\\s*[-–]\\s*(\\d+))?\\s*(?:осіб|гостей|людей|чол[${CYR_CLASS}]*)|(${NUMW})\\s+(?:осіб|гостей|людей)`, 'gi');
+  const CHAN = new RegExp(`(?<![${CYR_CLASS}])чан`, 'gi');
+  for (const str of allStrings) {
+    const chans = [...str.matchAll(CHAN)].map((c) => c.index);
+    if (!chans.length) continue;
+    for (const m of str.matchAll(PEOPLE)) {
+      if (!chans.some((ci) => ci >= m.index - 45 && ci <= m.index + 60)) continue;
+      if (/зал[${CYR_CLASS}]*\s+відпочинку|парн|басейн/i.test(str.slice(Math.max(0, m.index - 30), m.index))) continue;
+      const nums = [m[1], m[2]].filter(Boolean).map(Number);
+      if (m[3] ? !/^шести$/i.test(m[3]) : nums.some((n) => n !== 6)) fail(`чан: поруч названо іншу місткість, ніж «до 6 осіб» (Оля 05.10.2026): «${str.slice(Math.max(0, m.index - 50), m.index + 60)}»`);
+    }
+  }
+  // розкладний диван на 2 додаткових місця (Оля 05.10.2026), у всіх файлах однаково
+  for (const str of allStrings) for (const m of str.matchAll(/диван[^.]{0,40}?на\s+(\d+)\s+(?:додатков\S*\s+)?місц/gi)) if (m[1] !== '2') fail(`розкладний диван: має бути «на 2 місця», є «на ${m[1]}»: «${str.slice(0, 90)}»`);
+  // години бани 11:00-22:00 закріплені у двох місцях (Оля 05.10.2026)
+  const spaP = contentFiles.includes('banya-ta-spa.json') ? readContent('banya-ta-spa.json') : null;
+  if (spaP) {
+    if (!(spaP.booking?.text || '').includes('з 11:00 до 22:00')) fail('texts/banya-ta-spa.json: booking.text має містити «з 11:00 до 22:00» (Оля 05.10.2026)');
+    const ws = (spaP.faq?.items || []).find((i) => i.id === 'without-stay');
+    if (!ws || !ws.a.includes('з 11:00 до 22:00')) fail('texts/banya-ta-spa.json: у FAQ without-stay має бути «з 11:00 до 22:00» (Оля 05.10.2026)');
+    for (const str of collectStrings(spaP)) for (const m of str.matchAll(/(\d{1,2}:\d{2})\s*до\s*(\d{1,2}:\d{2})/g)) if (m[1] !== '11:00' || m[2] !== '22:00') fail(`banya-ta-spa.json: інші години бані: «${m[0]}» (підтверджено 11:00-22:00)`);
+  }
+  // умова акції: будні дні, а не вихідні (Макс 02.10.2026)
+  const promoD = readJson('promo.json');
+  if (promoD) {
+    const ps = JSON.stringify(promoD);
+    if (!/будн/.test(promoD.shortLabel || '') || !/будн/.test(promoD.title || '') || !(promoD.terms || []).some((t) => /у будні дні/.test(t)) || /вихідн/i.test(ps)) fail('promo.json: акція діє у будні, слова «вихідні» в акції бути не має');
+  }
+  // адреса, карта, координати, затримка аналітики: закріплено точно
+  const siteD = readJson('site.json');
+  if (siteD) {
+    if (siteD.address?.street !== 'вул. Лугова, 24' || !/cid=2762823765818742466$/.test(siteD.links?.googleMaps || '')) fail('site.json: адреса «вул. Лугова, 24» і картка Google cid=2762823765818742466 закріплені (Макс 02.10.2026)');
+    if (siteD.geo?.latitude !== 50.88686 || siteD.geo?.longitude !== 30.838818) fail('site.json: координати 50.88686 / 30.838818 закріплені (публічна картка Google)');
+    if (!(siteD.analytics?.gtmDelayMs >= 1000)) fail('site.json: analytics.gtmDelayMs має бути не менше 1000 (інакше сайт гальмує на телефоні; рішення Макса 4000)');
+  }
 }
 
 if (errors.length) {

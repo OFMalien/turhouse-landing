@@ -387,7 +387,7 @@ for (const [url, { doc }] of docs) {
   }
   const heroImg = doc.querySelector('.page-hero img, .hero__media img');
   if (heroImg && (heroImg.getAttribute('loading') !== 'eager' || heroImg.getAttribute('fetchpriority') !== 'high')) f('картинка шапки (LCP) має бути loading=eager і fetchpriority=high');
-  for (const img of doc.querySelectorAll('main img')) if (img !== heroImg && !/(^|\s)hero__logo(\s|$)/.test(img.getAttribute('class') || '') && img.getAttribute('loading') !== 'lazy') f(`<img ${path.basename(img.getAttribute('src') || '')}> нижче шапки має бути loading=lazy`);
+  for (const img of doc.querySelectorAll('main img')) if (img !== heroImg && img.getAttribute('loading') !== 'lazy') f(`<img ${path.basename(img.getAttribute('src') || '')}> нижче шапки має бути loading=lazy`);
 
   // ----- заголовки, id, aria-посилання -----
   const ids = doc.querySelectorAll('[id]').map((e) => e.getAttribute('id'));

@@ -188,7 +188,7 @@ function listPage(cfg) {
     // галерея: стільки кадрів, скільки в texts, кожен з alt
     const gal = doc.querySelectorAll(IMG_OR_PH('#gallery'));
     if (gal.length !== t.gallery.photos.length) f(`у галереї ${gal.length} кадрів, у ${file} ${t.gallery.photos.length}`);
-    for (const img of gal) if (!((photoIdOfEl(img) === 'placeholder' ? img.getAttribute('aria-label') : img.getAttribute('alt')) || '').trim()) f('у кадру галереї порожній alt');
+    for (const img of gal) if (photoIdOfEl(img) !== 'placeholder' && !(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
     // контекст аналітики з даних
     const ctx = pageContextOf(doc);
     const exp = { event: 'page_context', page_type: 'category', item_category: category, price_range: `${Math.min(...list.map((r) => r.price))}-${Math.max(...list.map((r) => r.price))}`, content_ids: list.map((r) => r.id) };
@@ -221,10 +221,10 @@ const PAGE_RULES = {
     // hero: перший екран, eager + fetchpriority
     const heroImg = doc.querySelector('.hero__media img');
     if (!heroImg || heroImg.getAttribute('loading') !== 'eager' || heroImg.getAttribute('fetchpriority') !== 'high') f('картинка hero має бути loading=eager і fetchpriority=high');
-    // бігуча стрічка: прихована від читачів екрана, шість пунктів двічі (для безшовного кола)
+    // бігуча стрічка: прихована від читачів екрана, шість пунктів чотири рази (безшовне коло без пустоти на широких екранах)
     const mq = doc.querySelector('.marquee-band');
     if (!mq || mq.getAttribute('aria-hidden') !== 'true') f('після hero має бути .marquee-band з aria-hidden="true"');
-    else if (!same(mq.querySelectorAll('.marquee-track span').map((x) => norm(x.text)), [...t.marquee, ...t.marquee].map(norm))) f('бігуча стрічка: пункти мають бути texts/home.json marquee двічі підряд');
+    else if (!same(mq.querySelectorAll('.marquee-track span').map((x) => norm(x.text)), [...t.marquee, ...t.marquee, ...t.marquee, ...t.marquee].map(norm))) f('бігуча стрічка: пункти мають бути texts/home.json marquee чотири рази підряд (щоб стрічка не пустіла на широких екранах)');
     if (doc.querySelectorAll('.hero .btn').length < 2) f('у hero дві кнопки: бронювання і Instagram');
     // три формати проживання: ціни з даних, формат «2 500 грн / доба»
     const cards = doc.querySelectorAll('#formats .format-card');
@@ -444,7 +444,7 @@ const PAGE_RULES = {
       });
     });
     if (doc.querySelectorAll('.menu-item').length !== menu.sections.reduce((n, sec) => n + sec.items.length, 0)) f('число позицій меню на сторінці не збігається з menu.json');
-    // години роботи невідомі: тільки відсилання до телефону і Direct (cafe.hours === null)
+    // години роботи кафе: з 9:00 до 21:00 (cafe.json), дні тижня не підтверджені
     if (!sameText(doc.querySelector('#hours-title')?.text, t.hours.heading) || !sameText(doc.querySelector('#hours .lede')?.text, t.hours.text)) f(`блок годин роботи не збігається з ${file}`);
     if (!doc.querySelector(`#hours a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#hours a[href="${site.links.instagramDirect}"]`)) f('блок годин роботи: телефон і Instagram Direct');
     if (/щодня|цілодобов/i.test(doc.querySelector('main')?.text || '')) f('«щодня» і «цілодобово» Оля не підтверджувала, їх на сторінці кафе немає (Оля 05.10.2026: з 9 до 21)');
@@ -454,7 +454,7 @@ const PAGE_RULES = {
     if (gal.length !== galExpect.length) f(`у галереї ${gal.length} кадрів, очікується ${galExpect.length} (cafe.json без кадру шапки)`);
     if (!same(gal.map((i) => photoIdOfEl(i)), galExpect)) f(`галерея кафе: кадри мають бути ${JSON.stringify(galExpect)} (cafe.json без кадру шапки) у цьому порядку`);
     if (photoIdOf(doc.querySelector('.page-hero img')?.getAttribute('src')) !== cafe.photo) f(`картинка шапки кафе має бути ${cafe.photo}`);
-    for (const img of gal) if (!((photoIdOfEl(img) === 'placeholder' ? img.getAttribute('aria-label') : img.getAttribute('alt')) || '').trim()) f('у кадру галереї порожній alt');
+    for (const img of gal) if (photoIdOfEl(img) !== 'placeholder' && !(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
     // проживання, посилання
     if (!sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`текст «Кафе і проживання» не збігається з ${file}`);
     for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці проживання немає посилання на ${l.url}`);
