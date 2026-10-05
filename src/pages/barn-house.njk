@@ -28,9 +28,6 @@ analyticsKind: barn
           <h3>{{ barn.title }}: {{ tariff.label }}</h3>
           <div class="card-object__price">
             <p class="price"><strong>{{ tariff.amount | price }}&nbsp;грн</strong> <span class="price__unit">/ доба</span></p>
-            {%- if promo.enabled and tariff.promoAmount %}
-            <a class="format-card__promo" href="#promo">{{ promo.shortLabel }}</a>
-            {%- endif %}
           </div>
           <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener"
              aria-label="Забронювати: {{ barn.title }}, {{ tariff.label }}"
@@ -41,8 +38,6 @@ analyticsKind: barn
     </div>
   </div>
 </section>
-
-{% include "components/promo-banner.njk" %}
 
 <section class="section" id="inside" aria-labelledby="inside-title">
   <div class="wrap split split--text">

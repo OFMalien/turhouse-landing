@@ -125,8 +125,21 @@
       return;
     }
 
-    // 4. Маршрут і карти
-    if (href.indexOf('google.com/maps') !== -1 || href.indexOf('maps.google.com') !== -1 || href.indexOf('waze.com') !== -1) {
+    // 4. Картка Google (maps.google.com/?cid=...: «Google Карти», «Усі відгуки») рахуємо окремо від маршруту (Макс 05.10.2026):
+    //    подія google_card_click, піксель Meta не чіпаємо. Маршрут (google.com/maps/dir, Waze) лишається map_route_click.
+    if (href.indexOf('maps.google.com') !== -1) {
+      dataLayer.push({
+        event: 'google_card_click',
+        event_category: 'navigation',
+        event_action: 'open_google_card',
+        event_label: placement + ' | google_card',
+        placement: placement,
+        link_url: href,
+        item_name: undefined
+      });
+      return;
+    }
+    if (href.indexOf('google.com/maps') !== -1 || href.indexOf('waze.com') !== -1) {
       dataLayer.push({
         event: 'map_route_click',
         event_category: 'navigation',

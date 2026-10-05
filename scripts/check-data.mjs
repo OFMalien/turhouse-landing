@@ -15,10 +15,10 @@ const readJson = (name) => {
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 // Дозволені ціни на сайті (п.6 промпта): 2500/2800/3000, 6000/7000, 11000 і 13000 (Барн-хаус), 600+200, 500, ціни акції.
-const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800, 5600, 8800, 10400]);
+const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800]);
 // суми чана і банщика беремо з spa.extras, а не зі статичного списку: «1500 грн» чи «300 грн» деінде не пройдуть без запису в даних
 for (const x of readJson('spa.json')?.extras || []) ALLOWED_PRICES.add(x.amount);
-const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'promoAmount', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
+const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
 // C9: відстань і час у дорозі не вказувати взагалі (км, "N хвилин їзди", "година в дорозі"). Слово "хвилин" саме по собі дозволене (відгук гостя: "з перших хвилин").
 const CYR_CLASS = 'А-Яа-яІіЇїЄєҐґ';
 const C9_RE = new RegExp(`(^|[^${CYR_CLASS}])км([^${CYR_CLASS}]|$)|кілометр|хвилин[${CYR_CLASS}']*\\s+(їзди|[вуи] дорозі|дороги|пішки|на машині)|годин[${CYR_CLASS}']*\\s+(їзди|[вуи] дорозі)|(дор(ог|оз)[${CYR_CLASS}]*|їхат[${CYR_CLASS}]*|їзд[${CYR_CLASS}]*|добрат[${CYR_CLASS}]*)[^.]{0,60}(хвилин[${CYR_CLASS}]*|годин[${CYR_CLASS}]*)|(хвилин[${CYR_CLASS}]*|годин[${CYR_CLASS}]*)[^.]{0,60}(дор(ог|оз)[${CYR_CLASS}]*|їхат[${CYR_CLASS}]*|їзд[${CYR_CLASS}]*)|\\d+\\s*(хв|год)([^${CYR_CLASS}]|$)`, 'i');
@@ -73,7 +73,7 @@ const cottages = readJson('cottages.json');
 if (!cottages || cottages.length !== 2) fail('cottages.json: має бути 2 види котеджів');
 else {
   if (!same(cottages.map((c) => c.price), [6000, 7000])) fail('cottages.json: ціни мають бути 6000 і 7000');
-  if (cottages[0].promoPrice !== 4800 || cottages[1].promoPrice !== 5600) fail('cottages.json: ціни акції 4800 (на 4 гості, Оля) і 5600 (на 6 гостей = 7000 мінус 20%, Макс 05.10.2026: знижка на всі варіанти)');
+  if (cottages[0].promoPrice !== 4800 || cottages[1].promoPrice !== undefined) fail('cottages.json: ціна акції 4800 тільки у котеджа на 4 гості (R9; Макс 05.10.2026: інші ціни не рахуємо)');
   for (const c of cottages) {
     if (c.count !== '2 котеджі цього типу') fail(`cottages.json ${c.id}: count має бути "2 котеджі цього типу" (R5)`);
     if (/12/.test(`${c.title} ${c.capacity}`)) fail(`cottages.json ${c.id}: "на 12" не має бути на сторінці котеджів (R5)`);
@@ -93,7 +93,7 @@ else {
   if (barn.title !== 'Барн-хаус') fail('barn.json: назва "Барн-хаус" (через дефіс)');
   if (barn.category !== 'barn') fail('barn.json: category barn');
   if (barn.price !== undefined) fail('barn.json: замість price мають бути tariffs (R6)');
-  if (!same(barn.tariffs, [{ label: 'до 8 гостей', amount: 11000, promoAmount: 8800 }, { label: 'до 12 гостей', amount: 13000, promoAmount: 10400 }])) fail('barn.json: tariffs мають бути "до 8 гостей" 11000 (акція 8800) і "до 12 гостей" 13000 (акція 10400 = ціна мінус 20%, Макс 05.10.2026) (R6)');
+  if (!same(barn.tariffs, [{ label: 'до 8 гостей', amount: 11000 }, { label: 'до 12 гостей', amount: 13000 }])) fail('barn.json: tariffs мають бути "до 8 гостей" 11000 і "до 12 гостей" 13000, без цін акції (R6; Макс 05.10.2026)');
   if (!barn.included || !barn.included.some((t) => /Starlink/.test(t)) || !barn.included.some((t) => /BBQ/.test(t)) || !barn.included.some((t) => /басейн/i.test(t))) fail('barn.json: included має містити BBQ, басейн і Starlink (як на живому лендингу)');
   if (!Array.isArray(barn.highlights) || barn.highlights.length < 5) fail('barn.json: мало пунктів highlights');
   for (const id of [barn.photo, ...(barn.gallery || [])]) {
@@ -642,7 +642,7 @@ if (!same([...contentFiles].sort(), TEXT_FILES)) fail(`texts/: має бути �
 // promoItems (похідні від rooms і cottages): рівно ціни Олі
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
-const expectedPromo = [['Стандарт', 2500, 2000], ['Напівлюкс', 2800, 2240], ['Люкс', 3000, 2400], ['Котедж на 4 гості', 6000, 4800], ['Котедж на 6 гостей', 7000, 5600], ['Барн-хаус до 8 гостей', 11000, 8800], ['Барн-хаус до 12 гостей', 13000, 10400]];
+const expectedPromo = [['Стандарт', 2500, 2000], ['Напівлюкс', 2800, 2240], ['Люкс', 3000, 2400], ['Котедж', 6000, 4800]];
 if (!same(promoItems, expectedPromo)) fail(`promoItems: очікується ${JSON.stringify(expectedPromo)}, є ${JSON.stringify(promoItems)}`);
 
 // promo.json: Direct, без дат і днів тижня (R9)

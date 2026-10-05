@@ -102,7 +102,7 @@ function photoIdOf(src) {
 const photoIdOfEl = (el) => (/(^|\s)photo-placeholder(\s|$)/.test(el.getAttribute('class') || '') ? 'placeholder' : photoIdOf(el.getAttribute('src')));
 
 // ---------- сторінки з акцією: банер і вікно ----------
-const PROMO_BANNER = new Set(['/', '/nomery/', '/kotedzhi/', '/barn-house/']);
+const PROMO_BANNER = new Set(['/', '/nomery/', '/kotedzhi/']);
 const PROMO_MODAL = new Set(['/', '/nomery/', '/kotedzhi/']);
 
 // sitemap.xml і robots.txt: у sitemap рівно адреси всіх зібраних сторінок крім 404 (9 розділів + політика = 10), кожна збігається з canonical сторінки

@@ -110,7 +110,7 @@ function pageContextOf(doc) {
 }
 // Усі суми «N грн» у тексті сторінки мають бути з даних (rooms, cottages, barn, spa, акція, 500 за тварин, меню кафе)
 const menuPrices = readJson('menu.json').sections.flatMap((s) => s.items.map((i) => i.price));
-const ALLOWED_SUMS = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.flatMap((x) => [x.amount, x.promoAmount]), spa.price.first, spa.price.next, ...(spa.extras || []).map((x) => x.amount), 500, ...menuPrices].filter(Boolean));
+const ALLOWED_SUMS = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next, ...(spa.extras || []).map((x) => x.amount), 500, ...menuPrices].filter(Boolean));
 function checkSums(url, doc) {
   const text = doc.text.replace(/[  ]/g, ' ');
   for (const m of text.matchAll(/(\d[\d ]*\d|\d)\s*грн/g)) {
@@ -238,7 +238,7 @@ const PAGE_RULES = {
     if (promo.enabled) {
       for (const r of rooms) if (r.promoPrice && text('formats').includes(`${money(r.promoPrice)} грн`)) f(`ціна акції ${money(r.promoPrice)} грн не має стояти в картках форматів (тільки в #promo, R9)`);
       if (!doc.querySelector('#promo a[href^="https://ig.me/m/tur_house_"]')) f('кнопка акції має вести на Instagram Direct (R9)');
-      for (const row of [['Стандарт', 2000], ['Напівлюкс', 2240], ['Люкс', 2400], ['Котедж на 4 гості', 4800], ['Котедж на 6 гостей', 5600], ['Барн-хаус до 8 гостей', 8800], ['Барн-хаус до 12 гостей', 10400]]) if (!text('promo').includes(`${money(row[1])} грн`)) f(`у банері акції немає ціни ${row[0]} ${money(row[1])} грн`);
+      for (const row of [['Стандарт', 2000], ['Напівлюкс', 2240], ['Люкс', 2400], ['Котедж', 4800]]) if (!text('promo').includes(`${money(row[1])} грн`)) f(`у банері акції немає ціни ${row[0]} ${money(row[1])} грн`);
     }
     // контекст аналітики головної: page_type home (ТЗ §9.3), не категорія
     const ctxHome = pageContextOf(doc);
@@ -317,8 +317,7 @@ const PAGE_RULES = {
       if (!norm(c.querySelector('.card-object__price')?.text).includes(`${money(tf.amount)} грн`)) f(`у картці «${tf.label}» немає ціни ${money(tf.amount)} грн`);
       if (norm(c.querySelector('.card-object__price .price')?.text) !== `${money(tf.amount)} грн / доба`) f(`ціна тарифу «${tf.label}» має бути «${money(tf.amount)} грн / доба»`);
       if (c.querySelector('a.btn')?.getAttribute('aria-label') !== `Забронювати: ${barn.title}, ${tf.label}`) f(`aria-label кнопки тарифу «${tf.label}» має бути «Забронювати: ${barn.title}, ${tf.label}»`);
-      if (c.querySelector('s')) f(`у картці «${tf.label}» є викреслена ціна: ціни акції лише в банері #promo (R9)`);
-      if (promo.enabled && tf.promoAmount && norm(c.querySelector('a[href="#promo"]')?.text) !== promo.shortLabel) f(`у картці «${tf.label}» немає посилання на акцію «${promo.shortLabel}»`);
+      if (c.querySelector('s')) f(`у картці «${tf.label}» є викреслена ціна (ціни акції для Барн-хауса не показуємо, Макс 05.10.2026)`);
       if (!c.querySelector(`a.btn[href="${site.links.booking}"][data-item-name="${barn.title}"][data-item-category="barn"][data-item-variant="${tf.label}"][data-value="${tf.amount}"]`)) f(`кнопка броні тарифу «${tf.label}» без data-item-name, data-item-category=barn, data-item-variant і data-value`);
     });
     if (doc.querySelectorAll('#tariffs .tariff-card h3').length !== barn.tariffs.length) f('усі тарифи мають бути H3');

@@ -48,7 +48,8 @@ function expectFor(href, placement, link) {
     const direct = href.includes('ig.me/');
     return { events: [direct ? 'instagram_direct_click' : 'instagram_click', 'Click_inst_ga4'], pixel: 'Contact' };
   }
-  if (href.includes('google.com/maps') || href.includes('maps.google.com') || href.includes('waze.com')) return { events: ['map_route_click'], pixel: 'FindLocation' };
+  if (href.includes('maps.google.com')) return { events: ['google_card_click'], pixel: null };
+  if (href.includes('google.com/maps') || href.includes('waze.com')) return { events: ['map_route_click'], pixel: 'FindLocation' };
   return null;
 }
 
@@ -98,7 +99,7 @@ for (const file of pages) {
     if (!same(got.map((e) => e.event), exp.events)) { fail(url, `посилання ${label}: події ${JSON.stringify(got.map((e) => e.event))}, очікується ${JSON.stringify(exp.events)}`); continue; }
     const main = got[0];
     if (main.placement !== placement) fail(url, `посилання ${label}: placement «${main.placement}», очікується «${placement}»`);
-    if (!String(main.event_label || '').startsWith(`${placement} | `) && exp.events[0] !== 'map_route_click') fail(url, `посилання ${label}: event_label «${main.event_label}» має починатися з «${placement} | »`);
+    if (!String(main.event_label || '').startsWith(`${placement} | `) && exp.events[0] !== 'map_route_click' && exp.events[0] !== 'google_card_click') fail(url, `посилання ${label}: event_label «${main.event_label}» має починатися з «${placement} | »`);
     if (exp.events[0] === 'booking_click') {
       if (main.link_url !== href || main.page_location !== `${prefix}${url}` || main.event_category !== 'ecommerce' || main.event_action !== 'click_bookmenow') fail(url, `booking_click: link_url, page_location, event_category, event_action: ${JSON.stringify(main)}`);
       const wantItem = {};
@@ -123,7 +124,10 @@ for (const file of pages) {
       const wantLabel = `${placement} | ${href.includes('waze') ? 'waze' : 'google_maps'}`;
       if (main.event_label !== wantLabel || main.link_url !== href || main.event_category !== 'navigation' || main.event_action !== 'get_directions') fail(url, `map_route_click ${label}: ${JSON.stringify(main)}, event_label має бути «${wantLabel}»`);
     }
-    if (!pixelCalls.length || pixelCalls[0][0] !== 'track' || pixelCalls[0][1] !== exp.pixel) fail(url, `посилання ${label}: Meta Pixel має отримати ${exp.pixel}, є ${JSON.stringify(pixelCalls.map((c) => c[1]))}`);
+    if (exp.events[0] === 'google_card_click') {
+      if (main.event_label !== `${placement} | google_card` || main.link_url !== href || main.event_category !== 'navigation' || main.event_action !== 'open_google_card') fail(url, `google_card_click ${label}: ${JSON.stringify(main)}`);
+      if (pixelCalls.length) fail(url, `google_card_click ${label}: Meta Pixel для кліку по картці Google не шлемо, є ${JSON.stringify(pixelCalls.map((c) => c[1]))}`);
+    } else if (!pixelCalls.length || pixelCalls[0][0] !== 'track' || pixelCalls[0][1] !== exp.pixel) fail(url, `посилання ${label}: Meta Pixel має отримати ${exp.pixel}, є ${JSON.stringify(pixelCalls.map((c) => c[1]))}`);
   }
   window.close();
 }
