@@ -550,7 +550,7 @@ else {
   if (/\d{1,2}[:.]\d{2}|\d+\s*(га|гектар)/i.test(okJson)) fail('texts/okolitsi.json: годин роботи, площі парку в тексті немає');
   if (/(наш|наші|наше)\s+(парк|тварин|коні|екостежк)/i.test(okJson)) fail('texts/okolitsi.json: Tur House не називає парк і його тварин своїми (ТЗ §6)');
   checkPagePhotos('okolitsi.json', [okolitsi.hero?.photo, ...(okolitsi.gallery?.photos || [])]);
-  if (!same(okolitsi.gallery?.photos, ['territory/playground', 'territory/table-tennis', 'territory/volleyball', 'territory/badminton']) || okolitsi.hero?.photo !== PLACEHOLDER) fail('texts/okolitsi.json: кадрів парку, Десни і лісу немає, шапка це сіра заглушка «placeholder» (Макс 04.10.2026); у галереї чотири кадри розваг з Instagram Tur House (пост 23.06.2026)');
+  if (!same(okolitsi.gallery?.photos, ['territory/playground', 'territory/table-tennis', 'territory/volleyball', 'territory/badminton']) || okolitsi.hero?.photo !== 'okolitsi/horse-sunset') fail('texts/okolitsi.json: шапка — згенерований кадр okolitsi/horse-sunset (Макс 05.10.2026), у галереї кадрів парку, Десни і лісу поки немає; у галереї чотири кадри розваг з Instagram Tur House (пост 23.06.2026)');
   const linkedO = new Set(collectLinks(okolitsi));
   for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!linkedO.has(u)) fail(`texts/okolitsi.json: немає посилання на ${u} (перелінковка)`);
 }

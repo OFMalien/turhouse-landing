@@ -470,5 +470,23 @@
     "uses": [
       "okolitsi"
     ]
+  },
+  "okolitsi/horse-sunset": {
+    "file": "okolitsi/horse-sunset.jpg",
+    "source": "img/okolitsi/horse-sunset.jpg",
+    "alt": "Кінь у високій траві на заході сонця, на тлі лісу та річкової долини",
+    "uses": [
+      "okolitsi"
+    ],
+    "generated": true
+  },
+  "route/forest-road": {
+    "file": "route/forest-road.jpg",
+    "source": "img/route/forest-road.jpg",
+    "alt": "Дорога через сосновий ліс у ранковому світлі",
+    "uses": [
+      "yak-distatysya"
+    ],
+    "generated": true
   }
 }
