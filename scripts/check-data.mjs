@@ -352,7 +352,7 @@ else {
   if (!same(nomery.variants?.photos, ['rooms/variant-rooms'])) fail('texts/nomery.json: variants.photos мають бути [rooms/variant-rooms] (Instagram, пост 13.05.2026)');
   const IN_ROOM = ['Двоспальне ліжко', 'Телевізор і кондиціонер', 'Душ і туалет', 'Рушники та засоби гігієни', 'Міні-холодильник', 'Чайник і чайний набір'];
   if (!same(nomery.inRoom?.items, IN_ROOM)) fail(`texts/nomery.json: inRoom.items мають бути ${JSON.stringify(IN_ROOM)} (слова Олі 05.10.2026)`);
-  if (!/Люкс/.test(nomery.types?.lead || '') || !/басейн/.test(nomery.types?.lead || '') || !/квадратур/.test(nomery.types?.lead || '')) fail('texts/nomery.json: types.lead про відмінності типів: квадратура, ліжко, матрац, вид на басейн у Люксів');
+  if (nomery.types?.lead) fail('texts/nomery.json: абзацу під «Три види номерів» немає (Макс 06.10.2026: «лишний текст»), площа в картках');
   if (nomery.where) fail('texts/nomery.json: блок where знято (Макс 05.10.2026: дубль hero.lede)');
   const incl = (nomery.included?.items || []).join(' ');
   for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(incl)) fail(`texts/nomery.json: included.items без "${w}"`);
