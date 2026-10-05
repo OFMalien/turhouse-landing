@@ -456,7 +456,7 @@ else {
   const spaJson = JSON.stringify(spaPage);
   if (new RegExp(`(?<![${CYR_CLASS}])(хамам|масаж|сауна|джакузі|скраб|процедур|ретрит|велнес|wellness|спа-відпочин|детокс|віник|температур|цілодобов|щодня|вихідн|без ночівлі|на день)`, 'i').test(spaJson)) fail('texts/banya-ta-spa.json: у тексті є послуги, години чи умови, яких немає в джерелах (хамам, масаж, спа-процедури, години роботи, візит без проживання тощо), C2, C6');
   const W = `[${CYR_CLASS}']*`; // \w у JS не знає кирилиці, тому закінчення слів беремо класом літер
-  const chanCap = new RegExp(`(чан${W})(\\s+просто\\s+неба)?\\s+(на|для|до|вміщ${W}|розрахован${W}\\s+на)\\s+(?!6\\b)\\d+|(?!6\\b)\\d+\\s*(осіб|гостей|людей|чол${W})\\s+(у|в)\\s+чан`, 'i');
+  const chanCap = new RegExp(`(чан${W})(\\s+просто\\s+неба)?\\s+(на|для|до|вміщ${W}(\\s+до)?|розрахован${W}\\s+на)\\s+(?!6\\b)\\d+|(?!6\\b)\\d+\\s*(осіб|гостей|людей|чол${W})\\s+(у|в)\\s+чан`, 'i');
   if (collectStrings(spaPage).some((s) => chanCap.test(s))) fail('texts/banya-ta-spa.json: у чані до 6 осіб (Оля 05.10.2026), іншої кількості в джерелах немає');
   checkPagePhotos('banya-ta-spa.json', [spaPage.hero?.photo]);
   if (spaPage.hero?.photo !== spa?.photo) fail('texts/banya-ta-spa.json: hero.photo має збігатися з spa.photo');
