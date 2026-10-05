@@ -11,19 +11,6 @@ analyticsKind: cafe
 {%- set hero = t.hero %}
 {% include "components/page-hero.njk" %}
 
-<section class="section text-section" id="cafe" aria-label="Про кафе">
-  <div class="wrap">
-    <p class="lede">{{ t.intro.text }}</p>
-  </div>
-</section>
-
-<section class="section section--tight" id="pizza" aria-labelledby="pizza-title">
-  <div class="wrap">
-    <h2 id="pizza-title">{{ t.pizza.heading }}</h2>
-    <p class="lede block-note">{{ t.pizza.text }}</p>
-  </div>
-</section>
-
 <section class="section section--alt" id="menu" aria-labelledby="menu-title">
   <div class="wrap">
     <h2 id="menu-title">{{ t.menu.heading }}</h2>
@@ -72,15 +59,3 @@ analyticsKind: cafe
 {%- set gallery = t.gallery %}
 {%- set galleryPhotos = cafe.gallery | reject("equalto", cafe.photo) %}
 {% include "components/gallery-block.njk" %}
-
-<section class="section" id="stay" aria-labelledby="stay-title">
-  <div class="wrap">
-    <h2 id="stay-title">{{ t.stay.heading }}</h2>
-    <p class="lede block-note">{{ t.stay.text }}</p>
-    <div class="btn-row">
-      {%- for l in t.stay.links %}
-      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
-      {%- endfor %}
-    </div>
-  </div>
-</section>

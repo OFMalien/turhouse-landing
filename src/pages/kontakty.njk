@@ -29,7 +29,6 @@ analyticsKind: contacts
           <p class="card-object__desc">{{ t.instagram.text }}</p>
           <div class="card-object__actions">
             <a class="btn btn-primary" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
-            <a class="btn" href="{{ site.links.instagram }}" target="_blank" rel="noopener">{{ site.cta.instagramProfile }}</a>
           </div>
         </div>
       </article>
@@ -46,34 +45,15 @@ analyticsKind: contacts
   </div>
 </section>
 
-<section class="section section--alt" id="where" aria-label="Адреса і карти" data-placement="contacts_where">
-  <div class="wrap split split--text">
-    <div class="split__copy" id="address">
+<section class="section section--alt" id="where" aria-label="Адреса" data-placement="contacts_where">
+  <div class="wrap">
+    <div id="address">
       <h2 id="address-title">{{ t.address.heading }}</h2>
       <address class="location-address">{{ site.address.full }}</address>
       <p class="lede">{{ t.address.text }}</p>
       <div class="btn-row">
         <a class="btn" href="{{ t.address.link.url | url }}">{{ t.address.link.label }}</a>
       </div>
-    </div>
-    <div class="split__copy" id="maps">
-      <h2 id="maps-title">{{ t.maps.heading }}</h2>
-      <p class="lede">{{ t.maps.text }}</p>
-      <div class="btn-row">
-        <a class="btn" href="{{ site.links.googleMaps }}" target="_blank" rel="noopener">{{ t.maps.heading }}</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="more" aria-labelledby="more-title">
-  <div class="wrap">
-    <h2 id="more-title">{{ t.more.heading }}</h2>
-    <p class="lede block-note">{{ t.more.text }}</p>
-    <div class="btn-row">
-      {%- for l in t.more.links %}
-      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
-      {%- endfor %}
     </div>
   </div>
 </section>

@@ -20,7 +20,7 @@ function priceRange(data) {
   return `${Math.min(...nums)}-${Math.max(...nums)} UAH`;
 }
 
-// Опис, зручності і тварини беруться з видимого тексту головної (hero.lede, блок «Що є на території») і FAQ (питання про тварин),
+// Опис, зручності і тварини беруться з видимого тексту головної (hero.lede, теги першого екрана hero.tags) і FAQ (питання про тварин),
 // щоб пошуковики і ІІ-асистенти бачили ті самі факти, що й гість (T2). Без FAQ про тварин petsAllowed не пишемо.
 export function lodgingBusiness(data) {
   const { site } = data;
@@ -49,8 +49,8 @@ export function lodgingBusiness(data) {
   if (site.geo) {
     node.geo = { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude };
   }
-  const territory = home?.territory?.items || [];
-  if (territory.length) node.amenityFeature = territory.map((t) => ({ '@type': 'LocationFeatureSpecification', name: t.title, value: true }));
+  const tags = home?.hero?.tags || [];
+  if (tags.length) node.amenityFeature = tags.map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true }));
   if ((data.faq || []).some((f) => f.id === 'pets')) node.petsAllowed = true;
   return node;
 }

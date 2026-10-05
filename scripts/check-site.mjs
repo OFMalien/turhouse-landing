@@ -282,10 +282,9 @@ for (const [url, { doc }] of docs) {
       const bl = c.querySelectorAll('.btn-row a').map((a) => ({ t: norm(a.text), h: a.getAttribute('href'), aria: a.getAttribute('aria-label') }));
       const want = [
         { t: site.cta.booking, h: site.links.booking, aria: undefined },
-        { t: site.cta.instagramProfile, h: site.links.instagram, aria: undefined },
         { t: site.phone.display, h: TEL, aria: TEL_ARIA },
       ];
-      if (!same(bl, want)) f('фінальний CTA: кнопки броні, Instagram і телефон з site.json');
+      if (!same(bl, want)) f('фінальний CTA: кнопки броні і телефон з site.json (кнопку «Наш Instagram» знято, Макс 05.10.2026)');
     }
   }
   const sticky = doc.querySelectorAll('.sticky-cta');
@@ -308,7 +307,7 @@ for (const [url, { doc }] of docs) {
   if (modal && !banner) f('вікно акції без банера #promo: посилання «Деталі акції» веде на банер цієї сторінки');
   if (banner) {
     const g = (s) => norm(banner.querySelector(s)?.text);
-    if (g('.promo-badge') !== promo.badge || g('#promo-title') !== promo.title || g('.promo-banner__subtitle') !== promo.subtitle || g('.promo-banner__content > .lede') !== promo.lead || g('.promo-banner__note') !== promo.note) f('банер акції: бейдж, заголовок, підзаголовок, текст або примітка не збігаються з promo.json');
+    if (g('.promo-badge') !== promo.badge || g('#promo-title') !== promo.title || g('.promo-banner__content > .lede') !== promo.lead || g('.promo-banner__note') !== promo.note) f('банер акції: бейдж, заголовок, текст або примітка не збігаються з promo.json (підзаголовка немає)');
     if (!same(banner.querySelectorAll('.promo-terms li').map((li) => norm(li.text)), promo.terms.map(norm))) f('банер акції: умови не збігаються з promo.json');
     if (!same(rowsOf('.promo-prices tbody tr', '.promo-price__who'), wantRows)) f(`банер акції: ціни мають бути ${JSON.stringify(wantRows)}`);
     const cb = banner.querySelector('.btn-row a.btn-primary');
@@ -435,6 +434,9 @@ for (const [url, { doc }] of docs) {
 // ---------- перелінковка (E4-T14): у змісті (main) кожної сторінки не менше 2 посилань на інші розділи, на кожен розділ не менше 2 посилань зі змісту інших сторінок ----------
 {
   const sectionUrls = new Set([...nav.map((n) => n.url), '/pryvatnist/']);
+  // Макс 05.10.2026: з /kafe/ знято блок «Кафе і проживання», з /yak-distatysya/ і /kontakty/ блоки з кнопками на /okolitsi/ та інші (їх немає на лендингу): там лишається по одному посиланню
+  const MIN_OUT = { '/kafe/': 1 };
+  const MIN_IN = { '/okolitsi/': 1 };
   const outgoing = new Map();
   for (const [url, { doc }] of docs) {
     const targets = new Set();
@@ -444,12 +446,12 @@ for (const [url, { doc }] of docs) {
       if (sectionUrls.has(h) && h !== url) targets.add(h);
     }
     outgoing.set(url, targets);
-    if (targets.size < 2) fail(url, `у змісті сторінки менше 2 посилань на інші розділи (є ${targets.size}: ${[...targets].join(', ') || 'жодного'})`);
+    if (targets.size < (MIN_OUT[url] ?? 2)) fail(url, `у змісті сторінки менше 2 посилань на інші розділи (є ${targets.size}: ${[...targets].join(', ') || 'жодного'})`);
   }
   for (const u of nav.map((n) => n.url)) {
     if (u === '/') continue; // на головну веде логотип і крихти, окремо не лічимо
     const from = [...outgoing.entries()].filter(([page, t]) => page !== u && page !== '/404.html' && t.has(u)).map(([page]) => page); // 404 не рахуємо: на неї ніхто не потрапляє по перелінковці
-    if (from.length < 2) fail(u, `на розділ ведуть менше 2 сторінок зі змісту (є ${from.length}: ${from.join(', ') || 'жодної'})`);
+    if (from.length < (MIN_IN[u] ?? 2)) fail(u, `на розділ ведуть менше 2 сторінок зі змісту (є ${from.length}: ${from.join(', ') || 'жодної'})`);
   }
   // політика: посилання в підвалі кожної сторінки (перевірено вище в підвалі) і зі змісту хоча б однієї сторінки не потрібно
 }

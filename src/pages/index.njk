@@ -61,7 +61,7 @@ analytics:
       <p class="caption">{{ t.spa.caption }}</p>
       <h2 id="sauna-title">{{ t.spa.heading }}</h2>
       <p class="lede">{{ t.spa.lede }}</p>
-      <p class="sauna-band__price">{{ t.spa.priceLead }} <strong>{{ spa.price.first | price }}&nbsp;грн</strong> {{ spa.price.per }} {{ spa.price.firstLabel }}, {{ spa.price.nextLabel }} <strong>{{ spa.price.next | price }}&nbsp;грн</strong>.</p>
+      <p class="sauna-band__price">{{ t.spa.priceLead }} <strong>{{ spa.price.first | price }}&nbsp;грн</strong> {{ spa.price.per }} {{ spa.price.firstLabel }}, {{ spa.price.nextLabel }} - <strong>{{ spa.price.next | price }}&nbsp;грн</strong>.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="{{ t.spa.link.url | url }}">{{ t.spa.link.label }}</a>
       </div>
@@ -72,33 +72,13 @@ analytics:
   </div>
 </section>
 
-<section class="section" id="territory" aria-labelledby="territory-title">
+<section class="section section--tight" id="sauna-cards">
   <div class="wrap">
-    <p class="caption">{{ t.territory.caption }}</p>
-    <h2 id="territory-title">{{ t.territory.heading }}</h2>
-    <div class="feature-grid">
-      {%- for item in t.territory.items %}
-      <article class="feature-grid__item" id="territory-{{ item.id }}">
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.text }}</p>
-      </article>
-      {%- endfor %}
-    </div>
-  </div>
-</section>
-
-<section class="section section--alt" id="cafe" aria-labelledby="cafe-title" data-placement="cafe_teaser">
-  <div class="wrap split">
-    <div class="split__media">
-      {% photo t.cafe.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
-    </div>
-    <div class="split__copy">
-      <p class="caption">{{ t.cafe.caption }}</p>
-      <h2 id="cafe-title">{{ t.cafe.heading }}</h2>
-      <p class="lede">{{ t.cafe.text }}</p>
-      <div class="btn-row">
-        <a class="btn btn-primary" href="{{ t.cafe.link.url | url }}">{{ t.cafe.link.label }}</a>
-      </div>
+    {%- set cardInfoOnly = true %}
+    <div class="cards-grid">
+      {%- asyncEach item in spa.cards %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
     </div>
   </div>
 </section>
@@ -109,7 +89,6 @@ analytics:
       {% photo t.area.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
     </div>
     <div class="split__copy">
-      <p class="caption">{{ t.area.caption }}</p>
       <h2 id="area-title">{{ t.area.heading }}</h2>
       <p class="lede">{{ t.area.text }}</p>
       <div class="btn-row">
@@ -121,6 +100,7 @@ analytics:
 
 <section class="section section--alt" id="reviews" aria-labelledby="reviews-title" data-placement="reviews_section">
   <div class="wrap">
+    <p class="caption">{{ reviews.caption }}</p>
     <p class="caption">{{ reviews.label }}</p>
     <h2 id="reviews-title">{{ reviews.heading }}</h2>
     <div class="review-grid">
@@ -128,7 +108,7 @@ analytics:
       <figure class="review-card">
         <p class="review-card__stars" role="img" aria-label="Оцінка {{ r.rating }} з 5"><span aria-hidden="true">{% for i in range(0, r.rating) %}★{% endfor %}</span></p>
         <blockquote class="review-card__text"><p>«{{ r.text }}»</p></blockquote>
-        <figcaption class="review-card__who"><span class="review-card__name">{{ r.author }}</span> <span class="review-card__src">{{ reviews.label }}</span></figcaption>
+        <figcaption class="review-card__who"><span class="review-card__name">{{ r.author }}</span> <span class="review-card__src">{{ reviews.cardLabel }}</span></figcaption>
       </figure>
       {%- endfor %}
     </div>
@@ -138,7 +118,6 @@ analytics:
 
 <section class="section" id="faq" aria-labelledby="faq-title">
   <div class="wrap">
-    <p class="caption">{{ t.faq.caption }}</p>
     <h2 id="faq-title">{{ t.faq.heading }}</h2>
     <div class="faq-list">
       {%- for item in faq %}

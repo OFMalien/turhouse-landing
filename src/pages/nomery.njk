@@ -37,18 +37,6 @@ analyticsKind: rooms
 
 {% include "components/promo-banner.njk" %}
 
-<section class="section" id="where" aria-labelledby="where-title">
-  <div class="wrap split">
-    <div class="split__media">
-      {% photo t.where.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
-    </div>
-    <div class="split__copy">
-      <h2 id="where-title">{{ t.where.heading }}</h2>
-      <p class="lede">{{ t.where.text }}</p>
-    </div>
-  </div>
-</section>
-
 <section class="section section--alt" id="in-room" aria-labelledby="in-room-title">
   <div class="wrap">
     <h2 id="in-room-title">{{ t.inRoom.heading }}</h2>

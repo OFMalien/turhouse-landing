@@ -133,7 +133,7 @@ function listPage(cfg) {
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
     if (!sameText(doc.querySelector('.text-section .lede')?.text, t.intro.text)) f(`вступ не збігається з ${file}`);
     if (!sameText(doc.querySelector(`[id="${cfg.cardsId}-title"]`)?.text, t.types.heading)) f(`H2 списку не збігається з ${file}`);
-    if (cfg.kitchen && !sameText(doc.querySelector('#kitchen .lede')?.text, t.kitchen.text)) f(`текст про кухню не збігається з ${file}`);
+    for (const id of ['where', 'kitchen']) if (doc.querySelector(`[id="${id}"]`)) f(`блока #${id} бути не повинно (знято, Макс 05.10.2026)`);
     // картки з JSON даних, звичайні ціни, без викресленої ціни акції
     const site = readJson('site.json');
     const cards = doc.querySelectorAll(`#${cfg.cardsId} .card-object`);
@@ -246,15 +246,25 @@ const PAGE_RULES = {
     // посилання на інші розділи: номери, котеджі, Барн-хаус, баня
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
-    // друга половина головної (E4-T2): територія, кафе, околиці, відгуки, FAQ, локація
-    for (const id of ['territory', 'cafe', 'area', 'reviews', 'faq', 'location']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
-    const terr = doc.querySelectorAll('#territory .feature-grid__item');
-    if (terr.length !== t.territory.items.length) f(`у блоці території ${terr.length} пунктів, у texts/home.json ${t.territory.items.length}`);
-    t.territory.items.forEach((it, i) => { if (terr[i] && (!sameText(terr[i].querySelector('h3')?.text, it.title) || !sameText(terr[i].querySelector('p')?.text, it.text))) f(`пункт території «${it.title}» не збігається з texts/home.json`); });
-    if (!doc.querySelector(`#cafe a[href$="/kafe/"]`)) f('тизер кафе має вести на /kafe/ (R7)');
-    if (!sameText(doc.querySelector('#cafe .lede')?.text, t.cafe.text)) f('текст тизера кафе не збігається з texts/home.json');
+    // друга половина головної: околиці, відгуки, FAQ, локація, «Про Tur House» унизу; блоків territory і cafe на лендингу немає (Макс 05.10.2026)
+    for (const id of ['area', 'reviews', 'faq', 'location']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['territory', 'cafe']) if (doc.querySelector(`[id="${id}"]`)) f(`блока #${id} на головній бути не повинно (його немає на живому лендингу)`);
+    // три картки банного комплексу з spa.json під банним блоком
+    const saunaCards = doc.querySelectorAll('#sauna-cards .card-object');
+    if (saunaCards.length !== spa.cards.length) f(`карток банного комплексу на головній ${saunaCards.length}, у spa.json ${spa.cards.length}`);
+    spa.cards.forEach((c, i) => {
+      const el = saunaCards[i];
+      if (!el) return;
+      if (!sameText(el.querySelector('h3')?.text, c.title) || !sameText(el.querySelector('.card-object__desc')?.text, c.text) || (c.note || '') !== norm(el.querySelector('.card-object__note')?.text)) f(`картка «${c.title}» на головній не збігається зі spa.json`);
+      if (el.querySelector('.card-object__price, a.btn')) f(`у картки «${c.title}» на головній не має бути ціни проживання й кнопки броні`);
+    });
+    // «Про Tur House» (01, 02, 03) лишається в самому низу головної, після «Як доїхати»
+    const introAt = doc.querySelector('section.intro');
+    const locAt = doc.querySelector('#location');
+    const mainKids = doc.querySelector('main')?.querySelectorAll('section').map((x) => x) || [];
+    if (!introAt || !locAt || mainKids.indexOf(introAt) < mainKids.indexOf(locAt)) f('«Про Tur House» має стояти в самому низу головної, після блока «Як доїхати»');
     if (!doc.querySelector(`#area a[href$="/okolitsi/"]`)) f('блок околиць має вести на /okolitsi/');
-    // відгуки: дослівно з reviews.json, підпис «Відгук з Google», без рейтингу
+    // відгуки: дослівно з reviews.json, підпис картки «Google Відгук», caption «Не тільки наші слова» і «Відгуки з Google», без рейтингу
     const revs = readJson('reviews.json');
     const revCards = doc.querySelectorAll('#reviews .review-card');
     if (revCards.length !== revs.items.length) f(`відгуків ${revCards.length}, у reviews.json ${revs.items.length}`);
@@ -263,8 +273,9 @@ const PAGE_RULES = {
       if (!c) return;
       if (!sameText(c.querySelector('.review-card__text')?.text, `«${r.text}»`)) f(`відгук ${r.id} не збігається з reviews.json`);
       if (!sameText(c.querySelector('.review-card__name')?.text, r.author)) f(`автор відгуку ${r.id} не збігається`);
-      if (!sameText(c.querySelector('.review-card__src')?.text, revs.label)) f(`підпис відгуку ${r.id}: має бути «${revs.label}»`);
+      if (!sameText(c.querySelector('.review-card__src')?.text, revs.cardLabel)) f(`підпис відгуку ${r.id}: має бути «${revs.cardLabel}»`);
     });
+    if (!same(doc.querySelectorAll('#reviews .caption').map((x) => norm(x.text)), [revs.caption, revs.label])) f('над заголовком відгуків мають стояти «Не тільки наші слова» і «Відгуки з Google»');
     if (/aggregateRating|ratingValue|reviewCount|4,2 \/ 5|8 600/.test(doc.toString())) f('у сторінці є агрегований рейтинг або непідтверджені цифри (ТЗ §7.2, питання 11)');
     if (!doc.querySelector(`#reviews a[href="${readJson('site.json').links.googleMaps}"][rel~="noopener"]`)) f('посилання на відгуки в Google має вести на картку Google Карт з rel=noopener');
     // FAQ: питання і відповіді дослівно з faq.json
@@ -287,14 +298,14 @@ const PAGE_RULES = {
     if (!doc.querySelector('#location a[href$="/yak-distatysya/"]')) f('локація має вести на /yak-distatysya/');
     // розділи сайту, на які веде головна
     for (const u of ['/kafe/', '/okolitsi/', '/yak-distatysya/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
-    // кожен блок головної має свій H2 (акція, формати, баня, територія, кафе, околиці, відгуки, FAQ, локація, фінальний CTA)
-    for (const id of [...(promo.enabled ? ['promo-title'] : []), 'formats-title', 'sauna-title', 'territory-title', 'cafe-title', 'area-title', 'reviews-title', 'faq-title', 'location-title', 'cta-title']) {
+    // кожен блок головної має свій H2 (акція, формати, баня, околиці, відгуки, FAQ, локація, фінальний CTA)
+    for (const id of [...(promo.enabled ? ['promo-title'] : []), 'formats-title', 'sauna-title', 'area-title', 'reviews-title', 'faq-title', 'location-title', 'cta-title']) {
       const h = doc.querySelector(`h2[id="${id}"]`);
       if (!h || !h.text.trim()) f(`немає H2 #${id}`);
     }
   },
-  '/nomery/': listPage({ slug: 'nomery', list: rooms, category: 'rooms', cardsId: 'rooms', crumb: 'Номери', blocks: ['where'], crossLinks: ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/'], groupLinks: ['/kotedzhi/', '/barn-house/'], includedLinks: ['/banya-ta-spa/', '/kafe/'] }),
-  '/kotedzhi/': listPage({ slug: 'kotedzhi', list: cottages, category: 'cottages', cardsId: 'cottages', crumb: 'Котеджі', blocks: ['kitchen'], crossLinks: ['/nomery/', '/barn-house/', '/banya-ta-spa/', '/kafe/'], groupLinks: ['/nomery/', '/barn-house/'], includedLinks: ['/banya-ta-spa/', '/kafe/'], features: true, kitchen: true }),
+  '/nomery/': listPage({ slug: 'nomery', list: rooms, category: 'rooms', cardsId: 'rooms', crumb: 'Номери', blocks: [], crossLinks: ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/'], groupLinks: ['/kotedzhi/', '/barn-house/'], includedLinks: ['/banya-ta-spa/', '/kafe/'] }),
+  '/kotedzhi/': listPage({ slug: 'kotedzhi', list: cottages, category: 'cottages', cardsId: 'cottages', crumb: 'Котеджі', blocks: [], crossLinks: ['/nomery/', '/barn-house/', '/banya-ta-spa/', '/kafe/'], groupLinks: ['/nomery/', '/barn-house/'], includedLinks: ['/banya-ta-spa/', '/kafe/'], features: true }),
   '/barn-house/'(doc, f) {
     const t = texts('barn-house');
     const file = 'texts/barn-house.json';
@@ -328,7 +339,7 @@ const PAGE_RULES = {
     // всередині і навколо
     if (!sameText(doc.querySelector('#inside-title')?.text, t.inside.heading)) f(`H2 «Що всередині» не збігається з ${file}`);
     const insideP = doc.querySelectorAll('#inside .split__copy:first-child .lede').map((p) => norm(p.text));
-    if (!same(insideP, [t.inside.lead, t.inside.note].map(norm))) f(`текст «Що всередині» не збігається з ${file}`);
+    if (!same(insideP, [t.inside.lead].map(norm))) f(`текст «Що всередині» не збігається з ${file} (один абзац, без довідки про адміністратора)`);
     if (!sameText(doc.querySelector('#outside-title')?.text, t.outside.heading) || !sameText(doc.querySelector('#outside .lede')?.text, t.outside.text)) f(`блок «Територія навколо» не збігається з ${file}`);
     // що входить, групи, бронь
     const inc = doc.querySelectorAll('#included .check-list li').map((li) => norm(li.text));
@@ -419,12 +430,11 @@ const PAGE_RULES = {
     const cafe = readJson('cafe.json');
     const menu = readJson('menu.json');
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'cafe', 'pizza', 'pizza-title', 'menu', 'menu-title', 'hours', 'hours-title', 'gallery', 'stay']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'menu', 'menu-title', 'hours', 'hours-title', 'gallery']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Кафе» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
-    if (!sameText(doc.querySelector('.text-section .lede')?.text, t.intro.text)) f(`вступ не збігається з ${file}`);
-    if (!sameText(doc.querySelector('#pizza-title')?.text, t.pizza.heading) || !sameText(doc.querySelector('#pizza .lede')?.text, t.pizza.text)) f(`блок про піцу не збігається з ${file}`);
+    for (const id of ['cafe', 'pizza', 'stay']) if (doc.querySelector(`[id="${id}"]`)) f(`блока #${id} на сторінці кафе бути не повинно (знято, Макс 05.10.2026)`);
     // меню: усі розділи і всі позиції menu.json, ціни, вага, склад, варіанти
     if (!sameText(doc.querySelector('#menu-title')?.text, t.menu.heading) || !sameText(doc.querySelector('#menu > .wrap > .lede')?.text, t.menu.note)) f(`заголовок і примітка меню не збігаються з ${file}`);
     const secs = doc.querySelectorAll('#menu .menu-section');
@@ -459,9 +469,6 @@ const PAGE_RULES = {
     if (!same(gal.map((i) => photoIdOfEl(i)), galExpect)) f(`галерея кафе: кадри мають бути ${JSON.stringify(galExpect)} (cafe.json без кадру шапки) у цьому порядку`);
     if (photoIdOf(doc.querySelector('.page-hero img')?.getAttribute('src')) !== cafe.photo) f(`картинка шапки кафе має бути ${cafe.photo}`);
     for (const img of gal) if (photoIdOfEl(img) !== 'placeholder' && !(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
-    // проживання, посилання
-    if (!sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`текст «Кафе і проживання» не збігається з ${file}`);
-    for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці проживання немає посилання на ${l.url}`);
     // акції на сторінці кафе немає, вона на проживання (R9)
     if (doc.querySelector('[id="promo"], .promo-modal')) f('акція −20% на проживання, на сторінці кафе її немає (R9)');
     // контекст аналітики
@@ -476,7 +483,7 @@ const PAGE_RULES = {
     const t = texts('okolitsi');
     const file = 'texts/okolitsi.json';
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'intro', 'park', 'park-title', 'nature', 'desna', 'desna-title', 'family', 'family-title', 'weekend', 'weekend-title', 'gallery', 'stay']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'intro', 'park', 'park-title', 'nature', 'desna', 'desna-title', 'family', 'family-title', 'gallery', 'stay']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Околиці» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
@@ -488,7 +495,7 @@ const PAGE_RULES = {
     // Десна, діти, вихідні
     if (!sameText(doc.querySelector('#desna-title')?.text, t.desna.heading) || !sameText(doc.querySelector('#desna .lede')?.text, t.desna.text)) f(`блок про Десну не збігається з ${file}`);
     if (!sameText(doc.querySelector('#family-title')?.text, t.family.heading) || !sameText(doc.querySelector('#family .lede')?.text, t.family.text)) f(`блок «З дітьми» не збігається з ${file}`);
-    if (!sameText(doc.querySelector('#weekend-title')?.text, t.weekend.heading) || !sameText(doc.querySelector('#weekend .lede')?.text, t.weekend.text)) f(`блок «Як провести вихідні» не збігається з ${file}`);
+    if (doc.querySelector('[id="weekend"]')) f('блока «Як провести вихідні» бути не повинно (знято, Макс 05.10.2026)');
     // де зупинитися: шість посилань
     if (!sameText(doc.querySelector('#stay-title')?.text, t.stay.heading) || !sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`блок «Де зупинитися поруч» не збігається з ${file}`);
     const stay = doc.querySelectorAll('#stay a').map((a) => ({ t: norm(a.text), h: stripPrefix(a.getAttribute('href')) }));
@@ -512,9 +519,9 @@ const PAGE_RULES = {
     const file = 'texts/yak-distatysya.json';
     const site = readJson('site.json');
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'route', 'route-title', 'address', 'address-title', 'navigator', 'navigator-title', 'map', 'map-title', 'map-box', 'map-load', 'help', 'landmark', 'support', 'stay']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'route', 'route-title', 'address', 'address-title', 'navigator', 'navigator-title', 'map', 'map-title', 'map-box', 'map-load', 'help', 'support']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
-    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Як дістатися» з aria-current на останньому');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Як доїхати» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
     // маршрут дослівно, адреса з site.json (без координат), без км і часу в дорозі (C9)
     if (!sameText(doc.querySelector('#route-title')?.text, t.route.heading) || !sameText(doc.querySelector('#route .lede')?.text, t.route.text)) f(`блок маршруту не збігається з ${file}`);
@@ -534,13 +541,10 @@ const PAGE_RULES = {
     const mb = doc.querySelector('#map-load');
     if (mb?.tagName.toLowerCase() !== 'button' || mb?.getAttribute('type') !== 'button' || mb?.getAttribute('aria-controls') !== 'map-box' || mb?.getAttribute('aria-expanded') !== 'false' || !sameText(mb?.text, t.map.button)) f(`кнопка карти: button type=button, aria-controls=map-box, aria-expanded=false, підпис «${t.map.button}»`);
     if (!sameText(doc.querySelector('#map-title')?.text, t.map.heading) || !sameText(doc.querySelector('#map-box .map-box__note')?.text, t.map.note)) f(`заголовок і примітка карти не збігаються з ${file}`);
-    // орієнтир, допомога, куди їдете
-    if (!sameText(doc.querySelector('#landmark-title')?.text, t.landmark.heading) || !sameText(doc.querySelector('#landmark .lede')?.text, t.landmark.text)) f(`блок «Орієнтир» не збігається з ${file}`);
-    if (!doc.querySelector(`#landmark a[href$="${t.landmark.link.url}"]`)) f(`у блоці «Орієнтир» немає посилання на ${t.landmark.link.url}`);
+    // допомога (орієнтир, «куди їдете» і FAQ знято, Макс 05.10.2026)
+    for (const id of ['landmark', 'stay', 'faq']) if (doc.querySelector(`[id="${id}"]`)) f(`блока #${id} на сторінці дороги бути не повинно (знято, Макс 05.10.2026)`);
     if (!sameText(doc.querySelector('#support-title')?.text, t.help.heading) || !sameText(doc.querySelector('#support .lede')?.text, t.help.text)) f(`блок допомоги не збігається з ${file}`);
     if (!doc.querySelector(`#support a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#support a[href="${site.links.instagramDirect}"]`)) f('блок допомоги: телефон і Instagram Direct');
-    if (!sameText(doc.querySelector('#stay-title')?.text, t.stay.heading) || !sameText(doc.querySelector('#stay .lede')?.text, t.stay.text)) f(`блок «Куди їдете» не збігається з ${file}`);
-    for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці «Куди їдете» немає посилання на ${l.url}`);
     if (photoIdOfEl(doc.querySelector(IMG_OR_PH('.page-hero'))) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
     if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці маршруту немає (R9)');
     const ctx = pageContextOf(doc);
@@ -553,7 +557,7 @@ const PAGE_RULES = {
     const file = 'texts/kontakty.json';
     const site = readJson('site.json');
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'channels', 'phone', 'phone-title', 'instagram', 'instagram-title', 'booking', 'booking-title', 'where', 'address', 'address-title', 'maps', 'maps-title', 'more', 'more-title']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'channels', 'phone', 'phone-title', 'instagram', 'instagram-title', 'booking', 'booking-title', 'where', 'address', 'address-title']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Контакти» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
@@ -567,18 +571,13 @@ const PAGE_RULES = {
       if (!same(got, buttons)) f(`картка «${t[key].heading}»: кнопки мають бути ${JSON.stringify(buttons)}, є ${JSON.stringify(got)}`);
     };
     card('phone', 'phone', [{ t: site.phone.display, h: `tel:${site.phone.tel}`, aria: `Зателефонувати: ${site.phone.display}` }]);
-    card('instagram', 'instagram', [{ t: site.cta.instagram, h: site.links.instagramDirect, aria: undefined }, { t: site.cta.instagramProfile, h: site.links.instagram, aria: undefined }]);
+    card('instagram', 'instagram', [{ t: site.cta.instagram, h: site.links.instagramDirect, aria: undefined }]);
     card('booking', 'booking', [{ t: site.cta.booking, h: site.links.booking, aria: undefined }]);
     if (doc.querySelectorAll('#channels .card-object').length !== 3) f('на сторінці контактів має бути три картки: телефон, Instagram, бронювання');
     // адреса з site.json, посилання на «Як дістатися», Google Карти
     if (!sameText(doc.querySelector('#address-title')?.text, t.address.heading) || !sameText(doc.querySelector('#address address')?.text, site.address.full) || !sameText(doc.querySelector('#address .lede')?.text, t.address.text)) f('блок адреси: заголовок, адреса з site.json і текст з texts');
     if (!doc.querySelector(`#address a[href$="${t.address.link.url}"]`)) f(`у блоці адреси немає посилання на ${t.address.link.url}`);
-    if (!sameText(doc.querySelector('#maps-title')?.text, t.maps.heading) || !sameText(doc.querySelector('#maps .lede')?.text, t.maps.text)) f(`блок Google Карт не збігається з ${file}`);
-    const mp = doc.querySelectorAll('#maps a');
-    if (mp.length !== 1 || mp[0].getAttribute('href') !== site.links.googleMaps || mp[0].getAttribute('target') !== '_blank' || !/\bnoopener\b/.test(mp[0].getAttribute('rel') || '')) f('блок Google Карт: одна кнопка на site.links.googleMaps, target=_blank, rel=noopener');
-    // перед поїздкою
-    if (!sameText(doc.querySelector('#more-title')?.text, t.more.heading) || !sameText(doc.querySelector('#more .lede')?.text, t.more.text)) f(`блок «Перед поїздкою» не збігається з ${file}`);
-    if (!same(doc.querySelectorAll('#more a').map((a) => ({ t: norm(a.text), h: stripPrefix(a.getAttribute('href')) })), t.more.links.map((l) => ({ t: l.label, h: l.url })))) f('посилання в блоці «Перед поїздкою» не збігаються з texts (підпис і адреса)');
+    if (doc.querySelector('[id="maps"], [id="more"]')) f('блоків «Google Карти» і «Перед поїздкою» на контактах бути не повинно (знято, Макс 05.10.2026: дубль підвалу)');
     // графіка роботи і e-mail у джерелах немає
     const mainText = norm(doc.querySelector('main')?.text);
     if (/\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}|графік|щодня|цілодобов|@[a-z0-9.-]+\.[a-z]{2,}|e-?mail|ФОП|ТОВ/i.test(mainText)) f('години роботи, e-mail і реквізити в джерелах невідомі, на сторінці їх немає');

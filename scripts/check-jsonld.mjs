@@ -117,7 +117,7 @@ for (const f of htmlFiles) {
         hasMap: site.links.googleMaps,
         sameAs: [site.links.instagram, site.links.googleMaps],
         geo: { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude },
-        amenityFeature: readData('texts/home.json').territory.items.map((t) => ({ '@type': 'LocationFeatureSpecification', name: t.title, value: true })),
+        amenityFeature: readData('texts/home.json').hero.tags.map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true })),
         ...(readData('faq.json').some((f) => f.id === 'pets') ? { petsAllowed: true } : {}),
       };
       for (const k of Object.keys(lb)) if (!(k in want)) fail(`${name}: у LodgingBusiness невідоме поле «${k}»`);

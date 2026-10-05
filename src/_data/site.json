@@ -39,14 +39,13 @@
   },
   "descriptor": "Заміський готельний комплекс",
   "cta": {
-    "caption": "Спокій чекає на вас",
-    "heading": "Приїжджайте, коли захочеться видихнути",
+    "caption": "Спокій чекає на тебе",
+    "heading": "Tur House",
     "booking": "Перевірити вільні дати",
     "instagram": "Написати в Instagram",
-    "instagramProfile": "Наш Instagram",
     "routeGoogle": "Відкрити в Google Maps",
     "routeWaze": "Відкрити у Waze",
-    "call": "Подзвонити",
+    "call": "Зателефонувати",
     "direct": "Написати в Direct"
   },
   "bookingByContactPages": [

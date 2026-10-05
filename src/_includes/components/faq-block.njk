@@ -2,7 +2,9 @@
     ті самі питання йдуть у FAQPage JSON-LD (schema.js, pageFaqPage), тож текст і розмітка не розходяться (T2). -#}
 <section class="section section--alt" id="faq" aria-labelledby="faq-title">
   <div class="wrap">
+    {%- if faqBlock.caption %}
     <p class="caption">{{ faqBlock.caption }}</p>
+    {%- endif %}
     <h2 id="faq-title">{{ faqBlock.heading }}</h2>
     <div class="faq-list">
       {%- for item in faqBlock.items %}

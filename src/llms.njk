@@ -29,9 +29,6 @@ eleventyExcludeFromCollections: true
 {%- endfor %}
 - Баня: {{ spa.price.first | price }} грн {{ spa.price.per | safe }} {{ spa.price.firstLabel | safe }}, {{ spa.price.next | price }} грн {{ spa.price.nextLabel | safe }}
 - {{ texts['banya-ta-spa'].booking.text | safe }}
-{%- for item in home.territory.items %}
-- {{ item.title | safe }}. {{ item.text | safe }}
-{%- endfor %}
 
 **Часті питання**
 {% for f in faq %}
