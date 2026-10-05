@@ -8,7 +8,6 @@ const read = (name) => JSON.parse(fs.readFileSync(new URL(`./${name}`, import.me
 const rooms = read('rooms.json');
 const cottages = read('cottages.json');
 const barn = read('barn.json');
-const bigHouse = read('bigHouse.json');
 
 const rows = (list, label) => list.map((i) => ({ label: label(i), amount: i.price, promo: i.promoPrice ?? null }));
 
@@ -23,9 +22,5 @@ const wrap = (items) => ({ rows: items, hasPromo: items.some((i) => i.promo !== 
 export default {
   rooms: wrap(rows(rooms, (r) => r.title)),
   cottages: wrap(rows(cottages, (c) => short(c.title))),
-  // Барн-хаус и Великий будинок: два разных дома (Макс 05.10.2026), строки в одной карточке, у Великого будинку в подписи его название
-  barn: wrap([
-    ...barn.tariffs.map((t) => ({ label: `${barn.title}, ${t.label}`, amount: t.amount, promo: null })),
-    ...bigHouse.tariffs.map((t) => ({ label: `${bigHouse.title}, ${t.label}`, amount: t.amount, promo: null })),
-  ]),
+  barn: wrap(barn.tariffs.map((t) => ({ label: t.label, amount: t.amount, promo: null }))),
 };

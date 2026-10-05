@@ -963,3 +963,8 @@ html:not(.js) .map-box__btn { display: none; }
 
 /* Фокус на золотых кнопках: тёмное кольцо, золотое на золотом не видно */
 .btn-primary:focus-visible, .on-dark .btn-primary:focus-visible, .site-header .btn-primary:focus-visible { outline-color: var(--color-onyx-warm); box-shadow: 0 0 0 4px var(--color-parchment); }
+
+/* Заголовок первого экрана как на лендинге: крупная строка и ниже обычным шрифтом «біля парку» */
+.hero__h1-main { display: block; }
+.hero__h1-sub { display: block; margin-top: 18px; font-family: var(--font-sans); font-size: clamp(18px, 1.9vw, 24px); font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--color-parchment); }
+.hero__inner h1 { min-height: 0; }

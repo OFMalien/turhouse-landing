@@ -19,15 +19,13 @@ analytics:
   <div class="wrap hero__inner">
     <p class="caption">{{ site.address.short }}</p>
     <p class="hero__name" aria-hidden="true">Tur House</p>
-    <h1 id="hero-title">{{ t.hero.h1 }}</h1>
+    <h1 id="hero-title"><span class="hero__h1-main">{{ t.hero.h1Main }}</span> <span class="hero__h1-sub">{{ t.hero.h1Sub }}</span></h1>
     <ul class="tag-list" aria-label="Коротко про комплекс">
       {%- for tag in t.hero.tags %}
       <li>{{ tag }}</li>
       {%- endfor %}
     </ul>
-    <p class="lede">{{ t.hero.lede }}</p>
     <div class="btn-row">
-      <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
       <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
     </div>
   </div>
@@ -40,23 +38,6 @@ analytics:
     {%- endfor %}{% endfor %}
   </div>
 </div>
-
-<section class="section intro" aria-label="{{ t.intro.caption }}">
-  <div class="wrap">
-    <p class="caption">{{ t.intro.caption }}</p>
-    <ol class="intro-list">
-      {%- for point in t.intro.points %}
-      <li class="intro-list__item">
-        <div class="intro-list__media">
-          {% photo t.intro.photos[loop.index0], { sizes: "(min-width: 900px) 380px, (min-width: 600px) 50vw, 100vw" } %}
-          <span class="intro-list__num" aria-hidden="true">{{ '0' + loop.index }}</span>
-        </div>
-        <p>{{ point }}</p>
-      </li>
-      {%- endfor %}
-    </ol>
-  </div>
-</section>
 
 {% include "components/promo-banner.njk" %}
 
@@ -188,5 +169,22 @@ analytics:
       <a class="btn" href="{{ site.links.waze }}" target="_blank" rel="noopener">{{ site.cta.routeWaze }}</a>
       <a class="btn" href="{{ t.location.link.url | url }}">{{ t.location.link.label }}</a>
     </div>
+  </div>
+</section>
+
+<section class="section intro" aria-label="{{ t.intro.caption }}">
+  <div class="wrap">
+    <p class="caption">{{ t.intro.caption }}</p>
+    <ol class="intro-list">
+      {%- for point in t.intro.points %}
+      <li class="intro-list__item">
+        <div class="intro-list__media">
+          {% photo t.intro.photos[loop.index0], { sizes: "(min-width: 900px) 380px, (min-width: 600px) 50vw, 100vw" } %}
+          <span class="intro-list__num" aria-hidden="true">{{ '0' + loop.index }}</span>
+        </div>
+        <p>{{ point }}</p>
+      </li>
+      {%- endfor %}
+    </ol>
   </div>
 </section>

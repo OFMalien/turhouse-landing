@@ -411,7 +411,8 @@ for (const [url, { doc }] of docs) {
   if (fs.existsSync(textsFile(slug))) {
     const t = JSON.parse(fs.readFileSync(textsFile(slug), 'utf8'));
     const mainText = norm(doc.querySelector('main')?.text);
-    for (const s of textLeaves(t)) if (!mainText.includes(norm(s))) f(`текст з texts/${slug}.json немає на сторінці: «${norm(s).slice(0, 70)}»`);
+    // Лид первого экрана главной на странице не показываем (Макс 05.10.2026: как на лендинге), он нужен для разметки и llms.txt
+    for (const s of textLeaves(t)) if (!(slug === 'home' && s === t.hero?.lede) && !mainText.includes(norm(s))) f(`текст з texts/${slug}.json немає на сторінці: «${norm(s).slice(0, 70)}»`);
     // кнопки-посилання: підпис і адреса разом (інакше два посилання з поміняними адресами проходять)
     const anchors = doc.querySelectorAll('main a').map((a) => ({ t: norm(a.text), h: a.getAttribute('href') }));
     for (const p of linkPairs(t)) {
