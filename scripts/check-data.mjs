@@ -568,7 +568,7 @@ else {
   if (!/Беремицьке/.test(contactPage.address?.text || '') || !/Чернігівська область/.test(contactPage.address?.text || '') || contactPage.address?.link?.url !== '/yak-distatysya/') fail('texts/kontakty.json: address.text про село Беремицьке, Чернігівську область і посилання на /yak-distatysya/');
   if (contactPage.maps || contactPage.more) fail('texts/kontakty.json: блоки maps і more знято (Макс 05.10.2026: дубль підвалу)');
   // чого в джерелах немає: години й графік рецепції, режим, час відповіді, цілодобово, реквізити, ФОП/ТОВ, e-mail
-  const contactJson = JSON.stringify(contactPage);
+  const contactJson = JSON.stringify(contactPage).replace(/Заїзд з 15:00, виїзд до 12:00\./g, ''); // заїзд і виїзд: єдина дозволена згадка годин на цій сторінці (Макс, 15:00 і 12:00)
   if (new RegExp(`(?<![${CYR_CLASS}])(рецепц|години|графік|режим|цілодобов|щодня|відповіда|протягом|реквізит|ФОП|ТОВ|ЄДРПОУ|ІПН|IBAN|юридичн|пошт)|24\\s*/\\s*7|\\d{1,2}[:.]\\d{2}`, 'i').test(contactJson)) fail('texts/kontakty.json: у тексті є години, графік, час відповіді чи реквізити, яких немає в джерелах (FACTS §5)');
   checkPagePhotos('kontakty.json', [contactPage.hero?.photo]);
   const linkedC = new Set(collectLinks(contactPage));

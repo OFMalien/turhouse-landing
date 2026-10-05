@@ -319,7 +319,7 @@ for (const [url, { doc }] of docs) {
     const g = (s) => norm(modal.querySelector(s)?.text);
     if (modal.getAttribute('hidden') === undefined) f('вікно акції має бути прихованим за замовчуванням');
     if (modal.getAttribute('data-session-key') !== promo.sessionKey) f('вікно акції: data-session-key з promo.json');
-    if (g('.promo-badge') !== promo.badge || g('#promo-modal-title') !== promo.title || g('.promo-modal__text') !== promo.modalText) f('вікно акції: бейдж, заголовок або текст не збігаються з promo.json');
+    if (g('.promo-badge') !== promo.badge || g('#promo-modal-title') !== (promo.modalTitle || promo.title) || g('.promo-modal__text') !== promo.modalText) f('вікно акції: бейдж, заголовок або текст не збігаються з promo.json');
     if (!same(rowsOf('.promo-rows li', 'span:first-child'), wantRows)) f(`вікно акції: ціни мають бути ${JSON.stringify(wantRows)}`);
     const cb = modal.querySelector('a.btn-primary');
     if (cb?.getAttribute('href') !== promo.cta.url || norm(cb?.text) !== promo.cta.label) f('вікно акції: кнопка має вести в Instagram Direct з promo.json');

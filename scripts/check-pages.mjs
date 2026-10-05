@@ -292,7 +292,7 @@ const PAGE_RULES = {
     if (items.some((it) => it.getAttribute('open') !== undefined)) f('FAQ має бути згорнутим за замовчуванням');
     // локація: адреса і кнопки маршруту з site.json
     const siteJson = readJson('site.json');
-    if (!sameText(doc.querySelector('#location address')?.text, siteJson.address.full)) f('адреса в блоці локації має збігатися з site.json');
+    if (!sameText(doc.querySelector('#location address')?.text, siteJson.address.line)) f('адреса в блоці локації має збігатися з site.json');
     if (!doc.querySelector(`#location a[href="${siteJson.links.googleMapsRoute}"][rel~="noopener"]`)) f('немає кнопки маршруту Google Maps з site.json');
     if (!doc.querySelector(`#location a[href="${siteJson.links.waze}"][rel~="noopener"]`)) f('немає кнопки Waze з site.json');
     if (!doc.querySelector('#location a[href$="/yak-distatysya/"]')) f('локація має вести на /yak-distatysya/');

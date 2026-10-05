@@ -4,7 +4,7 @@
   <div class="promo-modal__dialog" tabindex="-1">
     <button type="button" class="promo-modal__close" aria-label="Закрити">{{ close() }}</button>
     <p class="promo-badge">{{ promo.badge }}</p>
-    <p class="promo-modal__title" id="promo-modal-title">{{ promo.title }}</p>
+    <p class="promo-modal__title" id="promo-modal-title">{{ promo.modalTitle or promo.title }}</p>
     <p class="promo-modal__text">{{ promo.modalText }}</p>
     <ul class="promo-rows">
       {%- for row in promoItems %}
