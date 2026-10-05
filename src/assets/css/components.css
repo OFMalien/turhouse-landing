@@ -343,17 +343,17 @@ html.nav-open { overflow: hidden; }
   z-index: 90;
   display: none;
 }
-/* Шафранова кнопка (onyx на saffron-glow 5,55:1) видна і на світлому, і на темному фоні. */
+/* Золота кнопка (onyx на золоті 5,2-11,5:1) видна і на світлому, і на темному фоні. */
 .sticky-cta .btn {
   width: 100%;
-  background: var(--color-saffron-glow);
-  border-color: var(--color-saffron-glow);
+  background: var(--gold-grad);
+  border-color: var(--gold);
   color: var(--color-onyx-warm);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 .sticky-cta .btn:hover {
-  background: var(--color-saffron-bright);
-  border-color: var(--color-saffron-bright);
+  background: var(--gold-light);
+  border-color: var(--gold-light);
 }
 /* Дві кнопки поруч (баня: телефон і Direct, питання 29). */
 .sticky-cta--pair { gap: 8px; }
@@ -544,6 +544,12 @@ html.nav-open { overflow: hidden; }
 .promo-price > * { padding: 14px 20px; vertical-align: baseline; }
 .promo-price__who { text-align: left; font-family: var(--font-serif); font-weight: 500; font-size: 22px; letter-spacing: -0.4px; }
 .promo-price__amounts { text-align: right; }
+@media (max-width: 479.98px) {
+  .promo-prices thead th, .promo-price > * { padding: 12px 12px; }
+  .promo-price__who { font-size: 19px; }
+  .promo-price__amounts strong { font-size: 20px; }
+  .promo-price__amounts s { margin-right: 6px; }
+}
 .promo-price__amounts strong { font-weight: 800; font-size: 24px; letter-spacing: -0.6px; white-space: nowrap; }
 .promo-price__amounts s { margin-right: 10px; font-size: var(--text-small); color: var(--text-muted); white-space: nowrap; }
 .promo-banner__note { font-size: var(--text-small); color: var(--text-soft); }
@@ -573,7 +579,7 @@ html.nav-open { overflow: hidden; }
   overflow-y: auto;
   padding: 36px 32px 32px;
   background: var(--color-parchment);
-  border-top: 3px solid var(--color-saffron-bright);
+  border-top: 3px solid var(--gold);
   outline: none;
 }
 .promo-modal__title {
@@ -954,3 +960,6 @@ html:not(.js) .map-box__btn { display: none; }
 
 /* Тег GTM (noscript iframe) не показується */
 .gtm-noscript { display: none; visibility: hidden; }
+
+/* Фокус на золотых кнопках: тёмное кольцо, золотое на золотом не видно */
+.btn-primary:focus-visible, .on-dark .btn-primary:focus-visible, .site-header .btn-primary:focus-visible { outline-color: var(--color-onyx-warm); box-shadow: 0 0 0 4px var(--color-parchment); }
