@@ -17,7 +17,9 @@ analyticsKind: contacts
       <article class="card-object contact-card" id="phone">
         <div class="card-object__body">
           <h2 id="phone-title">{{ t.phone.heading }}</h2>
+          {%- if t.phone.text %}
           <p class="card-object__desc">{{ t.phone.text }}</p>
+          {%- endif %}
           <div class="card-object__actions">
             <a class="btn btn-primary" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}"><span class="nowrap">{{ site.phone.display }}</span></a>
           </div>
@@ -26,7 +28,9 @@ analyticsKind: contacts
       <article class="card-object contact-card" id="instagram">
         <div class="card-object__body">
           <h2 id="instagram-title">{{ t.instagram.heading }}</h2>
+          {%- if t.instagram.text %}
           <p class="card-object__desc">{{ t.instagram.text }}</p>
+          {%- endif %}
           <div class="card-object__actions">
             <a class="btn btn-primary" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
           </div>
@@ -35,7 +39,9 @@ analyticsKind: contacts
       <article class="card-object contact-card" id="booking">
         <div class="card-object__body">
           <h2 id="booking-title">{{ t.booking.heading }}</h2>
+          {%- if t.booking.text %}
           <p class="card-object__desc">{{ t.booking.text }}</p>
+          {%- endif %}
           <div class="card-object__actions">
             <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
           </div>

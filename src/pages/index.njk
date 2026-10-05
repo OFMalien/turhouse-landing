@@ -60,7 +60,6 @@ analytics:
     <div class="sauna-band__copy">
       <p class="caption">{{ t.spa.caption }}</p>
       <h2 id="sauna-title">{{ t.spa.heading }}</h2>
-      <p class="lede">{{ t.spa.lede }}</p>
       <p class="sauna-band__price">{{ t.spa.priceLead }} <strong>{{ spa.price.first | price }}&nbsp;грн</strong> {{ spa.price.per }} {{ spa.price.firstLabel }}, {{ spa.price.nextLabel }} - <strong>{{ spa.price.next | price }}&nbsp;грн</strong>.</p>
       <div class="btn-row">
         <a class="btn btn-primary" href="{{ t.spa.link.url | url }}">{{ t.spa.link.label }}</a>
@@ -148,22 +147,5 @@ analytics:
       <a class="btn" href="{{ site.links.waze }}" target="_blank" rel="noopener">{{ site.cta.routeWaze }}</a>
       <a class="btn" href="{{ t.location.link.url | url }}">{{ t.location.link.label }}</a>
     </div>
-  </div>
-</section>
-
-<section class="section intro" aria-label="{{ t.intro.caption }}">
-  <div class="wrap">
-    <p class="caption">{{ t.intro.caption }}</p>
-    <ol class="intro-list">
-      {%- for point in t.intro.points %}
-      <li class="intro-list__item">
-        <div class="intro-list__media">
-          {% photo t.intro.photos[loop.index0], { sizes: "(min-width: 900px) 380px, (min-width: 600px) 50vw, 100vw" } %}
-          <span class="intro-list__num" aria-hidden="true">{{ '0' + loop.index }}</span>
-        </div>
-        <p>{{ point }}</p>
-      </li>
-      {%- endfor %}
-    </ol>
   </div>
 </section>

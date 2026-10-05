@@ -11,12 +11,6 @@ analyticsKind: barn
 {%- set hero = t.hero %}
 {% include "components/page-hero.njk" %}
 
-<section class="section text-section" aria-label="Про Барн-хаус">
-  <div class="wrap">
-    <p class="lede">{{ t.intro.text }}</p>
-  </div>
-</section>
-
 <section class="section section--tight" id="tariffs" aria-labelledby="tariffs-title">
   <div class="wrap">
     <h2 id="tariffs-title">{{ t.tariffs.heading }}</h2>
@@ -69,7 +63,6 @@ analyticsKind: barn
 <section class="section section--alt" id="group" aria-labelledby="group-title">
   <div class="wrap">
     <h2 id="group-title">{{ t.group.heading }}</h2>
-    <p class="lede block-note">{{ t.group.text }}</p>
     <div class="btn-row">
       {%- for l in t.group.links %}
       <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>

@@ -75,7 +75,7 @@ else {
   if (!same(cottages.map((c) => c.price), [6000, 7000])) fail('cottages.json: ціни мають бути 6000 і 7000');
   if (cottages[0].promoPrice !== 4800 || cottages[1].promoPrice !== undefined) fail('cottages.json: ціна акції 4800 тільки у котеджа на 4 гості (R9; Макс 05.10.2026: інші ціни не рахуємо)');
   for (const c of cottages) {
-    if (c.count !== '2 котеджі цього типу') fail(`cottages.json ${c.id}: count має бути "2 котеджі цього типу" (R5)`);
+    if (c.count !== undefined) fail(`cottages.json ${c.id}: кількість котеджів на сайті не вказуємо (Макс 06.10.2026: скорочення тексту), поле count не потрібне`);
     if (/12/.test(`${c.title} ${c.capacity}`)) fail(`cottages.json ${c.id}: "на 12" не має бути на сторінці котеджів (R5)`);
     if (c.category !== 'cottages') fail(`cottages.json ${c.id}: category cottages`);
   }
@@ -283,9 +283,9 @@ else {
   // бігуча стрічка під першим екраном: шість пунктів дослівно з боєвого лендингу (Макс 05.10.2026)
   const MARQUEE = ['Баня на дровах', 'Чан під відкритим небом', 'Басейн з підігрівом', 'Готельні номери', 'Котеджі для компаній', 'Starlink'];
   if (!same(home.marquee, MARQUEE)) fail(`texts/home.json: marquee має бути ${JSON.stringify(MARQUEE)} (дослівно з боєвого лендингу)`);
-  if (!Array.isArray(home.intro?.points) || home.intro.points.length !== 3) fail('texts/home.json: intro.points має бути 3 пункти');
-  const introText = (home.intro?.points || []).join(' ');
-  if (!/Парком природи «Беремицьке»/.test(introText)) fail('texts/home.json: у вступі «Парком природи «Беремицьке»» (текст «Про Tur House» як на живому лендингу, Макс 05.10.2026)');
+  if (home.intro) fail('texts/home.json: блок «Про Tur House» знято (Макс 06.10.2026: скорочення тексту: дубль блоків вище)');
+
+
   const fmt = home.formats?.items || [];
   if (!same(fmt.map((i) => i.id), ['rooms', 'cottages', 'barn']) || !same(fmt.map((i) => i.link?.url), ['/nomery/', '/kotedzhi/', '/barn-house/'])) fail('texts/home.json: formats.items rooms, cottages, barn з посиланнями на свої сторінки (R4-R6: три формати)');
   else {
@@ -342,12 +342,12 @@ else {
   checkMeta('nomery.json', nomery.meta, { titleHas: ['Номери', 'Tur House', 'Беремицьке'], descHas: ['під Києвом', 'номер'] });
   if (!/Номери/.test(nomery.hero?.h1 || '') || !/готел/.test(nomery.hero?.h1 || '')) fail('texts/nomery.json: hero.h1 має містити "Номери" і "готелі"');
   if (/(шість|по два|2 номер)/i.test(nomery.hero?.lede || '') || !/двоє гостей/.test(nomery.hero?.lede || '')) fail('texts/nomery.json: hero.lede без кількості номерів, з "двоє гостей" (Макс 06.10.2026)');
-  const introT = nomery.intro?.text || '';
-  for (const w of ['Парком природи «Беремицьке»', 'Чернігівщин']) if (!introT.includes(w)) fail(`texts/nomery.json: у вступі немає "${w}" (текст «Про Tur House» як на лендингу і чесне місце)`);
+  if (nomery.intro) fail('texts/nomery.json: вступ знято (Макс 06.10.2026: скорочення тексту: дубль про парк)');
+
   if (rooms && rooms.length === 3) {
-    const t = rooms.map((r) => r.title);
-    const names = `${t.slice(0, -1).join(', ')} і ${t[t.length - 1]}`;
-    if (!t.every((n) => (nomery.types?.lead || '').includes(n)) || /по два номери/.test(nomery.types.lead) || !/двоє гостей/.test(nomery.types.lead)) fail(`texts/nomery.json: types.lead "${names}" і "двоє гостей", без кількості номерів (Макс 06.10.2026)`);
+
+
+    if (/по два номери|\d+ номер/.test(nomery.types?.lead || '')) fail('texts/nomery.json: types.lead без кількості номерів (Макс 06.10.2026)');
   }
   if (!same(nomery.variants?.photos, ['rooms/variant-rooms'])) fail('texts/nomery.json: variants.photos мають бути [rooms/variant-rooms] (Instagram, пост 13.05.2026)');
   const IN_ROOM = ['Двоспальне ліжко', 'Телевізор і кондиціонер', 'Душ і туалет', 'Рушники та засоби гігієни', 'Міні-холодильник', 'Чайник і чайний набір'];
@@ -356,7 +356,7 @@ else {
   if (nomery.where) fail('texts/nomery.json: блок where знято (Макс 05.10.2026: дубль hero.lede)');
   const incl = (nomery.included?.items || []).join(' ');
   for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(incl)) fail(`texts/nomery.json: included.items без "${w}"`);
-  if (!/до 8 або до 12 гостей/.test(nomery.group?.text || '') || !/чотирьох і шести гостей/.test(nomery.group?.text || '')) fail('texts/nomery.json: group.text про котеджі на 4 і 6 гостей і Барн-хаус до 8 або до 12 гостей (R5, R6)');
+  if (nomery.group?.text) fail('texts/nomery.json: у блоці group лише кнопки, без абзацу (Макс 06.10.2026: скорочення тексту)');
   if (!/BookmeNow/.test(nomery.booking?.text || '') || !/Direct/.test(nomery.booking?.text || '')) fail('texts/nomery.json: booking.text має згадувати BookmeNow і Instagram Direct');
   // зручності, яких немає в джерелах: площа, санвузол, кондиціонер, чайник, телевізор, сніданок, балкон, вид з вікна
   if (new RegExp(`(?<![${CYR_CLASS}])(кв\\.?\\s?м|м²|санвуз|ванн|балкон|вид з|вид на|кондиціонер|чайник|телевізор|снідан|холодильник|джакузі|сауна|посуд|фен|мінібар|wi-?fi)`, 'i').test(JSON.stringify(withoutConfirmed(nomery, { dropKeys: ['inRoom'], dropFaq: ['difference', 'in-room', 'breakfast'], blank: [['types', 'lead']] })))) fail('texts/nomery.json: у тексті є зручності, яких немає в джерелах (площа, санвузол, кондиціонер, сніданок тощо), C6');
@@ -378,19 +378,19 @@ else {
   const capN = (cottages || []).map((c) => Number((c.capacity.match(/\d+/) || [])[0]));
   if (!same(capN, [4, 6])) fail('texts/kotedzhi.json: у cottages.json місткість має бути 4 і 6 гостей (R5)');
   for (const [where, t] of [['hero.lede', kotedzhi.hero?.lede]]) {
-    if (!/(два котеджі|два) на 4 гості й два на 6 гостей/i.test(t || '')) fail(`texts/kotedzhi.json: ${where} "два на 4 гості й два на 6 гостей" (R5)`);
+    if (/(два|чотири|\d) котедж|котеджі цього типу/i.test(t || '')) fail(`texts/kotedzhi.json: ${where} без кількості котеджів (Макс 06.10.2026: скорочення тексту)`);
   }
-  if (!/Чотири котеджі/.test(kotedzhi.hero?.lede || '') || !/двокімнатні/i.test(kotedzhi.hero?.lede || '')) fail('texts/kotedzhi.json: hero.lede "Чотири котеджі ... двокімнатні" (R5, джерело LIVE)');
-  const introK = kotedzhi.intro?.text || '';
-  for (const w of ['Чернігівщин', 'кухн', 'Парком природи «Беремицьке»']) if (!new RegExp(w, 'i').test(introK)) fail(`texts/kotedzhi.json: у вступі немає "${w}" (текст «Про Tur House» про котеджі як на лендингу і чесне місце)`);
+  if (!/на 4 і на 6 гостей/.test(kotedzhi.hero?.lede || '') || !/двокімнатні/i.test(kotedzhi.hero?.lede || '')) fail('texts/kotedzhi.json: hero.lede "Двокімнатні ... на 4 і на 6 гостей"');
+  if (kotedzhi.intro) fail('texts/kotedzhi.json: вступ знято (Макс 06.10.2026: скорочення тексту: дубль шапки)');
+
   if (!same(kotedzhi.variants?.photos, ['cottages/variant-cottage-4', 'cottages/variant-cottage-6'])) fail('texts/kotedzhi.json: variants.photos мають бути два графіки котеджів (Instagram, пост 13.05.2026)');
   const IN_COTTAGE = ['Обладнана кухня: плита, мікрохвильовка, чайник', 'Електричне опалення та камін', 'Постільна білизна та засоби гігієни', 'Власна тераса та мангал', 'Своя зона BBQ біля кожного котеджу'];
   if (!same(kotedzhi.inCottage?.items, IN_COTTAGE)) fail(`texts/kotedzhi.json: inCottage.items мають бути ${JSON.stringify(IN_COTTAGE)} (слова Олі 05.10.2026)`);
-  if (!/розкладний диван/.test(kotedzhi.types?.lead || '') || !/на 6 гостей/.test(kotedzhi.types?.lead || '')) fail('texts/kotedzhi.json: types.lead про розкладний диван у котеджі на 6 гостей (Оля 05.10.2026)');
+  if (!(cottages || []).some((c) => /на 6 гостей/.test(c.title) && (c.features || []).some((f) => /[Рр]озкладний диван/.test(f)))) fail('cottages.json: розкладний диван у картці котеджа на 6 гостей (Оля 05.10.2026)');
   if (kotedzhi.kitchen) fail('texts/kotedzhi.json: блок kitchen знято (Макс 05.10.2026: дубль inCottage і hero)');
   const inclK = (kotedzhi.included?.items || []).join(' ');
   for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(inclK)) fail(`texts/kotedzhi.json: included.items без "${w}"`);
-  if (!/до 8 або до 12 гостей/.test(kotedzhi.group?.text || '') || !/двох гостей/.test(kotedzhi.group?.text || '')) fail('texts/kotedzhi.json: group.text про номери для двох гостей і Барн-хаус до 8 або до 12 гостей (R4, R6)');
+  if (kotedzhi.group?.text) fail('texts/kotedzhi.json: у блоці group лише кнопки, без абзацу (Макс 06.10.2026: скорочення тексту)');
   if (!/BookmeNow/.test(kotedzhi.booking?.text || '') || !/Direct/.test(kotedzhi.booking?.text || '')) fail('texts/kotedzhi.json: booking.text має згадувати BookmeNow і Instagram Direct');
   // комплектація, якої Оля не називала (05.10.2026 підтверджено: обладнана кухня з плитою, мікрохвильовкою і чайником, електричне опалення, камін, постільна білизна, засоби гігієни, своя зона BBQ; посуд, рушники та інше не підтверджено), Wi-Fi у котеджах (тільки "на території"), спальні, площа, вечірній вигляд
   if (new RegExp(`(?<![${CYR_CLASS}])(посуд|опален|постіль|постільн|білизн|камін|рушник|кондиціонер|телевізор|санвуз|ванн|душ|спальн|спален|снідан|кв\\.?\\s?м|м²|паркін|парковк|дитяч|холодильник|балкон|джакузі|сауна)|wi-?fi|вайфай`, 'i').test(JSON.stringify(withoutConfirmed(kotedzhi, { dropKeys: ['inCottage'], dropFaq: ['in-cottage', 'internet'] })))) fail('texts/kotedzhi.json: у тексті є комплектація або зручності, яких немає в джерелах (посуд, опалення, спальні, Wi-Fi тощо), C6');
@@ -407,9 +407,9 @@ if (!barnPage) fail('texts/barn-house.json: немає файлу');
 else {
   checkMeta('barn-house.json', barnPage.meta, { titleHas: ['Барн-хаус', 'Tur House'], descHas: ['під Києвом', 'Барн-хаус', 'до 8 або до 12 гостей'] });
   if (!/Барн-хаус/.test(barnPage.hero?.h1 || '') || !/окремий будинок/i.test(barnPage.hero?.h1 || '')) fail('texts/barn-house.json: hero.h1 "Барн-хаус: окремий будинок ..."');
-  if (!/Один[^.]*будинок/.test(barnPage.hero?.lede || '') || !/До 8 або до 12 гостей/.test(barnPage.hero?.lede || '')) fail('texts/barn-house.json: hero.lede "Один ... будинок ... До 8 або до 12 гостей"');
-  const introB = barnPage.intro?.text || '';
-  if (!/Панорамний фасад на 2 поверхи/.test(introB) || /для \d+ гостей/.test(introB)) fail('texts/barn-house.json: вступ як опис картки на лендингу («Панорамний фасад на 2 поверхи…»), без «для 8 гостей» (Макс 05.10.2026)');
+  if (barnPage.hero?.lede !== 'До 8 або до 12 гостей.') fail('texts/barn-house.json: hero.lede «До 8 або до 12 гостей.» (H1 уже каже «окремий будинок»)');
+  if (barnPage.intro) fail('texts/barn-house.json: вступ знято (Макс 06.10.2026: скорочення тексту: дубль «Що всередині»)');
+
   if (!/за добу/.test(barnPage.tariffs?.text || '')) fail('texts/barn-house.json: tariffs.text "... за добу"');
   if (!/Великий будинок/.test(barnPage.bigHouse?.heading || '') || !/готельний корпус/.test(barnPage.bigHouse?.text || '') || !/до 12 гостей/.test(barnPage.bigHouse?.text || '') || /\d\s*грн/.test(barnPage.bigHouse?.text || '')) fail('texts/barn-house.json: bigHouse: коротко, шість двомісних номерів, до 12 гостей, без цін (Макс 05.10.2026)');
   // inside і outside збігаються з підтвердженими пунктами barn.json
@@ -422,7 +422,7 @@ else {
   if (!/власна ділянка з газоном/.test(outside) || !/З вікон видно басейн і дитячий майданчик/.test(outside) || !hl.includes('Власна ділянка з газоном') || !hl.includes('З вікон видно басейн і дитячий майданчик')) fail('texts/barn-house.json: outside.text "власна ділянка з газоном" і "З вікон видно басейн і дитячий майданчик" (є в barn.json)');
   const inclB = (barnPage.included?.items || []).join(' ');
   for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(inclB)) fail(`texts/barn-house.json: included.items без "${w}"`);
-  if (!/двох гостей/.test(barnPage.group?.text || '') || !/чотирьох і шести гостей/.test(barnPage.group?.text || '')) fail('texts/barn-house.json: group.text про номери для двох гостей і котеджі для чотирьох і шести (R4, R5)');
+  if (barnPage.group?.text) fail('texts/barn-house.json: у блоці group лише кнопки, без абзацу (Макс 06.10.2026: скорочення тексту)');
   if (!/BookmeNow/.test(barnPage.booking?.text || '') || !/Direct/.test(barnPage.booking?.text || '')) fail('texts/barn-house.json: booking.text має згадувати BookmeNow і Instagram Direct');
   // чого в джерелах немає: число спалень і ліжок, огороджена територія, мангал, джакузі, паркінг, заходи (корпоратив, весілля, банкет, музика), Wi-Fi, сніданок, кондиціонер
   const barnJson = JSON.stringify(barnPage);
@@ -443,13 +443,13 @@ else {
   checkMeta('banya-ta-spa.json', spaPage.meta, { titleHas: ['Баня', 'чаном', 'під Києвом', 'Tur House'], descHas: ['під Києвом', 'чан'] });
   if (!/Баня/.test(spaPage.hero?.h1 || '') || !/чан/i.test(spaPage.hero?.h1 || '')) fail('texts/banya-ta-spa.json: hero.h1 має містити "Баня" і "чан"');
   if (!/весняно-осінній/.test(spaPage.hero?.lede || '')) fail('texts/banya-ta-spa.json: hero.lede про басейн має казати "весняно-осінній сезон"');
-  const introS = spaPage.intro?.text || '';
-  if (!/Банний комплекс/.test(introS) || !/Чернігівська область/.test(introS) || !/Парком природи «Беремицьке»/.test(introS)) fail('texts/banya-ta-spa.json: у вступі «Банний комплекс», «Чернігівська область» і «Парком природи «Беремицьке»»');
+  if (spaPage.intro || spaPage.complex?.lead || spaPage.stay?.text) fail('texts/banya-ta-spa.json: вступ, абзац складу і текст «Баня і проживання» знято (Макс 06.10.2026: скорочення тексту: дублі)');
+
   // склад комплексу в тексті = spa.complex (7 пунктів у тому ж порядку)
-  const lead = (spaPage.complex?.lead || '').toLowerCase();
-  const cplx = (spa?.complex || []).map((c) => c.toLowerCase());
-  let pos = -1;
-  for (const c of cplx) { const p = lead.indexOf(c, pos + 1); if (p < 0) { fail(`texts/banya-ta-spa.json: у complex.lead немає "${c}" (spa.json)`); break; } pos = p; }
+
+
+
+
   if (spa?.pricePoster !== 'spa/price-poster') fail('spa.json: pricePoster має бути spa/price-poster (прайс з Instagram, пост 16.09.2026)');
   const priceT = spaPage.price?.text || '';
   for (const w of ['з особи', 'першу годину', 'наступну', 'бронювання обов\'язкове', 'банщика']) if (!priceT.includes(w)) fail(`texts/banya-ta-spa.json: у price.text немає "${w}" (Instagram 16.09.2026)`);
@@ -521,7 +521,7 @@ else {
   if (okolitsi.park?.link || /beremytske\.com\.ua|сайт[іу]? парку[^,]/i.test(JSON.stringify(okolitsi.park || {}).replace('За інформацією на сайті парку,', ''))) fail('texts/okolitsi.json: посилання на сайт парку і відсилання «дивіться на сайті парку» знято (питання 24б)');
   if (!/дитячий майданчик/.test(okolitsi.family?.text || '')) fail('texts/okolitsi.json: family.text про дитячий майданчик (barn.json)');
   if (okolitsi.weekend) fail('texts/okolitsi.json: блок weekend знято (Макс 05.10.2026: самодельний SEO-абзац)');
-  if (!/Десна/.test(okolitsi.desna?.text || '')) fail('texts/okolitsi.json: desna.text про Десну');
+  if (okolitsi.desna || okolitsi.stay?.text) fail('texts/okolitsi.json: блок «Десна і тиша» і текст «Де зупинитися поруч» знято (Макс 06.10.2026: скорочення тексту: повтори)');
   // не вигадувати про парк: інші тварини (зубри, коні Пржевальського, ведмеді, вовки, тури), площа, рік відкриття, ціни, години, відстані, розваги, яких немає в джерелах Tur House
   const okJson = JSON.stringify(okolitsi);
   if (new RegExp(`(?<![${CYR_CLASS}])(зубр|бізон|пржевальськ|ведмід|ведмед|вовк|рис[іь]|тур[иіів]|тарпан|гектар|\\d+\\s*га|2017|вежа|оглядов|лучн|стрільб|велосипед|кемпінг|ресторан|квиток|вхід)`, 'i').test(okJson.replace(/вартість квитків/gi, '').replace(/квитків/gi, ''))) fail('texts/okolitsi.json: про парк є тварини, розваги чи умови, яких не підтверджено (дикі коні, тури, оглядова вежа, вхід тощо)');
@@ -543,8 +543,8 @@ else {
   if (routePage.route?.heading !== 'Як доїхати в Беремицьке з Києва') fail('texts/yak-distatysya.json: route.heading «Як доїхати в Беремицьке з Києва» (кластер ТЗ §6, слова лендингу)');
   // маршрут дослівно з живого лендингу (узгоджений з клієнтом, C5): Броварським проспектом, далі на Зазим'я та Літки
   if (routePage.route?.text !== "Дорога з Києва: Броварським проспектом, далі на Зазим'я та Літки.") fail("texts/yak-distatysya.json: route.text має бути маршрутом з живого лендингу («Броварським проспектом, далі на Зазим'я та Літки»)");
-  if (!/Google Maps/.test(routePage.navigator?.text || '') || !/Waze/.test(routePage.navigator?.text || '')) fail('texts/yak-distatysya.json: navigator.text про Google Maps і Waze');
-  if (routePage.map?.button !== 'Показати карту' || !/тільки після натискання/.test(routePage.map?.note || '')) fail('texts/yak-distatysya.json: карта вантажиться після кліку («Показати карту», «тільки після натискання»)');
+  if (routePage.navigator?.text) fail('texts/yak-distatysya.json: navigator.text знято (Макс 06.10.2026: скорочення тексту: повторює кнопки)');
+  if (routePage.map?.button !== 'Показати карту' || routePage.map?.note) fail('texts/yak-distatysya.json: кнопка «Показати карту» без службової примітки (Макс 06.10.2026: скорочення тексту)');
   if (routePage.landmark || routePage.stay || routePage.faq) fail('texts/yak-distatysya.json: блоки landmark, stay, faq знято (Макс 05.10.2026: на лендингу їх немає)');
   if (!/зателефонуйте/i.test(routePage.help?.text || '') || !/Direct/.test(routePage.help?.text || '')) fail('texts/yak-distatysya.json: help.text пропонує телефон і Instagram Direct');
   // чого в джерелах немає: Остер (маршрут з ТЗ), асфальт, в'їзд, парковка, громадський транспорт, таксі, траса
@@ -562,10 +562,10 @@ else {
   checkMeta('kontakty.json', contactPage.meta, { titleHas: ['Контакти', 'Tur House'], descHas: ['Instagram', 'BookmeNow', 'телефон'] });
   if (contactPage.hero?.h1 !== 'Контакти Tur House') fail('texts/kontakty.json: hero.h1 «Контакти Tur House»');
   if (!/Direct/.test(contactPage.hero?.lede || '') || !/BookmeNow/.test(contactPage.hero?.lede || '') || !/телефонуйте/i.test(contactPage.hero?.lede || '')) fail('texts/kontakty.json: hero.lede про телефон, Instagram Direct і BookmeNow');
-  if (!/Зателефонуйте/.test(contactPage.phone?.text || '')) fail('texts/kontakty.json: phone.text пропонує зателефонувати');
-  if (!/Direct/.test(contactPage.instagram?.text || '')) fail('texts/kontakty.json: instagram.text про Direct');
-  if (!/BookmeNow/.test(contactPage.booking?.text || '') || !/проживання/i.test(contactPage.booking?.text || '')) fail('texts/kontakty.json: booking.text про BookmeNow для проживання (баню через BookmeNow не бронюємо, питання 22)');
-  if (!/Беремицьке/.test(contactPage.address?.text || '') || !/Чернігівська область/.test(contactPage.address?.text || '') || contactPage.address?.link?.url !== '/yak-distatysya/') fail('texts/kontakty.json: address.text про село Беремицьке, Чернігівську область і посилання на /yak-distatysya/');
+  if (contactPage.phone?.text || contactPage.instagram?.text) fail('texts/kontakty.json: у картках телефону й Instagram лише кнопки (Макс 06.10.2026: скорочення тексту: повтор шапки)');
+
+  if (!/Заїзд з 15:00, виїзд до 12:00/.test(contactPage.booking?.text || '')) fail('texts/kontakty.json: booking.text про заїзд і виїзд');
+  if (!/Беремицьке/.test(contactPage.address?.text || '') || contactPage.address?.link?.url !== '/yak-distatysya/') fail('texts/kontakty.json: address.text про парк природи «Беремицьке» і посилання на /yak-distatysya/');
   if (contactPage.maps || contactPage.more) fail('texts/kontakty.json: блоки maps і more знято (Макс 05.10.2026: дубль підвалу)');
   // чого в джерелах немає: години й графік рецепції, режим, час відповіді, цілодобово, реквізити, ФОП/ТОВ, e-mail
   const contactJson = JSON.stringify(contactPage).replace(/Заїзд з 15:00, виїзд до 12:00\./g, ''); // заїзд і виїзд: єдина дозволена згадка годин на цій сторінці (Макс, 15:00 і 12:00)
@@ -686,12 +686,12 @@ else {
   }
   // розкладний диван на 2 додаткових місця (Оля 05.10.2026), у всіх файлах однаково
   for (const str of allStrings) for (const m of str.matchAll(/диван[^.]{0,40}?на\s+(\d+)\s+(?:додатков\S*\s+)?місц/gi)) if (m[1] !== '2') fail(`розкладний диван: має бути «на 2 місця», є «на ${m[1]}»: «${str.slice(0, 90)}»`);
-  // години бани 11:00-22:00 закріплені у двох місцях (Оля 05.10.2026)
+  // години бани 11:00-22:00 (Оля 05.10.2026): один раз, у блоці броні
   const spaP = contentFiles.includes('banya-ta-spa.json') ? readContent('banya-ta-spa.json') : null;
   if (spaP) {
     if (!(spaP.booking?.text || '').includes('з 11:00 до 22:00')) fail('texts/banya-ta-spa.json: booking.text має містити «з 11:00 до 22:00» (Оля 05.10.2026)');
     const ws = (spaP.faq?.items || []).find((i) => i.id === 'without-stay');
-    if (!ws || !ws.a.includes('з 11:00 до 22:00')) fail('texts/banya-ta-spa.json: у FAQ without-stay має бути «з 11:00 до 22:00» (Оля 05.10.2026)');
+    if (!ws || ws.a.includes('11:00')) fail('texts/banya-ta-spa.json: FAQ without-stay є, години в ньому не повторюємо (вони в блоці броні, Макс 06.10.2026)');
     for (const str of collectStrings(spaP)) for (const m of str.matchAll(/(\d{1,2}:\d{2})\s*до\s*(\d{1,2}:\d{2})/g)) if (m[1] !== '11:00' || m[2] !== '22:00') fail(`banya-ta-spa.json: інші години бані: «${m[0]}» (підтверджено 11:00-22:00)`);
   }
   // умова акції: будні дні, а не вихідні (Макс 02.10.2026)

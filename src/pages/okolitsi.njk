@@ -24,16 +24,10 @@ analyticsKind: area
   </div>
 </section>
 
-<section class="section section--alt" id="nature">
-  <div class="wrap split split--text">
-    <div class="split__copy" id="desna">
-      <h2 id="desna-title">{{ t.desna.heading }}</h2>
-      <p class="lede">{{ t.desna.text }}</p>
-    </div>
-    <div class="split__copy" id="family">
-      <h2 id="family-title">{{ t.family.heading }}</h2>
-      <p class="lede">{{ t.family.text }}</p>
-    </div>
+<section class="section section--alt" id="family" aria-labelledby="family-title">
+  <div class="wrap">
+    <h2 id="family-title">{{ t.family.heading }}</h2>
+    <p class="lede block-note">{{ t.family.text }}</p>
   </div>
 </section>
 
@@ -44,7 +38,6 @@ analyticsKind: area
 <section class="section" id="stay" aria-labelledby="stay-title">
   <div class="wrap">
     <h2 id="stay-title">{{ t.stay.heading }}</h2>
-    <p class="lede block-note">{{ t.stay.text }}</p>
     <div class="btn-row">
       {%- for l in t.stay.links %}
       <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>

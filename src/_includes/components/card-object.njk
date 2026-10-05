@@ -49,7 +49,7 @@
       <p class="price"><strong>{{ item.price | price }}&nbsp;грн</strong> <span class="price__unit">/ доба</span></p>
       {%- endif %}
       {%- if cardPlainPrice and promo and promo.enabled and item.promoPrice %}
-      <a class="format-card__promo" href="#promo">{{ promo.shortLabel }}</a>
+      <a class="format-card__promo" href="{% if promoElsewhere %}{{ '/' | url }}{% endif %}#promo">{{ promo.shortLabel }}</a>
       {%- endif %}
     </div>
 
