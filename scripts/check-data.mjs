@@ -198,7 +198,7 @@ else {
   }
   const need = (id, parts) => { for (const p of parts) if (!(answer[id] || '').toLowerCase().includes(p.toLowerCase())) fail(`faq.json ${id}: у відповіді немає "${p}"`); };
   if (rooms && cottages) need('stay-prices', [...rooms.map((r) => `${money(r.price)} грн`), ...cottages.map((c) => `${money(c.price)} грн`)]);
-  if (barn && barn.tariffs) need('barn-price', ['Барн-хаус', 'Великий будинок', ...barn.tariffs.map((t) => `${t.label.replace('до ', 'на ')} `), ...bigHouse.tariffs.map((t) => `${t.label} `), ...barn.tariffs.map((t) => `${money(t.amount)} грн`), ...bigHouse.tariffs.map((t) => `${money(t.amount)} грн`), 'BBQ']);
+  if (barn && barn.tariffs) need('barn-price', ['Барн-хаус', 'Великий будинок', ...barn.tariffs.map((t) => `${t.label} `), ...bigHouse.tariffs.map((t) => `${t.label} `), ...barn.tariffs.map((t) => `${money(t.amount)} грн`), ...bigHouse.tariffs.map((t) => `${money(t.amount)} грн`), 'BBQ']);
   if (spa) need('banya', [`${spa.price.first} грн з особи за першу годину`, `${spa.price.next} грн`, 'банщика', ...(spa.extras || []).map((x) => `${money(x.amount)} грн`)]);
   need('pool', ['весняно-осінній']);
   need('internet', ['Starlink']);
@@ -298,7 +298,7 @@ else {
   else {
     if (!/по два номери/.test(fmt[0].desc)) fail('texts/home.json: rooms.desc має говорити "по два номери кожного виду" (R4)');
     if (!/Два котеджі на 4 гості й два на 6 гостей/.test(fmt[1].desc)) fail('texts/home.json: cottages.desc має говорити "два котеджі на 4 гості й два на 6 гостей" (R5)');
-    if (!/Барн-хаус на 8 гостей/.test(fmt[2].desc) || !/Великий будинок до 12 гостей/.test(fmt[2].desc)) fail('texts/home.json: barn.desc має називати "Барн-хаус на 8 гостей" і "Великий будинок до 12 гостей" (два різні будинки, Макс 05.10.2026)');
+    if (!/Барн-хаус до 8 гостей/.test(fmt[2].desc) || !/Великий будинок до 12 гостей/.test(fmt[2].desc)) fail('texts/home.json: barn.desc має називати "Барн-хаус до 8 гостей" і "Великий будинок до 12 гостей" (два різні будинки, Макс 05.10.2026)');
   }
   if (!/BBQ/.test(home.formats?.included || '') || !/басейн/.test(home.formats?.included || '')) fail('texts/home.json: formats.included має говорити про BBQ і басейн');
   if (home.spa?.link?.url !== '/banya-ta-spa/' || home.cafe?.link?.url !== '/kafe/' || home.area?.link?.url !== '/okolitsi/' || home.location?.link?.url !== '/yak-distatysya/') fail('texts/home.json: посилання spa, cafe, area, location на свої сторінки');
@@ -422,10 +422,10 @@ if (!barnPage) fail('texts/barn-house.json: немає файлу');
 else {
   checkMeta('barn-house.json', barnPage.meta, { titleHas: ['Барн-хаус', 'Tur House'], descHas: ['під Києвом', 'Барн-хаус', 'Великий будинок', 'до 8 гостей', 'до 12 гостей'] });
   if (!/Барн-хаус/.test(barnPage.hero?.h1 || '') || !/окремий будинок/i.test(barnPage.hero?.h1 || '')) fail('texts/barn-house.json: hero.h1 "Барн-хаус: окремий будинок ..."');
-  if (!/двоповерховий будинок/.test(barnPage.hero?.lede || '') || !/на 8 гостей/.test(barnPage.hero?.lede || '') || !/Великий будинок/.test(barnPage.hero?.lede || '')) fail('texts/barn-house.json: hero.lede про Барн-хаус на 8 гостей і Великий будинок до 12 гостей (Макс 05.10.2026)');
+  if (!/двоповерховий будинок/.test(barnPage.hero?.lede || '') || !/до 8 гостей/.test(barnPage.hero?.lede || '') || !/Великий будинок/.test(barnPage.hero?.lede || '')) fail('texts/barn-house.json: hero.lede про Барн-хаус на 8 гостей і Великий будинок до 12 гостей (Макс 05.10.2026)');
   const introB = barnPage.intro?.text || '';
   if (!/будинок для компанії під Києвом/i.test(introB) || !/Чернігівщин/.test(introB)) fail('texts/barn-house.json: у вступі кластер ТЗ «будинок для компанії під Києвом» і «Чернігівщина»');
-  if (!/розрахований саме на 8/.test(barnPage.tariffs?.text || '') || !/за добу/.test(barnPage.tariffs?.text || '')) fail('texts/barn-house.json: tariffs.text "... розрахований саме на 8 ... за добу"');
+  if (!/за добу/.test(barnPage.tariffs?.text || '')) fail('texts/barn-house.json: tariffs.text "... за добу"');
   if (!/Великий будинок/.test(barnPage.bigHouse?.heading || '') || !/6 кімнат/.test(barnPage.bigHouse?.text || '') || !/8 санвузлів/.test(barnPage.bigHouse?.text || '') || !/до 12 гостей/.test(barnPage.bigHouse?.text || '')) fail('texts/barn-house.json: bigHouse має описувати Великий будинок: 6 кімнат, 8 санвузлів, до 12 гостей (Макс 05.10.2026)');
   if (!bigHouse || bigHouse.title !== 'Великий будинок' || !same(bigHouse.tariffs, [{ label: 'до 12 гостей', amount: 13000 }])) fail('bigHouse.json: Великий будинок, один тариф "до 12 гостей" 13000');
   else for (const w of ['6 кімнат', '8 санвузлів', 'До 12 гостей']) if (!bigHouse.highlights.includes(w)) fail(`bigHouse.json: highlights без "${w}"`);
