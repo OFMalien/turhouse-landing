@@ -47,7 +47,10 @@ analytics:
     <ol class="intro-list">
       {%- for point in t.intro.points %}
       <li class="intro-list__item">
-        <span class="intro-list__num" aria-hidden="true">{{ '0' + loop.index }}</span>
+        <div class="intro-list__media">
+          {% photo t.intro.photos[loop.index0], { sizes: "(min-width: 900px) 380px, (min-width: 600px) 50vw, 100vw" } %}
+          <span class="intro-list__num" aria-hidden="true">{{ '0' + loop.index }}</span>
+        </div>
         <p>{{ point }}</p>
       </li>
       {%- endfor %}

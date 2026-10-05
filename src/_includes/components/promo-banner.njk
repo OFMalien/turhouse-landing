@@ -17,17 +17,23 @@
           {%- endfor %}
         </ul>
 
-        <ul class="promo-prices">
-          {%- for row in promoItems %}
-          <li class="promo-price">
-            <span class="promo-price__who">{{ row.label }}</span>
-            <span class="promo-price__amounts">
-              <span class="visually-hidden">Звичайна ціна:</span> <s>{{ row.was | price }}&nbsp;грн</s>
-              <span class="visually-hidden">Ціна зі знижкою:</span> <strong>{{ row.now | price }}&nbsp;грн</strong>
-            </span>
-          </li>
-          {%- endfor %}
-        </ul>
+        <table class="promo-prices">
+          <caption class="visually-hidden">Ціни за добу зі знижкою</caption>
+          <thead>
+            <tr><th scope="col">Варіант</th><th scope="col">Ціна за добу</th></tr>
+          </thead>
+          <tbody>
+            {%- for row in promoItems %}
+            <tr class="promo-price">
+              <th scope="row" class="promo-price__who">{{ row.label }}</th>
+              <td class="promo-price__amounts">
+                <span class="visually-hidden">Звичайна ціна:</span> <s>{{ row.was | price }}&nbsp;грн</s>
+                <span class="visually-hidden">Ціна зі знижкою:</span> <strong>{{ row.now | price }}&nbsp;грн</strong>
+              </td>
+            </tr>
+            {%- endfor %}
+          </tbody>
+        </table>
         <p class="promo-banner__note">{{ promo.note }}</p>
 
         <div class="btn-row">

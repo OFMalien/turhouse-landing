@@ -310,7 +310,7 @@ for (const [url, { doc }] of docs) {
     const g = (s) => norm(banner.querySelector(s)?.text);
     if (g('.promo-badge') !== promo.badge || g('#promo-title') !== promo.title || g('.promo-banner__subtitle') !== promo.subtitle || g('.promo-banner__content > .lede') !== promo.lead || g('.promo-banner__note') !== promo.note) f('банер акції: бейдж, заголовок, підзаголовок, текст або примітка не збігаються з promo.json');
     if (!same(banner.querySelectorAll('.promo-terms li').map((li) => norm(li.text)), promo.terms.map(norm))) f('банер акції: умови не збігаються з promo.json');
-    if (!same(rowsOf('.promo-prices li', '.promo-price__who'), wantRows)) f(`банер акції: ціни мають бути ${JSON.stringify(wantRows)}`);
+    if (!same(rowsOf('.promo-prices tbody tr', '.promo-price__who'), wantRows)) f(`банер акції: ціни мають бути ${JSON.stringify(wantRows)}`);
     const cb = banner.querySelector('.btn-row a.btn-primary');
     if (cb?.getAttribute('href') !== promo.cta.url || norm(cb?.text) !== promo.cta.label) f('банер акції: кнопка має вести в Instagram Direct з promo.json');
     const tb = banner.querySelector('.btn-row a:not(.btn-primary)');

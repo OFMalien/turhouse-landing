@@ -28,12 +28,14 @@
   transform: translateY(-1px);
 }
 .btn-primary {
-  background: var(--color-onyx-warm);
-  color: var(--color-parchment);
+  background: var(--gold-grad);
+  border-color: var(--gold-deep);
+  color: var(--color-onyx-warm);
+  font-weight: 700;
 }
 .btn-primary:hover {
-  background: var(--color-saffron-bright);
-  border-color: var(--color-saffron-bright);
+  background: var(--gold-light);
+  border-color: var(--gold);
   color: var(--color-onyx-warm);
 }
 .btn-compact { min-height: 44px; padding: 10px 20px; }
@@ -48,13 +50,13 @@
   color: var(--color-onyx-warm);
 }
 .on-dark .btn-primary {
-  background: var(--color-saffron-glow);
-  border-color: var(--color-saffron-glow);
+  background: var(--gold-grad);
+  border-color: var(--gold);
   color: var(--color-onyx-warm);
 }
 .on-dark .btn-primary:hover {
-  background: var(--color-saffron-bright);
-  border-color: var(--color-saffron-bright);
+  background: var(--gold-light);
+  border-color: var(--gold-light);
   color: var(--color-onyx-warm);
 }
 .btn-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
@@ -492,7 +494,7 @@ html.nav-open { overflow: hidden; }
   padding: clamp(26px, 3.4vw, 48px);
   background: var(--bg-card);
   border: 1px solid var(--line);
-  border-top: 3px solid var(--color-saffron-bright);
+  border-top: 3px solid var(--gold);
 }
 .promo-banner__poster img { border: 1px solid var(--line); }
 .promo-banner__content { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
@@ -520,22 +522,30 @@ html.nav-open { overflow: hidden; }
   background: var(--color-saffron-glow);
 }
 .promo-prices {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 12px;
+  width: 100%;
   margin-top: 6px;
+  border-collapse: collapse;
+  border: 1px solid var(--gold);
+  background: var(--color-parchment);
 }
-.promo-price {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 16px 20px;
-  border: 1px solid var(--line);
+.promo-prices thead th {
+  padding: 12px 20px;
+  text-align: left;
+  font-size: var(--text-small);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-onyx-warm);
+  background: transparent;
 }
-.promo-price__who { font-family: var(--font-serif); font-size: 22px; letter-spacing: -0.4px; }
-.promo-price__amounts { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+.promo-prices thead { background: var(--gold-grad); }
+.promo-prices thead th:last-child { text-align: right; }
+.promo-prices tbody tr + tr > * { border-top: 1px solid var(--line); }
+.promo-price > * { padding: 14px 20px; vertical-align: baseline; }
+.promo-price__who { text-align: left; font-family: var(--font-serif); font-weight: 500; font-size: 22px; letter-spacing: -0.4px; }
+.promo-price__amounts { text-align: right; }
 .promo-price__amounts strong { font-weight: 800; font-size: 24px; letter-spacing: -0.6px; white-space: nowrap; }
-.promo-price__amounts s { font-size: var(--text-small); color: var(--text-muted); white-space: nowrap; }
+.promo-price__amounts s { margin-right: 10px; font-size: var(--text-small); color: var(--text-muted); white-space: nowrap; }
 .promo-banner__note { font-size: var(--text-small); color: var(--text-soft); }
 .promo-banner .btn-row { margin-top: 6px; }
 @media (max-width: 859.98px) {
@@ -657,7 +667,11 @@ html.modal-open { overflow: hidden; }
   line-height: 0.85;
   letter-spacing: -0.016em;
   text-transform: uppercase;
-  color: var(--color-parchment);
+  color: var(--gold-light);
+  background: linear-gradient(180deg, #f3e1b3 0%, #d9b56d 55%, #b98f46 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .hero__inner h1 { max-width: 30ch; margin: 10px auto 0; font-size: clamp(24px, 3.2vw, 40px); line-height: 1.08; letter-spacing: -0.02em; }
 .hero__inner .lede { max-width: 52ch; margin: 18px auto 0; color: var(--color-linen); }
@@ -725,20 +739,16 @@ html.modal-open { overflow: hidden; }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
 
-.intro-list { margin-top: 28px; border-top: 1px solid var(--line); }
-.intro-list__item {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr);
-  gap: 18px;
-  padding: 26px 0;
-  border-bottom: 1px solid var(--line);
-}
-/* Цифри 01-03 це декор: walnut на parchment (6,56:1), шафран тут давав би 1,88:1 і заборонений */
-.intro-list__num { font-family: var(--font-serif); font-weight: 300; font-size: 40px; line-height: 1; color: var(--text-muted); }
-.intro-list__item p { max-width: 66ch; font-size: var(--text-lede); line-height: 1.55; color: var(--text-soft); }
-@media (min-width: 700px) {
-  .intro-list__item { grid-template-columns: 90px minmax(0, 1fr); gap: 24px; }
-  .intro-list__num { font-size: 42px; }
+.intro-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; margin-top: 28px; }
+.intro-list__item { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.intro-list__media { position: relative; border: 1px solid var(--gold); padding: 4px; background: var(--color-parchment-light); }
+.intro-list__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+/* Цифри 01-03 на фото: светлое золото на затемнённом углу, декор (aria-hidden) */
+.intro-list__media::after { content: ""; position: absolute; inset: 4px; background: linear-gradient(0deg, rgba(20, 18, 16, 0.55) 0%, rgba(20, 18, 16, 0) 45%); pointer-events: none; }
+.intro-list__num { position: absolute; left: 18px; bottom: 12px; z-index: 1; font-family: var(--font-serif); font-weight: 400; font-size: 44px; line-height: 1; color: var(--gold-light); text-shadow: 0 1px 10px rgba(20, 18, 16, 0.7); }
+.intro-list__item p { font-size: var(--text-lede); line-height: 1.55; color: var(--text-soft); }
+@media (min-width: 800px) {
+  .intro-list { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
 }
 
 .format-card__promo {

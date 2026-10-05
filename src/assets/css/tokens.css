@@ -58,4 +58,10 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --t-fast: 0.2s ease;
   --t-base: 0.3s ease;
+
+  /* Золото (макет Gemini, Макс 05.10.2026): только заливки, рамки и крупный текст на тёмном; на светлом фоне как цвет текста не используется */
+  --gold-light: #ecd49b;
+  --gold: #c9a45c;
+  --gold-deep: #b08a45;
+  --gold-grad: linear-gradient(135deg, #ecd49b 0%, #c9a45c 55%, #b08a45 100%);
 }
