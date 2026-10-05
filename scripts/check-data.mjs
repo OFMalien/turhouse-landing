@@ -162,7 +162,7 @@ const cafe = readJson('cafe.json');
 if (!cafe) fail('cafe.json: немає файлу');
 else {
   if (cafe.title !== 'Кафе та піца-бар') fail('cafe.json: title "Кафе та піца-бар"');
-  if (cafe.hours !== null) fail('cafe.json: годин роботи в джерелах немає, hours має бути null (R7)');
+  if (!same(cafe.hours, { from: '9:00', to: '21:00' })) fail('cafe.json: hours має бути з 9:00 до 21:00 (Оля 05.10.2026: «Кафе працює з 9 до 21»)');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(cafe.menuUpdated || '')) fail('cafe.json: menuUpdated має бути датою YYYY-MM-DD');
   else if (cafe.menuUpdated !== '2026-08-28') fail('cafe.json: меню від 2026-08-28 (змінювати дату тільки після нового меню)');
   for (const k of ['serves', 'cuisine']) if (!Array.isArray(cafe[k]) || !cafe[k].length) fail(`cafe.json: ${k} має бути непустим списком`);
@@ -350,6 +350,7 @@ else {
     const names = `${t.slice(0, -1).join(', ')} і ${t[t.length - 1]}`;
     if (!(nomery.types?.lead || '').includes(names) || !/по два номери/.test(nomery.types.lead) || !/двоє гостей/.test(nomery.types.lead)) fail(`texts/nomery.json: types.lead "${names}", "по два номери", "двоє гостей" (R4)`);
   }
+  if (!same(nomery.variants?.photos, ['rooms/variant-rooms'])) fail('texts/nomery.json: variants.photos мають бути [rooms/variant-rooms] (Instagram, пост 13.05.2026)');
   const IN_ROOM = ['Двоспальне ліжко', 'Телевізор і кондиціонер', 'Душ і туалет', 'Рушники та засоби гігієни', 'Міні-холодильник', 'Чайник і чайний набір'];
   if (!same(nomery.inRoom?.items, IN_ROOM)) fail(`texts/nomery.json: inRoom.items мають бути ${JSON.stringify(IN_ROOM)} (слова Олі 05.10.2026)`);
   if (!/Люкс/.test(nomery.types?.lead || '') || !/басейн/.test(nomery.types?.lead || '') || !/квадратур/.test(nomery.types?.lead || '')) fail('texts/nomery.json: types.lead про відмінності типів: квадратура, ліжко, матрац, вид на басейн у Люксів');
@@ -383,6 +384,7 @@ else {
   if (!/Чотири котеджі/.test(kotedzhi.hero?.lede || '') || !/двокімнатні/i.test(kotedzhi.hero?.lede || '')) fail('texts/kotedzhi.json: hero.lede "Чотири котеджі ... двокімнатні" (R5, джерело LIVE)');
   const introK = kotedzhi.intro?.text || '';
   for (const w of ['під Києвом', 'Чернігівщин', 'кухня', "сім.ї"]) if (!new RegExp(w, 'i').test(introK)) fail(`texts/kotedzhi.json: у вступі немає "${w}" (кластер ТЗ §6 «котедж під Києвом з кухнею», «котедж для сім'ї»)`);
+  if (!same(kotedzhi.variants?.photos, ['cottages/variant-cottage-4', 'cottages/variant-cottage-6'])) fail('texts/kotedzhi.json: variants.photos мають бути два графіки котеджів (Instagram, пост 13.05.2026)');
   const IN_COTTAGE = ['Обладнана кухня: плита, мікрохвильовка, чайник', 'Електричне опалення та камін', 'Постільна білизна та засоби гігієни', 'Власна тераса та мангал', 'Своя зона BBQ біля кожного котеджу'];
   if (!same(kotedzhi.inCottage?.items, IN_COTTAGE)) fail(`texts/kotedzhi.json: inCottage.items мають бути ${JSON.stringify(IN_COTTAGE)} (слова Олі 05.10.2026)`);
   if (!/розкладний диван/.test(kotedzhi.types?.lead || '') || !/на 6 гостей/.test(kotedzhi.types?.lead || '')) fail('texts/kotedzhi.json: types.lead про розкладний диван у котеджі на 6 гостей (Оля 05.10.2026)');
@@ -448,6 +450,7 @@ else {
   const cplx = (spa?.complex || []).map((c) => c.toLowerCase());
   let pos = -1;
   for (const c of cplx) { const p = lead.indexOf(c, pos + 1); if (p < 0) { fail(`texts/banya-ta-spa.json: у complex.lead немає "${c}" (spa.json)`); break; } pos = p; }
+  if (spa?.pricePoster !== 'spa/price-poster') fail('spa.json: pricePoster має бути spa/price-poster (прайс з Instagram, пост 16.09.2026)');
   const priceT = spaPage.price?.text || '';
   for (const w of ['з особи', 'першу годину', 'наступну', 'бронювання обов\'язкове', 'банщика']) if (!priceT.includes(w)) fail(`texts/banya-ta-spa.json: у price.text немає "${w}" (Instagram 16.09.2026)`);
   if (!/Direct/.test(spaPage.booking?.text || '') || !/зателефонуйте/.test(spaPage.booking?.text || '')) fail('texts/banya-ta-spa.json: booking.text має пропонувати телефон і Instagram Direct');
@@ -492,11 +495,11 @@ else {
   const menuDate = `${dd} ${MONTHS[mm - 1]} ${yy} року`;
   if (!(kafePage.menu?.note || '').includes(`станом на ${menuDate}`)) fail(`texts/kafe.json: menu.note має містити "станом на ${menuDate}" (cafe.menuUpdated)`);
   if (!/Direct/.test(kafePage.menu?.note || '') || !/телефоном/.test(kafePage.menu?.note || '')) fail('texts/kafe.json: menu.note має відсилати до телефону та Instagram Direct');
-  // години роботи невідомі: текст тільки відсилає до телефону / Direct (cafe.hours === null)
-  if (cafe?.hours !== null || !/Години роботи/.test(kafePage.hours?.heading || '') || !/телефоном/.test(kafePage.hours?.text || '') || !/Direct/.test(kafePage.hours?.text || '')) fail('texts/kafe.json: hours.heading "Години роботи", hours.text відсилає до телефону та Direct; cafe.hours має бути null (питання 1)');
+  // години роботи (Оля 05.10.2026): з 9:00 до 21:00, текст кажe це і відсилає до телефону / Direct
+  if (!/Години роботи/.test(kafePage.hours?.heading || '') || !(kafePage.hours?.text || '').includes(`з ${cafe?.hours?.from} до ${cafe?.hours?.to}`) || !/без проживання/.test(kafePage.hours?.text || '') || !/телефоном/.test(kafePage.hours?.text || '') || !/Direct/.test(kafePage.hours?.text || '')) fail('texts/kafe.json: hours.text: «з 9:00 до 21:00», «без проживання», телефон і Direct (Оля 05.10.2026)');
   // чого в джерелах немає
   const kafeJson = JSON.stringify(kafePage);
-  if (new RegExp(`\\d{1,2}[:.]\\d{2}|з\\s+\\d{1,2}\\s+до\\s+\\d{1,2}|(?<![${CYR_CLASS}])(щодня|цілодобов|пізн|зранку|вихідн|будн|доставк|навинос|з собою|столик|резерв|десерт|алкогол|вино|пиво|коктейл|віскі|дитяч|вегетар|веган|безглютен|шеф|кухар|пекарн|дров)`, 'i').test(kafeJson)) fail('texts/kafe.json: у тексті є години, доставка, столики, десерти, алкоголь чи інші умови, яких немає в джерелах (R7, C6)');
+  if (new RegExp(`(?<![${CYR_CLASS}])(щодня|цілодобов|пізн|зранку|вихідн|будн|доставк|навинос|з собою|столик|резерв|десерт|алкогол|вино|пиво|коктейл|віскі|дитяч|вегетар|веган|безглютен|шеф|кухар|пекарн|дров)`, 'i').test(kafeJson)) fail('texts/kafe.json: у тексті є години, доставка, столики, десерти, алкоголь чи інші умови, яких немає в джерелах (R7, C6)');
   // страви, яких немає в menu.json (типові, які можуть "прийти" з власних знань): суші, стейк, шашлик, риба, торти тощо
   const NOT_ON_MENU = new RegExp(`(?<![${CYR_CLASS}])(суші|ролл?и?|стейк[${CYR_CLASS}]*|шашлик[${CYR_CLASS}]*|шаурм[${CYR_CLASS}]*|хінкал[${CYR_CLASS}]*|плов|пельмен[${CYR_CLASS}]*|млинц[${CYR_CLASS}]*|торт[${CYR_CLASS}]*|морозив[${CYR_CLASS}]*|тірамісу|чізкейк[${CYR_CLASS}]*|лимонад[${CYR_CLASS}]*|смузі|фреш[${CYR_CLASS}]*|риб[аиуі]|лосос[${CYR_CLASS}]*|креветк[${CYR_CLASS}]*|устриц[${CYR_CLASS}]*|гриль-бар|сет[${CYR_CLASS}]*)(?![${CYR_CLASS}])`, 'i');
   for (const s of collectStrings(kafePage)) if (NOT_ON_MENU.test(s)) fail(`texts/kafe.json: у тексті "${s.slice(0, 70)}" назва страви, якої немає в menu.json`);
@@ -529,7 +532,7 @@ else {
   if (/\d{1,2}[:.]\d{2}|\d+\s*(га|гектар)/i.test(okJson)) fail('texts/okolitsi.json: годин роботи, площі парку в тексті немає');
   if (/(наш|наші|наше)\s+(парк|тварин|коні|екостежк)/i.test(okJson)) fail('texts/okolitsi.json: Tur House не називає парк і його тварин своїми (ТЗ §6)');
   checkPagePhotos('okolitsi.json', [okolitsi.hero?.photo, ...(okolitsi.gallery?.photos || [])]);
-  if (!same(okolitsi.gallery?.photos, [PLACEHOLDER, PLACEHOLDER]) || okolitsi.hero?.photo !== PLACEHOLDER) fail('texts/okolitsi.json: кадрів парку, Десни і лісу немає: шапка і обидва місця в галереї це сіра заглушка «placeholder» (Макс 04.10.2026), поки Оля не пришле фото');
+  if (!same(okolitsi.gallery?.photos, ['territory/playground', 'territory/table-tennis', 'territory/volleyball', 'territory/badminton']) || okolitsi.hero?.photo !== PLACEHOLDER) fail('texts/okolitsi.json: кадрів парку, Десни і лісу немає, шапка це сіра заглушка «placeholder» (Макс 04.10.2026); у галереї чотири кадри розваг з Instagram Tur House (пост 23.06.2026)');
   const linkedO = new Set(collectLinks(okolitsi));
   for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!linkedO.has(u)) fail(`texts/okolitsi.json: немає посилання на ${u} (перелінковка)`);
 }

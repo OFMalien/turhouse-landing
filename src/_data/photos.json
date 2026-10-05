@@ -405,5 +405,69 @@
       "home",
       "promo"
     ]
+  },
+  "spa/price-poster": {
+    "file": "spa/price-poster.jpg",
+    "source": "photo/ig_price_bath_2026-09-16.jpg",
+    "alt": "Прайс бані та чану Tur House: вартість відвідування, послуга банщика і чан",
+    "uses": [
+      "banya"
+    ]
+  },
+  "rooms/variant-rooms": {
+    "file": "rooms/variant-rooms.jpg",
+    "source": "photo/ig_accom_rooms_2026-05-13.jpg",
+    "alt": "Номер у готелі Tur House: двоспальне ліжко та кондиціонер, підпис про Стандарт, Напівлюкс і Люкс",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "cottages/variant-cottage-4": {
+    "file": "cottages/variant-cottage-4.jpg",
+    "source": "photo/ig_accom_cottage4_2026-05-13.jpg",
+    "alt": "Вітальня котеджа на 4 гості з фіолетовою стіною та обіднім столом, підпис про дві кімнати",
+    "uses": [
+      "kotedzhi"
+    ]
+  },
+  "cottages/variant-cottage-6": {
+    "file": "cottages/variant-cottage-6.jpg",
+    "source": "photo/ig_accom_cottage6_2026-05-13.jpg",
+    "alt": "Вітальня котеджа на 6 гостей з розкладним диваном і кухнею, підпис про дві кімнати та диван",
+    "uses": [
+      "kotedzhi"
+    ]
+  },
+  "territory/playground": {
+    "file": "territory/playground.jpg",
+    "source": "photo/ig_fun_playground_2026-06-23.jpg",
+    "alt": "Дитячий майданчик із гойдалками та гіркою на території Tur House",
+    "uses": [
+      "okolitsi"
+    ]
+  },
+  "territory/table-tennis": {
+    "file": "territory/table-tennis.jpg",
+    "source": "photo/ig_fun_tabletennis_2026-06-23.jpg",
+    "alt": "Ракетки та м'ячик для настільного тенісу на синьому столі",
+    "uses": [
+      "okolitsi"
+    ]
+  },
+  "territory/volleyball": {
+    "file": "territory/volleyball.jpg",
+    "source": "photo/ig_fun_volleyball_2026-06-23.jpg",
+    "alt": "Волейбольний м'яч над сіткою на тлі неба",
+    "uses": [
+      "okolitsi"
+    ]
+  },
+  "territory/badminton": {
+    "file": "territory/badminton.jpg",
+    "source": "photo/ig_fun_badminton_2026-06-23.jpg",
+    "alt": "Ракетка та волан для бадмінтону на траві",
+    "uses": [
+      "okolitsi"
+    ]
   }
 }

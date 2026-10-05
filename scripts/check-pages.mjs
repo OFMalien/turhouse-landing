@@ -163,6 +163,12 @@ function listPage(cfg) {
     });
     // банер акції і Direct
     if (promo.enabled && !doc.querySelector('#promo a[href^="https://ig.me/m/tur_house_"]')) f('кнопка акції має вести на Instagram Direct (R9)');
+    // графіки варіантів розміщення (сторінки номерів і котеджів): ті самі кадри, що в texts
+    {
+      const vp = doc.querySelectorAll('#variants .variants-grid img');
+      if (vp.length !== t.variants.photos.length) f(`у блоці варіантів ${vp.length} кадрів, у ${file} ${t.variants.photos.length}`);
+      for (const img of vp) if (!(img.getAttribute('alt') || '').trim()) f('у графіка варіантів порожній alt');
+    }
     // що є в котеджі (тільки сторінка котеджів)
     if (cfg.slug === 'kotedzhi') {
       const cot = doc.querySelectorAll('#in-cottage .check-list li').map((li) => norm(li.text));
@@ -364,6 +370,7 @@ const PAGE_RULES = {
       const pr = norm(c.querySelector('.price')?.text);
       if (!pr.includes(`${money(amount)} грн`) || !pr.includes(unit)) f(`плитка ціни ${i + 1}: має бути «${money(amount)} грн ${unit}»`);
     });
+    if (!doc.querySelector('#price .price-poster img')?.getAttribute('alt')) f('у блоці ціни бані немає прайс-афіші з alt (spa/price-poster)');
     if (doc.querySelector('#price s, #price a.btn')) f('у блоці ціни бані немає ні викреслених цін, ні кнопок броні проживання');
     // карточки: баня, чан, басейн з spa.json, без ціни проживання й без кнопки BookmeNow
     const cards = doc.querySelectorAll('#cards .card-object');
@@ -440,7 +447,7 @@ const PAGE_RULES = {
     // години роботи невідомі: тільки відсилання до телефону і Direct (cafe.hours === null)
     if (!sameText(doc.querySelector('#hours-title')?.text, t.hours.heading) || !sameText(doc.querySelector('#hours .lede')?.text, t.hours.text)) f(`блок годин роботи не збігається з ${file}`);
     if (!doc.querySelector(`#hours a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#hours a[href="${site.links.instagramDirect}"]`)) f('блок годин роботи: телефон і Instagram Direct');
-    if (cafe.hours === null && /\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}|щодня|цілодобов|з \d{1,2}(:\d{2})? до \d{1,2}/i.test(doc.querySelector('main')?.text || '')) f('години роботи невідомі, на сторінці не має бути розкладу');
+    if (/щодня|цілодобов/i.test(doc.querySelector('main')?.text || '')) f('«щодня» і «цілодобово» Оля не підтверджувала, їх на сторінці кафе немає (Оля 05.10.2026: з 9 до 21)');
     // галерея: кадри cafe.json без кадру шапки
     const galExpect = cafe.gallery.filter((id) => id !== cafe.photo);
     const gal = doc.querySelectorAll(IMG_OR_PH('#gallery'));

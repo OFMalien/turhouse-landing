@@ -24,6 +24,10 @@
     "text": "Усі номери розташовані в головному корпусі. Басейн на території працює у весняно-осінній сезон.",
     "photo": "home/building-pool-main"
   },
+  "variants": {
+    "heading": "Номери в готелі",
+    "photos": ["rooms/variant-rooms"]
+  },
   "inRoom": {
     "heading": "Що є в кожному номері",
     "items": [

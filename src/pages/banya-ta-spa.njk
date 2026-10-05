@@ -58,6 +58,11 @@ analyticsKind: spa
       </div>
       {%- endfor %}
     </div>
+    {%- if spa.pricePoster %}
+    <figure class="price-poster">
+      {% photo spa.pricePoster, { sizes: "(min-width: 700px) 420px, 100vw", class: "media" } %}
+    </figure>
+    {%- endif %}
   </div>
 </section>
 

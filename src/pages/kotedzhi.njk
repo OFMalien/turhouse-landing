@@ -32,6 +32,9 @@ analyticsKind: cottages
   </div>
 </section>
 
+{%- set variants = t.variants %}
+{% include "components/variants-block.njk" %}
+
 {% include "components/promo-banner.njk" %}
 
 <section class="section" id="kitchen" aria-labelledby="kitchen-title">

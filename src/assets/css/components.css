@@ -872,6 +872,12 @@ html.modal-open { overflow: hidden; }
 .gallery-grid li { margin: 0; }
 @media (min-width: 700px) { .gallery-grid--thirds { grid-template-columns: repeat(3, 1fr); } }
 .gallery-grid img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }
+/* Портретні графіки (варіанти розміщення) і прайс-афіша з Instagram: без обрізання, по центру */
+.variants-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 32px; }
+.variants-grid li { margin: 0; width: min(100%, 340px); }
+.variants-grid img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: 1px solid var(--line); }
+.price-poster { margin: 36px auto 0; width: min(100%, 420px); }
+.price-poster img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; border: 1px solid var(--line); }
 
 /* ---------- Меню кафе ---------- */
 .menu-columns { margin-top: 40px; }
