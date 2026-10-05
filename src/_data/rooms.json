@@ -7,8 +7,14 @@
     "count": "2 номери цього типу",
     "price": 2500,
     "promoPrice": 2000,
-    "features": ["У головному корпусі", "Starlink на території", "Басейн включено"],
-    "photo": "rooms/room-white-brown"
+    "features": [
+      "19 м²",
+      "У головному корпусі",
+      "Starlink на території",
+      "Басейн включено"
+    ],
+    "photo": "rooms/room-white-brown",
+    "area": 19
   },
   {
     "id": "napivlyuks",
@@ -18,8 +24,14 @@
     "count": "2 номери цього типу",
     "price": 2800,
     "promoPrice": 2240,
-    "features": ["У головному корпусі", "Starlink на території", "Басейн включено"],
-    "photo": "rooms/room-blue"
+    "features": [
+      "22 м²",
+      "У головному корпусі",
+      "Starlink на території",
+      "Басейн включено"
+    ],
+    "photo": "rooms/room-blue",
+    "area": 22
   },
   {
     "id": "lyuks",
@@ -29,7 +41,13 @@
     "count": "2 номери цього типу",
     "price": 3000,
     "promoPrice": 2400,
-    "features": ["У головному корпусі", "Starlink на території", "Басейн включено"],
-    "photo": "rooms/room-panorama-window"
+    "features": [
+      "25 м²",
+      "У головному корпусі",
+      "Starlink на території",
+      "Басейн включено"
+    ],
+    "photo": "rooms/room-panorama-window",
+    "area": 25
   }
 ]
