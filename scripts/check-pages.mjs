@@ -163,6 +163,16 @@ function listPage(cfg) {
     });
     // банер акції і Direct
     if (promo.enabled && !doc.querySelector('#promo a[href^="https://ig.me/m/tur_house_"]')) f('кнопка акції має вести на Instagram Direct (R9)');
+    // що є в котеджі (тільки сторінка котеджів)
+    if (cfg.slug === 'kotedzhi') {
+      const cot = doc.querySelectorAll('#in-cottage .check-list li').map((li) => norm(li.text));
+      if (!same(cot, t.inCottage.items.map(norm))) f(`пункти «Що є в котеджі» не збігаються з ${file}`);
+    }
+    // що є в номері (тільки сторінка номерів)
+    if (cfg.slug === 'nomery') {
+      const room = doc.querySelectorAll('#in-room .check-list li').map((li) => norm(li.text));
+      if (!same(room, t.inRoom.items.map(norm))) f(`пункти «Що є в кожному номері» не збігаються з ${file}`);
+    }
     // що входить, групи, бронь
     const inc = doc.querySelectorAll('#included .check-list li').map((li) => norm(li.text));
     if (!same(inc, t.included.items.map(norm))) f(`пункти «Що входить у вартість» не збігаються з ${file}`);

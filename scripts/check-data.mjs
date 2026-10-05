@@ -335,7 +335,7 @@ const checkPagePhotos = (file, ids, verifyOk = []) => {
   }
 };
 
-// texts/nomery.json: сторінка номерів (E3-T8). У джерелах немає нічого про відмінності між видами номерів, тому зручності не вигадуємо (C6)
+// texts/nomery.json: сторінка номерів (E3-T8). Зручності номерів підтверджені Олею 05.10.2026 (відповіді на питання 1); чого вона не називала (площа в цифрах, балкон, санвузол окремо, сніданок), не вигадуємо (C6)
 const nomery = contentFiles.includes('nomery.json') ? readContent('nomery.json') : null;
 if (!nomery) fail('texts/nomery.json: немає файлу');
 else {
@@ -349,18 +349,21 @@ else {
     const names = `${t.slice(0, -1).join(', ')} і ${t[t.length - 1]}`;
     if (!(nomery.types?.lead || '').includes(names) || !/по два номери/.test(nomery.types.lead) || !/двоє гостей/.test(nomery.types.lead)) fail(`texts/nomery.json: types.lead "${names}", "по два номери", "двоє гостей" (R4)`);
   }
+  const IN_ROOM = ['Двоспальне ліжко', 'Телевізор і кондиціонер', 'Душ і туалет', 'Рушники та засоби гігієни', 'Міні-холодильник', 'Чайник і чайний набір'];
+  if (!same(nomery.inRoom?.items, IN_ROOM)) fail(`texts/nomery.json: inRoom.items мають бути ${JSON.stringify(IN_ROOM)} (слова Олі 05.10.2026)`);
+  if (!/Люкс/.test(nomery.types?.lead || '') || !/басейн/.test(nomery.types?.lead || '') || !/квадратур/.test(nomery.types?.lead || '')) fail('texts/nomery.json: types.lead про відмінності типів: квадратура, ліжко, матрац, вид на басейн у Люксів');
   if (!/головному корпусі/.test(nomery.where?.text || '')) fail('texts/nomery.json: where.text має говорити про головний корпус');
   const incl = (nomery.included?.items || []).join(' ');
   for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(incl)) fail(`texts/nomery.json: included.items без "${w}"`);
   if (!/до 8 або до 12 гостей/.test(nomery.group?.text || '') || !/чотирьох і шести гостей/.test(nomery.group?.text || '')) fail('texts/nomery.json: group.text про котеджі на 4 і 6 гостей і Барн-хаус до 8 або до 12 гостей (R5, R6)');
   if (!/BookmeNow/.test(nomery.booking?.text || '') || !/Direct/.test(nomery.booking?.text || '')) fail('texts/nomery.json: booking.text має згадувати BookmeNow і Instagram Direct');
   // зручності, яких немає в джерелах: площа, санвузол, кондиціонер, чайник, телевізор, сніданок, балкон, вид з вікна
-  if (new RegExp(`(?<![${CYR_CLASS}])(кв\\.?\\s?м|м²|санвуз|ванн|душ|кондиціонер|чайник|телевізор|снідан|холодильник|балкон|вид на|вид з)`, 'i').test(JSON.stringify(nomery))) fail('texts/nomery.json: у тексті є зручності, яких немає в джерелах (площа, санвузол, кондиціонер, сніданок тощо), C6');
+  if (new RegExp(`(?<![${CYR_CLASS}])(кв\\.?\\s?м|м²|санвуз|ванн|балкон|вид з)`, 'i').test(JSON.stringify(nomery))) fail('texts/nomery.json: у тексті є зручності, яких немає в джерелах (площа, санвузол, кондиціонер, сніданок тощо), C6');
   // фото: hero і where без verify; галерея номерів 4 кадри, verify дозволений лише для них (тип номера не підтверджено, питання 8)
-  const ROOM_GALLERY_OK = ['rooms/room-burgundy', 'rooms/room-white-brown', 'rooms/room-blue', 'rooms/room-panorama-window'];
+  const ROOM_GALLERY_OK = ['rooms/room-white-brown', 'rooms/room-blue', 'rooms/room-panorama-window'];
   checkPagePhotos('nomery.json', [nomery.hero?.photo, nomery.where?.photo]);
   checkPagePhotos('nomery.json', nomery.gallery?.photos || [], ROOM_GALLERY_OK);
-  if (!same(nomery.gallery?.photos, ROOM_GALLERY_OK)) fail('texts/nomery.json: у галереї номерів мають бути 4 кадри без room-wood-wall (схожий на спальню Барн-хауса, питання 8)');
+  if (!same(nomery.gallery?.photos, ROOM_GALLERY_OK)) fail('texts/nomery.json: у галереї номерів 3 кадри: без room-burgundy і room-wood-wall (Оля 05.10.2026: фото 1 і 5 з документа не номери готелю)');
   const linkedN = new Set(collectLinks(nomery));
   for (const u of ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedN.has(u)) fail(`texts/nomery.json: немає посилання на ${u} (перелінковка)`);
 }
@@ -379,17 +382,20 @@ else {
   if (!/Чотири котеджі/.test(kotedzhi.hero?.lede || '') || !/двокімнатні/i.test(kotedzhi.hero?.lede || '')) fail('texts/kotedzhi.json: hero.lede "Чотири котеджі ... двокімнатні" (R5, джерело LIVE)');
   const introK = kotedzhi.intro?.text || '';
   for (const w of ['під Києвом', 'Чернігівщин', 'кухня', "сім.ї"]) if (!new RegExp(w, 'i').test(introK)) fail(`texts/kotedzhi.json: у вступі немає "${w}" (кластер ТЗ §6 «котедж під Києвом з кухнею», «котедж для сім'ї»)`);
+  const IN_COTTAGE = ['Обладнана кухня: плита, мікрохвильовка, чайник', 'Електричне опалення та камін', 'Постільна білизна та засоби гігієни', 'Власна тераса та мангал', 'Своя зона BBQ біля кожного котеджу'];
+  if (!same(kotedzhi.inCottage?.items, IN_COTTAGE)) fail(`texts/kotedzhi.json: inCottage.items мають бути ${JSON.stringify(IN_COTTAGE)} (слова Олі 05.10.2026)`);
+  if (!/розкладний диван/.test(kotedzhi.types?.lead || '') || !/на 6 гостей/.test(kotedzhi.types?.lead || '')) fail('texts/kotedzhi.json: types.lead про розкладний диван у котеджі на 6 гостей (Оля 05.10.2026)');
   const kit = kotedzhi.kitchen?.text || '';
   for (const w of ['кухня', 'тераса', 'мангал', 'BBQ']) if (!new RegExp(w, 'i').test(kit)) fail(`texts/kotedzhi.json: у kitchen.text немає "${w}"`);
   const inclK = (kotedzhi.included?.items || []).join(' ');
   for (const w of ['BBQ', 'басейн', 'Starlink']) if (!new RegExp(w, 'i').test(inclK)) fail(`texts/kotedzhi.json: included.items без "${w}"`);
   if (!/до 8 або до 12 гостей/.test(kotedzhi.group?.text || '') || !/двох гостей/.test(kotedzhi.group?.text || '')) fail('texts/kotedzhi.json: group.text про номери для двох гостей і Барн-хаус до 8 або до 12 гостей (R4, R6)');
   if (!/BookmeNow/.test(kotedzhi.booking?.text || '') || !/Direct/.test(kotedzhi.booking?.text || '')) fail('texts/kotedzhi.json: booking.text має згадувати BookmeNow і Instagram Direct');
-  // комплектація, якої немає в джерелах (у ТЗ є посуд, опалення, постіль, але живий лендинг їх не підтверджує), Wi-Fi у котеджах (тільки "на території"), спальні, площа, вечірній вигляд
-  if (new RegExp(`(?<![${CYR_CLASS}])(посуд|опален|постіль|постільн|білизн|рушник|кондиціонер|камін|телевізор|санвуз|ванн|душ|спальн|спален|снідан|кв\\.?\\s?м|м²|паркін|парковк|дитяч|холодильник|балкон)|wi-?fi|вайфай`, 'i').test(JSON.stringify(kotedzhi))) fail('texts/kotedzhi.json: у тексті є комплектація або зручності, яких немає в джерелах (посуд, опалення, спальні, Wi-Fi тощо), C6');
+  // комплектація, якої Оля не називала (05.10.2026 підтверджено: обладнана кухня з плитою, мікрохвильовкою і чайником, електричне опалення, камін, постільна білизна, засоби гігієни, своя зона BBQ; посуд, рушники та інше не підтверджено), Wi-Fi у котеджах (тільки "на території"), спальні, площа, вечірній вигляд
+  if (new RegExp(`(?<![${CYR_CLASS}])(посуд|рушник|кондиціонер|телевізор|санвуз|ванн|душ|спальн|спален|снідан|кв\\.?\\s?м|м²|паркін|парковк|дитяч|холодильник|балкон)|wi-?fi|вайфай`, 'i').test(JSON.stringify(kotedzhi))) fail('texts/kotedzhi.json: у тексті є комплектація або зручності, яких немає в джерелах (посуд, опалення, спальні, Wi-Fi тощо), C6');
   // фото: інтер'єри з фіолетовими стінами (verify, питання 9) на сторінку не ставимо; у галереї два підтверджені фасадні кадри
   checkPagePhotos('kotedzhi.json', [kotedzhi.hero?.photo, ...(kotedzhi.gallery?.photos || [])]);
-  if (!same(kotedzhi.gallery?.photos, ['cottages/cottage-orange', 'cottages/cottages-sunset'])) fail('texts/kotedzhi.json: у галереї два підтверджені фасадні кадри (інтер\'єри з verify чекають відповіді на питання 9)');
+  if (!same(kotedzhi.gallery?.photos, ['cottages/cottage-orange', 'cottages/cottages-sunset', 'cottages/interior-living-purple', 'cottages/interior-tv-purple'])) fail('texts/kotedzhi.json: у галереї два фасадні кадри і два інтер\'єри (Оля 05.10.2026: фіолетові інтер\'єри це котеджі, котеджі однакові)');
   const linkedK = new Set(collectLinks(kotedzhi));
   for (const u of ['/nomery/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedK.has(u)) fail(`texts/kotedzhi.json: немає посилання на ${u} (перелінковка)`);
 }

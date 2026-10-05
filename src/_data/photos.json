@@ -165,8 +165,7 @@
     "alt": "Вітальня з їдальнею та кухнею в Tur House",
     "uses": [
       "kotedzhi"
-    ],
-    "verify": true
+    ]
   },
   "cottages/interior-tv-purple": {
     "file": "cottages/interior-tv-purple.jpg",
@@ -174,8 +173,7 @@
     "alt": "Вітальня з телевізором і обіднім столом у Tur House",
     "uses": [
       "kotedzhi"
-    ],
-    "verify": true
+    ]
   },
   "barn/barn-01-fasad": {
     "file": "barn/barn-01-fasad.jpg",

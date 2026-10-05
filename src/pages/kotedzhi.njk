@@ -41,6 +41,17 @@ analyticsKind: cottages
   </div>
 </section>
 
+<section class="section section--alt" id="in-cottage" aria-labelledby="in-cottage-title">
+  <div class="wrap">
+    <h2 id="in-cottage-title">{{ t.inCottage.heading }}</h2>
+    <ul class="check-list">
+      {%- for item in t.inCottage.items %}
+      <li>{{ item }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
 {%- set included = t.included %}
 {% include "components/included-block.njk" %}
 
