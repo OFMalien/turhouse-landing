@@ -61,7 +61,7 @@ else {
   if (!same(rooms.map((r) => r.promoPrice), [2000, 2240, 2400])) fail('rooms.json: ціни акції мають бути 2000, 2240, 2400');
   if (!same(rooms.map((r) => r.title), ['Стандарт', 'Напівлюкс', 'Люкс'])) fail('rooms.json: назви Стандарт, Напівлюкс, Люкс');
   for (const r of rooms) {
-    if (r.count !== '2 номери цього типу') fail(`rooms.json ${r.id}: count має бути "2 номери цього типу" (R4)`);
+    if (r.count !== undefined) fail(`rooms.json ${r.id}: кількість номерів на сайті не вказуємо (Макс 06.10.2026), поле count не потрібне`);
     if (!/^2 гості$/.test(r.capacity)) fail(`rooms.json ${r.id}: місткість має бути "2 гості" (R4)`);
     if (r.category !== 'rooms') fail(`rooms.json ${r.id}: category rooms`);
   }
@@ -341,13 +341,13 @@ if (!nomery) fail('texts/nomery.json: немає файлу');
 else {
   checkMeta('nomery.json', nomery.meta, { titleHas: ['Номери', 'Tur House', 'Беремицьке'], descHas: ['під Києвом', 'номер'] });
   if (!/Номери/.test(nomery.hero?.h1 || '') || !/готел/.test(nomery.hero?.h1 || '')) fail('texts/nomery.json: hero.h1 має містити "Номери" і "готелі"');
-  if (!/Шість номерів/.test(nomery.hero?.lede || '') || !/по два/.test(nomery.hero?.lede || '')) fail('texts/nomery.json: hero.lede "Шість номерів ... по два" (R4)');
+  if (/(шість|по два|2 номер)/i.test(nomery.hero?.lede || '') || !/двоє гостей/.test(nomery.hero?.lede || '')) fail('texts/nomery.json: hero.lede без кількості номерів, з "двоє гостей" (Макс 06.10.2026)');
   const introT = nomery.intro?.text || '';
   for (const w of ['Парком природи «Беремицьке»', 'Чернігівщин']) if (!introT.includes(w)) fail(`texts/nomery.json: у вступі немає "${w}" (текст «Про Tur House» як на лендингу і чесне місце)`);
   if (rooms && rooms.length === 3) {
     const t = rooms.map((r) => r.title);
     const names = `${t.slice(0, -1).join(', ')} і ${t[t.length - 1]}`;
-    if (!t.every((n) => (nomery.types?.lead || '').includes(n)) || !/по два номери/.test(nomery.types.lead) || !/двоє гостей/.test(nomery.types.lead)) fail(`texts/nomery.json: types.lead "${names}", "по два номери", "двоє гостей" (R4)`);
+    if (!t.every((n) => (nomery.types?.lead || '').includes(n)) || /по два номери/.test(nomery.types.lead) || !/двоє гостей/.test(nomery.types.lead)) fail(`texts/nomery.json: types.lead "${names}" і "двоє гостей", без кількості номерів (Макс 06.10.2026)`);
   }
   if (!same(nomery.variants?.photos, ['rooms/variant-rooms'])) fail('texts/nomery.json: variants.photos мають бути [rooms/variant-rooms] (Instagram, пост 13.05.2026)');
   const IN_ROOM = ['Двоспальне ліжко', 'Телевізор і кондиціонер', 'Душ і туалет', 'Рушники та засоби гігієни', 'Міні-холодильник', 'Чайник і чайний набір'];
@@ -411,7 +411,7 @@ else {
   const introB = barnPage.intro?.text || '';
   if (!/Панорамний фасад на 2 поверхи/.test(introB) || /для \d+ гостей/.test(introB)) fail('texts/barn-house.json: вступ як опис картки на лендингу («Панорамний фасад на 2 поверхи…»), без «для 8 гостей» (Макс 05.10.2026)');
   if (!/за добу/.test(barnPage.tariffs?.text || '')) fail('texts/barn-house.json: tariffs.text "... за добу"');
-  if (!/Великий будинок/.test(barnPage.bigHouse?.heading || '') || !/шість двомісних номерів/.test(barnPage.bigHouse?.text || '') || !/до 12 гостей/.test(barnPage.bigHouse?.text || '') || /\d\s*грн/.test(barnPage.bigHouse?.text || '')) fail('texts/barn-house.json: bigHouse: коротко, шість двомісних номерів, до 12 гостей, без цін (Макс 05.10.2026)');
+  if (!/Великий будинок/.test(barnPage.bigHouse?.heading || '') || !/готельний корпус/.test(barnPage.bigHouse?.text || '') || !/до 12 гостей/.test(barnPage.bigHouse?.text || '') || /\d\s*грн/.test(barnPage.bigHouse?.text || '')) fail('texts/barn-house.json: bigHouse: коротко, шість двомісних номерів, до 12 гостей, без цін (Макс 05.10.2026)');
   // inside і outside збігаються з підтвердженими пунктами barn.json
   const hl = barn?.highlights || [];
   const inside = `${barnPage.inside?.lead || ''}`;

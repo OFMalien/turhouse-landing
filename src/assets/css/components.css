@@ -859,7 +859,18 @@ html.modal-open { overflow: hidden; }
 .section--alt .lede { margin-top: 10px; }
 
 /* ---------- Внутрішні сторінки: шапка сторінки, крихти, переліки, галерея (E4-T3) ---------- */
-.page-hero { background: var(--bg-dark); padding-block: clamp(28px, 4vw, 64px); }
+.page-hero {
+  padding-block: clamp(28px, 4vw, 64px);
+  /* Тёмный лесной фон с тёплым свечением и золотым узором-веточкой, как на баннере с прайсом бани (Макс 06.10.2026) */
+  background-color: #1d231a;
+  background-image:
+    radial-gradient(60% 90% at 100% 0%, rgba(200, 135, 66, 0.24), transparent 62%),
+    radial-gradient(55% 80% at 0% 100%, rgba(200, 135, 66, 0.14), transparent 62%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23c9a45c' stroke-opacity='.26' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M36 190C48 140 68 104 104 66'/%3E%3Cpath d='M52 150C34 144 26 128 30 114C46 118 56 132 52 150Z'/%3E%3Cpath d='M66 122C82 116 94 104 96 88C80 90 68 102 66 122Z'/%3E%3Cpath d='M82 100C66 92 60 76 66 64C80 70 88 84 82 100Z'/%3E%3Cpath d='M96 78C112 72 122 60 122 46C108 48 98 60 96 78Z'/%3E%3Cpath d='M156 206C164 176 178 152 198 130'/%3E%3Cpath d='M166 184C154 178 150 166 154 156C166 160 172 172 166 184Z'/%3E%3Cpath d='M178 160C190 156 198 146 198 136C186 138 180 148 178 160Z'/%3E%3Ccircle cx='140' cy='40' r='1.6'/%3E%3Ccircle cx='24' cy='60' r='1.6'/%3E%3Ccircle cx='190' cy='96' r='1.6'/%3E%3C/svg%3E"),
+    linear-gradient(160deg, #1b2218 0%, #262519 52%, #2d2217 100%);
+  background-size: auto, auto, 220px 220px, auto;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.5);
+}
 .page-hero__inner { display: grid; gap: 32px; align-items: center; }
 .page-hero__copy { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .page-hero h1 { max-width: 18ch; font-size: clamp(30px, 4.4vw, 54px); }

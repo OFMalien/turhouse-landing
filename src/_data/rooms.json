@@ -4,7 +4,6 @@
     "category": "rooms",
     "title": "Стандарт",
     "capacity": "2 гості",
-    "count": "2 номери цього типу",
     "price": 2500,
     "promoPrice": 2000,
     "features": [
@@ -21,7 +20,6 @@
     "category": "rooms",
     "title": "Напівлюкс",
     "capacity": "2 гості",
-    "count": "2 номери цього типу",
     "price": 2800,
     "promoPrice": 2240,
     "features": [
@@ -38,7 +36,6 @@
     "category": "rooms",
     "title": "Люкс",
     "capacity": "2 гості",
-    "count": "2 номери цього типу",
     "price": 3000,
     "promoPrice": 2400,
     "features": [

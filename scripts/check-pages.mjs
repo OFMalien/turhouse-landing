@@ -143,7 +143,7 @@ function listPage(cfg) {
       if (!c) return;
       if (!sameText(c.querySelector('h3')?.text, r.title)) f(`назва картки ${i + 1} не збігається з даними (${r.title})`);
       const meta = norm(c.querySelector('.card-object__meta')?.text);
-      if (!meta.includes(r.capacity) || !meta.includes(r.count)) f(`у картці ${r.title} має бути «${r.capacity}» і «${r.count}» (R4)`);
+      if (!meta.includes(r.capacity) || /номер[иів]* цього типу/.test(meta)) f(`у картці ${r.title} має бути «${r.capacity}» без кількості номерів (Макс 06.10.2026)`);
       if (!norm(c.querySelector('.card-object__price')?.text).includes(`${money(r.price)} грн`)) f(`у картці ${r.title} немає ціни ${money(r.price)} грн`);
       if (norm(c.querySelector('.card-object__price .price')?.text) !== `${money(r.price)} грн / доба`) f(`ціна картки ${r.title} має бути «${money(r.price)} грн / доба»`);
       if (promo.enabled && r.promoPrice && norm(c.querySelector('a[href="#promo"]')?.text) !== promo.shortLabel) f(`підпис акції в картці ${r.title} має бути «${promo.shortLabel}» (promo.json)`);
