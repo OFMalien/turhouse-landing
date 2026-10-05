@@ -39,6 +39,38 @@ analyticsKind: barn
   </div>
 </section>
 
+<section class="section section--alt" id="big-house" aria-labelledby="big-house-title">
+  <div class="wrap">
+    <h2 id="big-house-title">{{ t.bigHouse.heading }}</h2>
+    <p class="lede block-note">{{ t.bigHouse.text }}</p>
+    <div class="split split--text">
+      <div class="split__copy">
+        <ul class="check-list" id="big-house-list">
+          {%- for item in bigHouse.highlights %}
+          <li>{{ item }}</li>
+          {%- endfor %}
+        </ul>
+        <p class="lede">{{ t.bigHouse.note }} Вартість {{ bigHouse.extraPlace | price }}&nbsp;грн за добу.</p>
+      </div>
+      <div class="cards-grid" id="{{ bigHouse.id }}" data-placement="barn_tariffs">
+        {%- for tariff in bigHouse.tariffs %}
+        <article class="card-object tariff-card">
+          <div class="card-object__body">
+            <h3>{{ bigHouse.title }}: {{ tariff.label }}</h3>
+            <div class="card-object__price">
+              <p class="price"><strong>{{ tariff.amount | price }}&nbsp;грн</strong> <span class="price__unit">/ доба</span></p>
+            </div>
+            <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener"
+               aria-label="Забронювати: {{ bigHouse.title }}, {{ tariff.label }}"
+               data-item-name="{{ bigHouse.title }}" data-item-category="{{ bigHouse.category }}" data-item-variant="{{ tariff.label }}" data-value="{{ tariff.amount }}">Забронювати</a>
+          </div>
+        </article>
+        {%- endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="inside" aria-labelledby="inside-title">
   <div class="wrap split split--text">
     <div class="split__copy">

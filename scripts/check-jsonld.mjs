@@ -102,7 +102,7 @@ for (const f of htmlFiles) {
       const rooms = readData('rooms.json');
       const cottages = readData('cottages.json');
       const barnD = readData('barn.json');
-      const nums = [...rooms, ...cottages].flatMap((i) => [i.price, ...(i.tariffs || []).map((t) => t.amount)]).concat(barnD.tariffs.map((t) => t.amount)).filter((x) => typeof x === 'number');
+      const nums = [...rooms, ...cottages].flatMap((i) => [i.price, ...(i.tariffs || []).map((t) => t.amount)]).concat(barnD.tariffs.map((t) => t.amount)).concat(readData('bigHouse.json').tariffs.map((t) => t.amount)).filter((x) => typeof x === 'number');
       const want = {
         '@type': 'LodgingBusiness',
         '@id': `${ORIGIN}/#lodging`,

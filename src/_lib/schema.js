@@ -16,6 +16,7 @@ function priceRange(data) {
   }
   const barn = data.barn;
   for (const t of (barn && barn.tariffs) || []) nums.push(t.amount);
+  for (const t of (data.bigHouse && data.bigHouse.tariffs) || []) nums.push(t.amount);
   if (!nums.length) return undefined;
   return `${Math.min(...nums)}-${Math.max(...nums)} UAH`;
 }
