@@ -86,10 +86,10 @@ const photos = readJson('photos.json') || {};
 // Id заглушки замість відсутнього фото (шорткод photo в eleventy.config.js): у паспорті photos.json його немає, і так має бути.
 const PLACEHOLDER = 'placeholder';
 
-// barn: один дім, два тарифи (R6), без "дім на 12" як окремої позиції
+// barn: Барн-хаус на 8 гостей, один тариф (Макс 05.10.2026: Великий будинок на 12 гостей окремо, bigHouse.json)
 const barn = readJson('barn.json');
 const bigHouse = readJson('bigHouse.json');
-if (!barn || Array.isArray(barn)) fail('barn.json: має бути один об\'єкт (один дім, R6)');
+if (!barn || Array.isArray(barn)) fail('barn.json: має бути один об\'єкт (Барн-хаус)');
 else {
   if (barn.title !== 'Барн-хаус') fail('barn.json: назва "Барн-хаус" (через дефіс)');
   if (barn.category !== 'barn') fail('barn.json: category barn');
@@ -416,7 +416,7 @@ else {
   for (const u of ['/nomery/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedK.has(u)) fail(`texts/kotedzhi.json: немає посилання на ${u} (перелінковка)`);
 }
 
-// texts/barn-house.json: сторінка Барн-хауса (E3-T10). R6: один дім, два тарифи; факти тільки з barn.json (живий лендинг), планування невідоме
+// texts/barn-house.json: сторінка Барн-хауса (E3-T10). Барн-хаус на 8 гостей і Великий будинок окремо (Макс 05.10.2026); факти тільки з barn.json і bigHouse.json (живий лендинг), планування невідоме
 const barnPage = contentFiles.includes('barn-house.json') ? readContent('barn-house.json') : null;
 if (!barnPage) fail('texts/barn-house.json: немає файлу');
 else {
