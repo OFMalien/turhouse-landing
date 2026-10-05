@@ -46,6 +46,17 @@ analyticsKind: spa
           <p class="price"><strong>{{ spa.price.next | price }}&nbsp;грн</strong> <span class="price__unit">{{ spa.price.per }}</span></p>
         </div>
       </div>
+      {%- for x in spa.extras %}
+      <div class="card-object tariff-card" id="price-{{ x.id }}">
+        <div class="card-object__body">
+          <p class="card-object__meta">{{ x.label }}</p>
+          <p class="price"><strong>{{ x.amount | price }}&nbsp;грн</strong> <span class="price__unit">{{ x.unit }}</span></p>
+          {%- if x.note %}
+          <p class="card-object__note">{{ x.note }}</p>
+          {%- endif %}
+        </div>
+      </div>
+      {%- endfor %}
     </div>
   </div>
 </section>

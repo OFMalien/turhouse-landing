@@ -15,7 +15,7 @@ const readJson = (name) => {
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 // Дозволені ціни на сайті (п.6 промпта): 2500/2800/3000, 6000/7000, 11000 і 13000 (Барн-хаус), 600+200, 500, ціни акції.
-const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800]);
+const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800, 1500, 300]);
 const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);
 // C9: відстань і час у дорозі не вказувати взагалі (км, "N хвилин їзди", "година в дорозі"). Слово "хвилин" саме по собі дозволене (відгук гостя: "з перших хвилин").
 const CYR_CLASS = 'А-Яа-яІіЇїЄєҐґ';
@@ -113,7 +113,8 @@ else {
   if (spa.price.first !== 600 || spa.price.next !== 200) fail('spa.json: тариф має бути 600 за першу годину і 200 за кожну наступну');
   const need = ['Дві парні', 'Зал відпочинку до 20 осіб', 'Басейн', 'Купіль', 'Водоспади', 'Кімната-сіновал', 'Чан просто неба'];
   if (!same(spa.complex, need)) fail(`spa.json: склад комплексу має бути ${need.join(', ')}`);
-  if (!/банщик/i.test(spa.bathAttendant || '') || /\d/.test(spa.bathAttendant || '')) fail('spa.json: банщик за доплату, без суми (суми в джерелах немає)');
+  if (!/банщик/i.test(spa.bathAttendant || '') || /\d/.test(spa.bathAttendant || '')) fail('spa.json: bathAttendant без суми, суми лежать в extras');
+  if (!same((spa.extras || []).map((x) => [x.id, x.amount, x.unit]), [['chan', 1500, 'за годину'], ['attendant', 300, 'за бажанням']]) || !/2 години/.test(spa.extras?.[0]?.note || '')) fail('spa.json: extras: чан 1500 грн за годину (мінімум 2 години) і банщик 300 грн за бажанням (Instagram Tur House, пост 16.09.2026)');
   if (!spa.cards || !same(spa.cards.map((c) => c.id), ['banya', 'chan', 'pool'])) fail('spa.json: картки banya, chan, pool');
   for (const id of [spa.photo, ...(spa.gallery || []), ...((spa.cards || []).map((c) => c.photo))]) {
     if (!photos[id]) fail(`spa.json: фото "${id}" немає в photos.json`);
@@ -194,7 +195,7 @@ else {
   const need = (id, parts) => { for (const p of parts) if (!(answer[id] || '').toLowerCase().includes(p.toLowerCase())) fail(`faq.json ${id}: у відповіді немає "${p}"`); };
   if (rooms && cottages) need('stay-prices', [...rooms.map((r) => `${money(r.price)} грн`), ...cottages.map((c) => `${money(c.price)} грн`)]);
   if (barn && barn.tariffs) need('barn-price', ['один окремий будинок', ...barn.tariffs.map((t) => `${t.label} `), ...barn.tariffs.map((t) => `${money(t.amount)} грн`), 'BBQ']);
-  if (spa) need('banya', [`${spa.price.first} грн з особи за першу годину`, `${spa.price.next} грн`, 'банщика']);
+  if (spa) need('banya', [`${spa.price.first} грн з особи за першу годину`, `${spa.price.next} грн`, 'банщика', ...(spa.extras || []).map((x) => `${money(x.amount)} грн`)]);
   need('pool', ['весняно-осінній']);
   need('internet', ['Starlink']);
   need('pets', ['10 кг', '500 грн']);
@@ -433,7 +434,7 @@ else {
 }
 
 // texts/banya-ta-spa.json: сторінка бані та спа (E3-T11). Ціна 600+200 і склад комплексу беруться з spa.json; цін у тексті немає.
-// Невідомо з джерел: ціна чана і банщика, скільки людей у чані, години роботи, порядок бронювання бані, чи можна без проживання.
+// З Instagram Tur House (пост 16.09.2026): чан 1500 грн/год, мінімум 2 години, банщик 300 грн, попереднє бронювання обов'язкове. Невідомо: скільки людей у чані, години роботи, порядок бронювання бані, чи можна без проживання.
 const spaPage = contentFiles.includes('banya-ta-spa.json') ? readContent('banya-ta-spa.json') : null;
 if (!spaPage) fail('texts/banya-ta-spa.json: немає файлу');
 else {
@@ -448,7 +449,7 @@ else {
   let pos = -1;
   for (const c of cplx) { const p = lead.indexOf(c, pos + 1); if (p < 0) { fail(`texts/banya-ta-spa.json: у complex.lead немає "${c}" (spa.json)`); break; } pos = p; }
   const priceT = spaPage.price?.text || '';
-  for (const w of ['з особи', 'першу годину', 'наступну', 'попереднім бронюванням', 'банщика']) if (!priceT.includes(w)) fail(`texts/banya-ta-spa.json: у price.text немає "${w}"`);
+  for (const w of ['з особи', 'першу годину', 'наступну', 'бронювання обов\'язкове', 'банщика']) if (!priceT.includes(w)) fail(`texts/banya-ta-spa.json: у price.text немає "${w}" (Instagram 16.09.2026)`);
   if (!/Direct/.test(spaPage.booking?.text || '') || !/зателефонуйте/.test(spaPage.booking?.text || '')) fail('texts/banya-ta-spa.json: booking.text має пропонувати телефон і Instagram Direct');
   if (/BookmeNow/.test(JSON.stringify(spaPage))) fail('texts/banya-ta-spa.json: що баню бронюють через BookmeNow, в джерелах немає (BookmeNow для проживання)');
   // не вигадувати: хамам, масаж, сауна, процедури, ретрит, абстрактний велнес, віник, температуру, вартість чана, скільки людей у чані, години, "без проживання"

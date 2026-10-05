@@ -110,7 +110,7 @@ function pageContextOf(doc) {
 }
 // Усі суми «N грн» у тексті сторінки мають бути з даних (rooms, cottages, barn, spa, акція, 500 за тварин, меню кафе)
 const menuPrices = readJson('menu.json').sections.flatMap((s) => s.items.map((i) => i.price));
-const ALLOWED_SUMS = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next, 500, ...menuPrices].filter(Boolean));
+const ALLOWED_SUMS = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next, ...(spa.extras || []).map((x) => x.amount), 500, ...menuPrices].filter(Boolean));
 function checkSums(url, doc) {
   const text = doc.text.replace(/[  ]/g, ' ');
   for (const m of text.matchAll(/(\d[\d ]*\d|\d)\s*грн/g)) {
@@ -355,14 +355,14 @@ const PAGE_RULES = {
     // ціна: 600 за першу годину і 200 за кожну наступну, з особи (spa.json), без акції і без знижок
     if (!sameText(doc.querySelector('#price-title')?.text, t.price.heading) || !sameText(doc.querySelector('#price .lede')?.text, t.price.text)) f(`блок ціни не збігається з ${file}`);
     const tiles = doc.querySelectorAll('#price .tariff-card');
-    const wantTiles = [[spa.price.firstLabel, spa.price.first], [spa.price.nextLabel, spa.price.next]];
-    if (tiles.length !== 2) f(`у блоці ціни ${tiles.length} плиток, має бути 2 (перша година і наступні)`);
-    wantTiles.forEach(([label, amount], i) => {
+    const wantTiles = [[spa.price.firstLabel, spa.price.first, spa.price.per], [spa.price.nextLabel, spa.price.next, spa.price.per], ...(spa.extras || []).map((x) => [x.label, x.amount, x.unit])];
+    if (tiles.length !== wantTiles.length) f(`у блоці ціни ${tiles.length} плиток, має бути ${wantTiles.length} (перша година, наступні, чан, банщик)`);
+    wantTiles.forEach(([label, amount, unit], i) => {
       const c = tiles[i];
       if (!c) return;
       if (norm(c.querySelector('.card-object__meta')?.text).toLowerCase() !== label.toLowerCase()) f(`плитка ціни ${i + 1}: підпис має бути «${label}»`);
       const pr = norm(c.querySelector('.price')?.text);
-      if (!pr.includes(`${money(amount)} грн`) || !pr.includes(spa.price.per)) f(`плитка ціни ${i + 1}: має бути «${money(amount)} грн ${spa.price.per}»`);
+      if (!pr.includes(`${money(amount)} грн`) || !pr.includes(unit)) f(`плитка ціни ${i + 1}: має бути «${money(amount)} грн ${unit}»`);
     });
     if (doc.querySelector('#price s, #price a.btn')) f('у блоці ціни бані немає ні викреслених цін, ні кнопок броні проживання');
     // карточки: баня, чан, басейн з spa.json, без ціни проживання й без кнопки BookmeNow
