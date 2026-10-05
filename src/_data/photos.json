@@ -488,5 +488,14 @@
       "yak-distatysya"
     ],
     "generated": true
+  },
+  "contacts/terrace-evening": {
+    "file": "contacts/terrace-evening.jpg",
+    "source": "img/contacts/terrace-evening.jpg",
+    "alt": "Вечірня дерев'яна тераса: чай, свічка в ліхтарі, плед і телефон на столі, ліс у сутінках",
+    "uses": [
+      "kontakty"
+    ],
+    "generated": true
   }
 }
