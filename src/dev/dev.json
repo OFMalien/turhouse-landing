@@ -31,12 +31,11 @@
       "id": "sample-barn",
       "category": "barn",
       "title": "Барн-хаус",
-      "capacity": "до 8 або до 12 гостей",
+      "capacity": "до 8 гостей",
       "tariffs": [
-        { "label": "до 8 гостей", "amount": 11000 },
-        { "label": "до 12 гостей", "amount": 13000 }
+        { "label": "до 8 гостей", "amount": 11000 }
       ],
-      "description": "Приклад карточки з двома тарифами замість однієї ціни.",
+      "description": "Приклад карточки з тарифом.",
       "features": ["Зона BBQ", "Басейн включено"],
       "photo": "barn/barn-01-fasad"
     }
