@@ -273,7 +273,9 @@ html.nav-open { overflow: hidden; }
 /* ---------- Блок заклику до дії (CTA) ---------- */
 .cta-band {
   padding-block: 90px;
-  background: var(--color-midnight-roast);
+  background-color: var(--color-midnight-roast);
+  background-image: var(--leaf-pattern-dark);
+  background-size: 220px 220px;
   text-align: center;
 }
 .cta-band .section-heading {
@@ -492,7 +494,8 @@ html.nav-open { overflow: hidden; }
   gap: clamp(28px, 3.6vw, 56px);
   align-items: start;
   padding: clamp(26px, 3.4vw, 48px);
-  background: var(--bg-card);
+  /* напівпрозора плашка, крізь неї видно узор фону (Макс 06.10.2026) */
+  background: rgba(228, 218, 207, 0.45);
   border: 1px solid var(--line);
   border-top: 3px solid var(--gold);
 }
@@ -526,7 +529,7 @@ html.nav-open { overflow: hidden; }
   margin-top: 6px;
   border-collapse: collapse;
   border: 1px solid var(--gold);
-  background: var(--color-parchment);
+  background: rgba(216, 203, 184, 0.4);
 }
 .promo-prices thead th {
   padding: 12px 20px;
@@ -773,7 +776,7 @@ html.modal-open { overflow: hidden; }
   .card-object__price--plain { min-height: calc(6px + var(--text-lg) * 1.3 + 44px); }
 }
 
-.sauna-band { background: var(--bg-darkest); padding-block: var(--section-gap); }
+.sauna-band { background-color: var(--bg-darkest); background-image: var(--leaf-pattern-dark); background-size: 220px 220px; padding-block: var(--section-gap); }
 .sauna-band__inner { display: grid; gap: 36px; align-items: center; }
 .sauna-band__copy { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .sauna-band__price { font-size: var(--text-body); line-height: 1.5; }
@@ -786,6 +789,90 @@ html.modal-open { overflow: hidden; }
 
 /* ---------- Головна: територія, блоки «фото + текст», відгуки, FAQ, локація (E4-T2) ---------- */
 /* Золотий узор-гілочка на світлих фонах усіх сторінок, той самий, що в темних шапках (Макс 06.10.2026) */
+:root { --leaf-pattern-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23a07a36' stroke-opacity='.22' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M36 190C48 140 68 104 104 66'/%3E%3Cpath d='M52 150C34 144 26 128 30 114C46 118 56 132 52 150Z'/%3E%3Cpath d='M66 122C82 116 94 104 96 88C80 90 68 102 66 122Z'/%3E%3Cpath d='M82 100C66 92 60 76 66 64C80 70 88 84 82 100Z'/%3E%3Cpath d='M96 78C112 72 122 60 122 46C108 48 98 60 96 78Z'/%3E%3Cpath d='M156 206C164 176 178 152 198 130'/%3E%3Cpath d='M166 184C154 178 150 166 154 156C166 160 172 172 166 184Z'/%3E%3Cpath d='M178 160C190 156 198 146 198 136C186 138 180 148 178 160Z'/%3E%3Ccircle cx='140' cy='40' r='1.6'/%3E%3Ccircle cx='24' cy='60' r='1.6'/%3E%3Ccircle cx='190' cy='96' r='1.6'/%3E%3C/svg%3E"); }
+body { background-image: var(--leaf-pattern-light); background-size: 220px 220px; }
+.section--alt { background-color: var(--bg-card); background-image: var(--leaf-pattern-light); background-size: 220px 220px; }
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  margin-top: 40px;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.feature-grid__item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--card-padding) 24px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.feature-grid__item h3 { font-weight: 400; font-size: 26px; letter-spacing: -0.5px; }
+.feature-grid__item p { color: var(--text-soft); line-height: 1.55; }
+
+.split { display: grid; gap: 32px; align-items: center; }
+.split__copy { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.split__media picture { display: block; }
+.split__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line); }
+@media (min-width: 960px) {
+  .split { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: 64px; }
+  .split--reverse .split__media { order: 2; }
+}
+.split--text { align-items: start; }
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 20px;
+  margin-top: 40px;
+}
+.review-card { margin: 0; display: flex; flex-direction: column; gap: 14px; padding: 26px 24px; border: 1px solid var(--line); background: var(--bg-page); }
+/* Зірки: декор у кольорі walnut (6,56:1 на parchment), шафран на світлому дає 1,88:1 і заборонений; оцінка є й текстом у aria-label */
+.review-card__stars { margin: 0; font-size: 18px; letter-spacing: 2px; color: var(--text-muted); }
+.review-card__text { margin: 0; }
+.review-card__text p { font-size: var(--text-body); line-height: 1.6; color: var(--text); }
+.review-card__who { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-top: auto; font-size: var(--text-small); }
+.review-card__name { font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; color: var(--text-muted); }
+.review-card__src { color: var(--text-muted); }
+.reviews-more { margin-top: 28px; }
+
+.faq-list { margin-top: 36px; border-bottom: 1px solid var(--line); max-width: 860px; }
+.faq-item { border-top: 1px solid var(--line); }
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 56px;
+  padding: 16px 0;
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.35;
+  cursor: pointer;
+  list-style: none;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+/* Знак «+»/«−» керує відкриттям: колір text, не шафран (шафран на світлому нечитний) */
+.faq-item summary::after { content: "+"; flex: none; font-family: var(--font-serif); font-size: 28px; font-weight: 300; color: var(--text); }
+.faq-item[open] summary::after { content: "\2212"; }
+.faq-item__answer { padding: 0 0 22px; max-width: 64ch; }
+.faq-item__answer p { font-size: var(--text-body); line-height: 1.6; color: var(--text-soft); }
+.faq-item__links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.faq-item__links a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+
+.location-address { margin-top: 18px; font-style: normal; font-size: var(--text-lg); line-height: 1.4; color: var(--text); }
+.section--alt .lede { margin-top: 10px; }
+
+/* ---------- Внутрішні сторінки: шапка сторінки, крихти, переліки, галерея (E4-T3) ---------- */
+.page-hero {
+  padding-block: clamp(28px, 4vw, 64px);
+  /* Тёмный лесной фон с тёплым свечением и золотым узором-веточкой, как на баннере с прайсом бани (Макс 06.10.2026) */
+  background-color: #1d231a;
+  background-image:
+    radial-gradient(60% 90% at 100% 0%, rgba(200, 135, 66, 0.24), transparent 62%),
+    radial-gradient(55% 80% at 0% 100%, rgba(200, 135, 66, 0.14), transparent 62%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23c9a45c' stroke-opacity='.26' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M36 190C48 140 68 104 104 66'/%3E%3Cpath d='M52 150C34 144 26 128 30 114C46 118 56 132 52 150Z'/%3E%3Cpath d='M66 122C82 116 94 104 96 88C80 90 68 102 66 122Z'/%3E%3Cpath d='M82 100C66 92 60 76 66 64C80 70 88 84 82 100Z'/%3E%3Cpath d='M96 78C112 72 122 60 122 46C108 48 98 60 96 78Z'/%3E%3Cpath d='M156 206C164 176 178 152 198 130'/%3E%3Cpath d='M166 184C154 178 150 166 154 156C166 160 172 172 166 184Z'/%3E%3Cpath d='M178 160C190 156 198 146 198 136C186 138 180 148 178 160Z'/%3E%3Ccircle cx='140' cy='40' r='1.6'/%3E%3Ccircle cx='24' cy='60' r='1.6'/%3E%3Ccircle cx='190' cy='96' r='1.6'/%3E%3C/svg%3E"); }
 :root { --leaf-pattern-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220' fill='none' stroke='%23a07a36' stroke-opacity='.22' stroke-width='1' stroke-linecap='round'%3E%3Cpath d='M36 190C48 140 68 104 104 66'/%3E%3Cpath d='M52 150C34 144 26 128 30 114C46 118 56 132 52 150Z'/%3E%3Cpath d='M66 122C82 116 94 104 96 88C80 90 68 102 66 122Z'/%3E%3Cpath d='M82 100C66 92 60 76 66 64C80 70 88 84 82 100Z'/%3E%3Cpath d='M96 78C112 72 122 60 122 46C108 48 98 60 96 78Z'/%3E%3Cpath d='M156 206C164 176 178 152 198 130'/%3E%3Cpath d='M166 184C154 178 150 166 154 156C166 160 172 172 166 184Z'/%3E%3Cpath d='M178 160C190 156 198 146 198 136C186 138 180 148 178 160Z'/%3E%3Ccircle cx='140' cy='40' r='1.6'/%3E%3Ccircle cx='24' cy='60' r='1.6'/%3E%3Ccircle cx='190' cy='96' r='1.6'/%3E%3C/svg%3E"); }
 body { background-image: var(--leaf-pattern-light); background-size: 220px 220px; }
 .section--alt { background-color: var(--bg-card); background-image: var(--leaf-pattern-light); background-size: 220px 220px; }
