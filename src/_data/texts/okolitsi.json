@@ -30,34 +30,5 @@
       "territory/volleyball",
       "territory/badminton"
     ]
-  },
-  "stay": {
-    "heading": "Де зупинитися поруч",
-    "links": [
-      {
-        "url": "/nomery/",
-        "label": "Номери"
-      },
-      {
-        "url": "/kotedzhi/",
-        "label": "Котеджі"
-      },
-      {
-        "url": "/barn-house/",
-        "label": "Барн-хаус"
-      },
-      {
-        "url": "/banya-ta-spa/",
-        "label": "Баня та спа"
-      },
-      {
-        "url": "/kafe/",
-        "label": "Кафе"
-      },
-      {
-        "url": "/yak-distatysya/",
-        "label": "Як доїхати"
-      }
-    ]
   }
 }

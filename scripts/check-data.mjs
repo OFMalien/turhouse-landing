@@ -205,7 +205,11 @@ else {
 
 // reviews: реальні відгуки дослівно, з підписом "Відгук з Google", без агрегованого рейтингу (ТЗ §7.2)
 const REVIEW_TEXTS = {
-  // 05.10.2026 (Макс): лише два відгуки з живого лендингу, дослівно; три додані пізніше знято
+  // 03.10.2026: свіжі відгуки з картки Google (Макс дозволив), уривки дослівно без емодзі; серію відгуків 03-04.09 не брали.
+  // 06.10.2026 (Макс): п'ять відгуків повернуто, підпис лише іменем
+  puzanov: 'Гостинність, комфортний номер, плавання в басейні, смачна кухня. Особливо вразив подарунок на день народження у вигляді чану з травами та апельсинами.',
+  katya: 'Все дуже чудово, свіже повітря, басейн, чудова атмосфера на території, ввічливі працівники та приємне відношення до гостей.',
+  stets: 'Територія доглянута, басейн чистий та комфортний, вода приємної температури. Атмосфера затишна й ідеально підходить як для сімейного відпочинку, так і для зустрічі з друзями.',
   obrucheva: 'Давно не отримувала такого задоволення від відпочинку! Це місце закохує в себе з перших хвилин. Неймовірна природа, спокій, свіже повітря та краєвиди, від яких просто неможливо відвести погляд.',
   andy: 'Чудовий вибір відпочинку неподалік від Києва за прийнятні кошти з можливістю поплавати в басейні та позасмагати.',
 };
@@ -217,7 +221,7 @@ else {
   if (!same((reviews.items || []).map((i) => i.id), Object.keys(REVIEW_TEXTS))) fail(`reviews.json: відгуки мають бути ${Object.keys(REVIEW_TEXTS).join(', ')}`);
   for (const i of reviews.items || []) {
     if (!i.author) fail(`reviews.json ${i.id}: немає автора`);
-    if (({ obrucheva: 'Вікторія Обручева', andy: 'Andy Andy' })[i.id] !== i.author) fail(`reviews.json ${i.id}: автор як на лендингу («Вікторія Обручева», «Andy Andy»)`);
+    if (/\s/.test(i.author.trim())) fail(`reviews.json ${i.id}: автор лише іменем, без прізвища (Макс 06.10.2026)`);
     if (!Number.isInteger(i.rating) || i.rating < 1 || i.rating > 5) fail(`reviews.json ${i.id}: rating 1-5`);
     if (REVIEW_TEXTS[i.id] !== undefined && i.text !== REVIEW_TEXTS[i.id]) fail(`reviews.json ${i.id}: текст відгуку змінено, відгуки цитуємо дослівно`);
   }
@@ -365,8 +369,8 @@ else {
   checkPagePhotos('nomery.json', [nomery.hero?.photo]);
   checkPagePhotos('nomery.json', nomery.gallery?.photos || [], ROOM_GALLERY_OK);
   if (!same(nomery.gallery?.photos, ROOM_GALLERY_OK)) fail('texts/nomery.json: у галереї номерів 3 кадри: без room-burgundy і room-wood-wall (Оля 05.10.2026: фото 1 і 5 з документа не номери готелю)');
-  const linkedN = new Set(collectLinks(nomery));
-  for (const u of ['/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedN.has(u)) fail(`texts/nomery.json: немає посилання на ${u} (перелінковка)`);
+
+  if (nomery.group) fail('texts/nomery.json: блоки «Якщо гостей…», «Якщо вас менше», «Баня і проживання», «Де зупинитися поруч» знято (Макс 06.10.2026: «лишнее»), перелінковка через меню і картки');
 }
 
 // texts/kotedzhi.json: сторінка котеджів (E3-T9). Підтверджено лише: двокімнатні, кухня, зона BBQ, власна тераса, мангал, 2+2 котеджі (R5)
@@ -397,8 +401,8 @@ else {
   // фото: інтер'єри з фіолетовими стінами (verify, питання 9) на сторінку не ставимо; у галереї два підтверджені фасадні кадри
   checkPagePhotos('kotedzhi.json', [kotedzhi.hero?.photo, ...(kotedzhi.gallery?.photos || [])]);
   if (!same(kotedzhi.gallery?.photos, ['cottages/cottage-orange', 'cottages/cottages-sunset', 'cottages/interior-living-purple', 'cottages/interior-tv-purple'])) fail('texts/kotedzhi.json: у галереї два фасадні кадри і два інтер\'єри (Оля 05.10.2026: фіолетові інтер\'єри це котеджі, котеджі однакові)');
-  const linkedK = new Set(collectLinks(kotedzhi));
-  for (const u of ['/nomery/', '/barn-house/', '/banya-ta-spa/', '/kafe/']) if (!linkedK.has(u)) fail(`texts/kotedzhi.json: немає посилання на ${u} (перелінковка)`);
+
+  if (kotedzhi.group) fail('texts/kotedzhi.json: блоки «Якщо гостей…», «Якщо вас менше», «Баня і проживання», «Де зупинитися поруч» знято (Макс 06.10.2026: «лишнее»), перелінковка через меню і картки');
 }
 
 // texts/barn-house.json: сторінка Барн-хауса (E3-T10): один дім, два тарифи; Великий будинок без цін, коротким блоком (Макс 05.10.2026); факти з barn.json і живого лендингу
@@ -431,8 +435,8 @@ else {
   // фото: hero без verify; галерея береться з barn.json, де verify заборонений
   checkPagePhotos('barn-house.json', [barnPage.hero?.photo]);
   if (barnPage.hero?.photo !== barn?.photo) fail('texts/barn-house.json: hero.photo має збігатися з barn.photo');
-  const linkedB = new Set(collectLinks(barnPage));
-  for (const u of ['/nomery/', '/kotedzhi/', '/banya-ta-spa/', '/kafe/']) if (!linkedB.has(u)) fail(`texts/barn-house.json: немає посилання на ${u} (перелінковка)`);
+
+  if (barnPage.group) fail('texts/barn-house.json: блоки «Якщо гостей…», «Якщо вас менше», «Баня і проживання», «Де зупинитися поруч» знято (Макс 06.10.2026: «лишнее»), перелінковка через меню і картки');
 }
 
 // texts/banya-ta-spa.json: сторінка бані та спа (E3-T11). Ціна 600+200 і склад комплексу беруться з spa.json; цін у тексті немає.
@@ -463,8 +467,8 @@ else {
   if (collectStrings(spaPage).some((s) => chanCap.test(s))) fail('texts/banya-ta-spa.json: у чані до 6 осіб (Оля 05.10.2026), іншої кількості в джерелах немає');
   checkPagePhotos('banya-ta-spa.json', [spaPage.hero?.photo]);
   if (spaPage.hero?.photo !== spa?.photo) fail('texts/banya-ta-spa.json: hero.photo має збігатися з spa.photo');
-  const linkedS = new Set(collectLinks(spaPage));
-  for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/kafe/']) if (!linkedS.has(u)) fail(`texts/banya-ta-spa.json: немає посилання на ${u} (перелінковка)`);
+
+  if (spaPage.stay || spaPage.faq) fail('texts/banya-ta-spa.json: блок «Баня і проживання» і «Питання наперед» знято (Макс 06.10.2026)');
 }
 
 // texts/kafe.json: сторінка кафе та піца-бару (E3-T12, R7). Страви в тексті є в menu.json; годин, доставки, столиків, десертів, алкоголю в джерелах немає.
@@ -492,7 +496,7 @@ else {
   if (!(kafePage.menu?.note || '').includes(`станом на ${menuDate}`)) fail(`texts/kafe.json: menu.note має містити "станом на ${menuDate}" (cafe.menuUpdated)`);
   if (!/Direct/.test(kafePage.menu?.note || '') || !/телефоном/.test(kafePage.menu?.note || '')) fail('texts/kafe.json: menu.note має відсилати до телефону та Instagram Direct');
   // години роботи (Оля 05.10.2026): з 9:00 до 21:00, текст кажe це і відсилає до телефону / Direct
-  if (!/Години роботи/.test(kafePage.hours?.heading || '') || !(kafePage.hours?.text || '').includes(`з ${cafe?.hours?.from} до ${cafe?.hours?.to}`) || !/без проживання/.test(kafePage.hours?.text || '') || !/телефоном/.test(kafePage.hours?.text || '') || !/Direct/.test(kafePage.hours?.text || '')) fail('texts/kafe.json: hours.text: «з 9:00 до 21:00», «без проживання», телефон і Direct (Оля 05.10.2026)');
+  if (!/Години роботи/.test(kafePage.hours?.heading || '') || !(kafePage.hours?.text || '').includes(`з ${cafe?.hours?.from} до ${cafe?.hours?.to}`) || /без проживання/.test(kafePage.hours?.text || '') || !/телефоном/.test(kafePage.hours?.text || '') || !/Direct/.test(kafePage.hours?.text || '')) fail('texts/kafe.json: hours.text: «з 9:00 до 21:00», «без проживання», телефон і Direct (Оля 05.10.2026)');
   // чого в джерелах немає
   const kafeJson = JSON.stringify(kafePage);
   // єдині підтверджені години кафе: з 9:00 до 21:00 (Оля 05.10.2026); будь-які інші години на сторінці заборонені
@@ -529,8 +533,8 @@ else {
   if (/(наш|наші|наше)\s+(парк|тварин|коні|екостежк)/i.test(okJson)) fail('texts/okolitsi.json: Tur House не називає парк і його тварин своїми (ТЗ §6)');
   checkPagePhotos('okolitsi.json', [okolitsi.hero?.photo, ...(okolitsi.gallery?.photos || [])]);
   if (!same(okolitsi.gallery?.photos, ['territory/playground', 'territory/table-tennis', 'territory/volleyball', 'territory/badminton']) || okolitsi.hero?.photo !== 'okolitsi/horse-sunset') fail('texts/okolitsi.json: шапка — згенерований кадр okolitsi/horse-sunset (Макс 05.10.2026), у галереї кадрів парку, Десни і лісу поки немає; у галереї чотири кадри розваг з Instagram Tur House (пост 23.06.2026)');
-  const linkedO = new Set(collectLinks(okolitsi));
-  for (const u of ['/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/yak-distatysya/']) if (!linkedO.has(u)) fail(`texts/okolitsi.json: немає посилання на ${u} (перелінковка)`);
+
+  if (okolitsi.stay) fail('texts/okolitsi.json: блоки «Якщо гостей…», «Якщо вас менше», «Баня і проживання», «Де зупинитися поруч» знято (Макс 06.10.2026: «лишнее»), перелінковка через меню і картки');
 }
 
 // texts/yak-distatysya.json: як дістатися (E3-T14). Маршрут тільки з живого лендингу; C9: жодних км і часу в дорозі; транспорт, парковка, в'їзд невідомі.
@@ -544,7 +548,7 @@ else {
   // маршрут дослівно з живого лендингу (узгоджений з клієнтом, C5): Броварським проспектом, далі на Зазим'я та Літки
   if (routePage.route?.text !== "Дорога з Києва: Броварським проспектом, далі на Зазим'я та Літки.") fail("texts/yak-distatysya.json: route.text має бути маршрутом з живого лендингу («Броварським проспектом, далі на Зазим'я та Літки»)");
   if (routePage.navigator?.text) fail('texts/yak-distatysya.json: navigator.text знято (Макс 06.10.2026: скорочення тексту: повторює кнопки)');
-  if (routePage.map?.button !== 'Показати карту' || routePage.map?.note) fail('texts/yak-distatysya.json: кнопка «Показати карту» без службової примітки (Макс 06.10.2026: скорочення тексту)');
+  if (routePage.map?.button || routePage.map?.note) fail('texts/yak-distatysya.json: карта показується одразу, без кнопки й примітки (Макс 06.10.2026: «Карта должна сразу подгружаться»)');
   if (routePage.landmark || routePage.stay || routePage.faq) fail('texts/yak-distatysya.json: блоки landmark, stay, faq знято (Макс 05.10.2026: на лендингу їх немає)');
   if (!/зателефонуйте/i.test(routePage.help?.text || '') || !/Direct/.test(routePage.help?.text || '')) fail('texts/yak-distatysya.json: help.text пропонує телефон і Instagram Direct');
   // чого в джерелах немає: Остер (маршрут з ТЗ), асфальт, в'їзд, парковка, громадський транспорт, таксі, траса
@@ -589,7 +593,7 @@ else {
   if (!/Google Tag Manager/.test(privacy.collected?.lead || '')) fail('texts/pryvatnist.json: collected.lead має згадувати Google Tag Manager');
   const titles = (privacy.collected?.items || []).map((i) => i.title).join(' | ');
   for (const w of ['Google Analytics', 'Meta Pixel', 'Google Fonts', 'Google Карти']) if (!titles.includes(w)) fail(`texts/pryvatnist.json: у collected.items немає "${w}"`);
-  if (!/«Показати карту»/.test((privacy.collected?.items || []).find((i) => i.id === 'maps')?.text || '')) fail('texts/pryvatnist.json: maps: карта вантажиться після кнопки «Показати карту» (узгоджено з yak-distatysya.json)');
+  if (!/Як доїхати/.test((privacy.collected?.items || []).find((i) => i.id === 'maps')?.text || '') || /Показати карту|після натискання/.test(JSON.stringify(privacy))) fail('texts/pryvatnist.json: maps: карта на сторінці «Як доїхати» вантажиться одразу (Макс 06.10.2026), без згадки кнопки');
   if (!/IP-адрес/.test((privacy.collected?.items || []).find((i) => i.id === 'fonts')?.text || '')) fail('texts/pryvatnist.json: fonts: Google отримує IP-адресу');
   if (!/cookie/.test(privacy.cookies?.text || '') || !/пам'ят[іи] браузера/.test(privacy.cookies?.text || '') || !/вікно з акцією/.test(privacy.cookies?.text || '')) fail('texts/pryvatnist.json: cookies.text про cookie і sessionStorage вікна акції (пам\'ять браузера)');
   if (!/немає форм/.test(privacy.yours?.text || '') || !/BookmeNow/.test(privacy.yours?.text || '') || !/Instagram/.test(privacy.yours?.text || '')) fail('texts/pryvatnist.json: yours.text: немає форм, дані повідомляє сам гість по телефону, в Instagram чи BookmeNow');
@@ -690,8 +694,8 @@ else {
   const spaP = contentFiles.includes('banya-ta-spa.json') ? readContent('banya-ta-spa.json') : null;
   if (spaP) {
     if (!(spaP.booking?.text || '').includes('з 11:00 до 22:00')) fail('texts/banya-ta-spa.json: booking.text має містити «з 11:00 до 22:00» (Оля 05.10.2026)');
-    const ws = (spaP.faq?.items || []).find((i) => i.id === 'without-stay');
-    if (!ws || ws.a.includes('11:00')) fail('texts/banya-ta-spa.json: FAQ without-stay є, години в ньому не повторюємо (вони в блоці броні, Макс 06.10.2026)');
+
+
     for (const str of collectStrings(spaP)) for (const m of str.matchAll(/(\d{1,2}:\d{2})\s*до\s*(\d{1,2}:\d{2})/g)) if (m[1] !== '11:00' || m[2] !== '22:00') fail(`banya-ta-spa.json: інші години бані: «${m[0]}» (підтверджено 11:00-22:00)`);
   }
   // умова акції: будні дні, а не вихідні (Макс 02.10.2026)

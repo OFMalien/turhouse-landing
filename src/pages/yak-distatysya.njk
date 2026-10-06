@@ -6,8 +6,6 @@ eleventyComputed:
   breadcrumbTitle: "{{ texts['yak-distatysya'].meta.breadcrumbTitle | safe }}"
 schemaType: yak-distatysya
 analyticsKind: route
-pageScripts:
-  - /assets/js/map.js
 ---
 {%- set t = texts['yak-distatysya'] %}
 {%- set hero = t.hero %}
@@ -39,10 +37,8 @@ pageScripts:
 <section class="section" id="map" aria-labelledby="map-title">
   <div class="wrap">
     <h2 id="map-title">{{ t.map.heading }}</h2>
-    <div class="map-box" id="map-box" data-src="{{ site.links.mapEmbed }}" data-title="Мапа проїзду до {{ site.name }}, {{ site.address.locality }}">
-      <div class="map-box__inner">
-        <button type="button" class="btn btn-primary map-box__btn" id="map-load" aria-controls="map-box" aria-expanded="false">{{ t.map.button }}</button>
-      </div>
+    <div class="map-box is-loaded" id="map-box">
+      <iframe class="map-box__frame" src="{{ site.links.mapEmbed }}" title="Мапа проїзду до {{ site.name }}, {{ site.address.locality }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
   </div>
 </section>

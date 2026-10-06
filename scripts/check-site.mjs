@@ -204,9 +204,10 @@ for (const [url, { doc }] of docs) {
   if (doc.querySelectorAll('script[src$="app.js"]').length !== 1) f('app.js має бути підключений один раз');
   if (doc.querySelectorAll('script[src$="tracking.js"]').length !== 1 || !scripts.includes(`${prefix}/assets/js/tracking.js`)) f('tracking.js (аналітика кліків) має бути підключений один раз на кожній сторінці');
   const hasMapJs = scripts.includes(`${prefix}/assets/js/map.js`);
-  if (url === '/yak-distatysya/' && !hasMapJs) f('на сторінці «Як дістатися» має бути скрипт map.js (карта по кліку)');
-  if (url !== '/yak-distatysya/' && (hasMapJs || doc.querySelector('#map-box'))) f('карта по кліку лише на сторінці «Як дістатися»');
-  if (doc.querySelectorAll('iframe').length) f('iframe у розмітці сторінки не допускається: карта підвантажується скриптом після кліку, сторонні запити до згоди не йдуть');
+  if (hasMapJs) f('map.js більше не потрібен: карта вантажиться одразу (Макс 06.10.2026)');
+  if (url !== '/yak-distatysya/' && (hasMapJs || doc.querySelector('#map-box'))) f('карта лише на сторінці «Як дістатися»');
+  const frames = doc.querySelectorAll('iframe');
+  if (frames.length && (url !== '/yak-distatysya/' || frames.length !== 1 || frames[0].getAttribute('class') !== 'map-box__frame')) f('iframe дозволено лише один: карта на сторінці «Як дістатися» (Макс 06.10.2026)');
   if (doc.querySelector('script[src$="promo.js"]') && !doc.querySelector('#promo-modal')) f('promo.js без вікна акції');
 
   if (doc.querySelectorAll('form, input, textarea, select').length) f('на сайті немає форм і полів вводу (політика конфіденційності це обіцяє)');
@@ -434,8 +435,9 @@ for (const [url, { doc }] of docs) {
 {
   const sectionUrls = new Set([...nav.map((n) => n.url), '/pryvatnist/']);
   // Макс 05.10.2026: з /kafe/ знято блок «Кафе і проживання», з /yak-distatysya/ і /kontakty/ блоки з кнопками на /okolitsi/ та інші (їх немає на лендингу): там лишається по одному посиланню
-  const MIN_OUT = { '/kafe/': 1 };
-  const MIN_IN = { '/okolitsi/': 1 };
+  // Макс 06.10.2026: блоки-перелінковки на номерах, котеджах, Барн-хаусі, бані й околицях знято («лишнее»); посилання між розділами лишаються в меню, картках і підвалі
+  const MIN_OUT = { '/kafe/': 1, '/banya-ta-spa/': 0, '/okolitsi/': 0 };
+  const MIN_IN = { '/okolitsi/': 1, '/nomery/': 1, '/kotedzhi/': 1 };
   const outgoing = new Map();
   for (const [url, { doc }] of docs) {
     const targets = new Set();

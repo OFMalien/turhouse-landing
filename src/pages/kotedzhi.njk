@@ -46,17 +46,6 @@ analyticsKind: cottages
 {%- set included = t.included %}
 {% include "components/included-block.njk" %}
 
-<section class="section section--alt" id="group" aria-labelledby="group-title">
-  <div class="wrap">
-    <h2 id="group-title">{{ t.group.heading }}</h2>
-    <div class="btn-row">
-      {%- for l in t.group.links %}
-      <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
-      {%- endfor %}
-    </div>
-  </div>
-</section>
-
 {%- set gallery = t.gallery %}
 {%- set galleryPhotos = t.gallery.photos %}
 {% include "components/gallery-block.njk" %}

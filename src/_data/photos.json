@@ -476,7 +476,8 @@
     "source": "img/okolitsi/horse-sunset.jpg",
     "alt": "Кінь у високій траві на заході сонця, на тлі лісу та річкової долини",
     "uses": [
-      "okolitsi"
+      "okolitsi",
+      "home"
     ],
     "generated": true
   },

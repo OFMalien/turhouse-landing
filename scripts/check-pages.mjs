@@ -126,14 +126,14 @@ function listPage(cfg) {
     const t = texts(slug);
     const file = `texts/${slug}.json`;
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', cfg.cardsId, `${cfg.cardsId}-title`, ...cfg.blocks, 'included', 'group', 'gallery', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', cfg.cardsId, `${cfg.cardsId}-title`, ...cfg.blocks, 'included', 'gallery', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     // хлібні крихти: Головна > поточний розділ, збігаються з назвою в розмітці
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f(`хлібні крихти мають бути «Головна / ${cfg.crumb}» з aria-current на останньому`);
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
     if (doc.querySelector('.text-section')) f('вступного абзацу під шапкою бути не повинно (Макс 06.10.2026: скорочення тексту)');
     if (doc.querySelector('[id="promo"]')) f('великий банер акції лише на головній (Макс 06.10.2026: скорочення тексту), тут картки ведуть на нього');
-    if (doc.querySelector('#group .lede')) f('у блоці #group лише кнопки, без абзацу (Макс 06.10.2026: скорочення тексту)');
+    if (doc.querySelector('[id="group"]')) f('блока #group бути не повинно (Макс 06.10.2026: «Якщо вас менше» лишнее)');
     if (!sameText(doc.querySelector(`[id="${cfg.cardsId}-title"]`)?.text, t.types.heading)) f(`H2 списку не збігається з ${file}`);
     for (const id of ['where', 'kitchen']) if (doc.querySelector(`[id="${id}"]`)) f(`блока #${id} бути не повинно (знято, Макс 05.10.2026)`);
     // картки з JSON даних, звичайні ціни, без викресленої ціни акції
@@ -183,7 +183,6 @@ function listPage(cfg) {
     const inc = doc.querySelectorAll('#included .check-list li').map((li) => norm(li.text));
     if (!same(inc, t.included.items.map(norm))) f(`пункти «Що входить у вартість» не збігаються з ${file}`);
     for (const u of cfg.includedLinks) if (!doc.querySelector(`#included a[href$="${u}"]`)) f(`у блоці «Що входить» немає посилання на ${u}`);
-    for (const u of cfg.groupLinks) if (!doc.querySelector(`#group a[href$="${u}"]`)) f(`у блоці груп немає посилання на ${u}`);
     if (!doc.querySelector(`#booking a[href="${site.links.booking}"][rel~="noopener"]`) || !doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: BookmeNow, телефон і Instagram Direct');
     // галерея: стільки кадрів, скільки в texts, кожен з alt
     const gal = doc.querySelectorAll(IMG_OR_PH('#gallery'));
@@ -307,12 +306,12 @@ const PAGE_RULES = {
     const file = 'texts/barn-house.json';
     const site = readJson('site.json');
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'tariffs', 'tariffs-title', barn.id, 'big-house', 'big-house-title', 'inside', 'inside-title', 'outside', 'outside-title', 'included', 'group', 'gallery', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'tariffs', 'tariffs-title', barn.id, 'big-house', 'big-house-title', 'inside', 'inside-title', 'outside', 'outside-title', 'included', 'gallery', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Барн-хаус» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
     if (doc.querySelector('.text-section')) f('вступного абзацу під шапкою бути не повинно (Макс 06.10.2026: скорочення тексту: дубль «Що всередині»)');
-    if (doc.querySelector('#group .lede')) f('у блоці #group лише кнопки, без абзацу (Макс 06.10.2026: скорочення тексту)');
+    if (doc.querySelector('[id="group"]')) f('блока #group бути не повинно (Макс 06.10.2026: «Якщо вас менше» лишнее)');
     // тарифи: один будинок, дві картки з barn.json (R6), звичайні ціни, кнопка броні на кожен тариф
     if (!sameText(doc.querySelector('#tariffs-title')?.text, t.tariffs.heading)) f(`H2 тарифів не збігається з ${file}`);
     if (!sameText(doc.querySelector('#tariffs .lede')?.text, t.tariffs.text)) f(`текст про тарифи не збігається з ${file}`);
@@ -342,7 +341,6 @@ const PAGE_RULES = {
     const inc = doc.querySelectorAll('#included .check-list li').map((li) => norm(li.text));
     if (!same(inc, t.included.items.map(norm))) f(`пункти «Що входить у вартість» не збігаються з ${file}`);
     for (const u of ['/banya-ta-spa/', '/kafe/']) if (!doc.querySelector(`#included a[href$="${u}"]`)) f(`у блоці «Що входить» немає посилання на ${u}`);
-    for (const u of ['/nomery/', '/kotedzhi/']) if (!doc.querySelector(`#group a[href$="${u}"]`)) f(`у блоці груп немає посилання на ${u}`);
     if (!doc.querySelector(`#booking a[href="${site.links.booking}"][rel~="noopener"]`) || !doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: BookmeNow, телефон і Instagram Direct');
     // галерея: кадри з barn.json без кадру шапки, кожен з alt
     const galExpect = barn.gallery.filter((id) => id !== barn.photo);
@@ -362,7 +360,7 @@ const PAGE_RULES = {
     const file = 'texts/banya-ta-spa.json';
     const site = readJson('site.json');
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'complex', 'complex-title', 'price', 'price-title', 'cards', 'cards-title', 'gallery', 'stay', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'complex', 'complex-title', 'price', 'price-title', 'cards', 'cards-title', 'gallery', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Баня та спа» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
@@ -398,8 +396,8 @@ const PAGE_RULES = {
       if (el.querySelector('.card-object__price, a.btn')) f(`у карточки «${c.title}» не має бути ціни проживання й кнопки броні`);
     });
     // проживання, бронь без BookmeNow: телефон і Direct
-    if (doc.querySelector('#stay .lede')) f('у блоці «Баня і проживання» лише кнопки (Макс 06.10.2026: скорочення тексту)');
-    for (const l of t.stay.links) if (!doc.querySelector(`#stay a[href$="${l.url}"]`)) f(`у блоці проживання немає посилання на ${l.url}`);
+    if (doc.querySelector('[id="stay"], [id="faq"]')) f('блоків «Баня і проживання» і «Питання наперед» на сторінці бані бути не повинно (Макс 06.10.2026)');
+
     if (!sameText(doc.querySelector('#booking .lede')?.text, t.booking.text)) f(`текст броні не збігається з ${file}`);
     if (!doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: телефон і Instagram Direct');
     if (doc.querySelector(`#booking a[href="${site.links.booking}"]`)) f('баню не бронюють через BookmeNow: у блоці броні немає кнопки BookmeNow');
@@ -480,7 +478,7 @@ const PAGE_RULES = {
     const t = texts('okolitsi');
     const file = 'texts/okolitsi.json';
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'intro', 'park', 'park-title', 'family', 'family-title', 'gallery', 'stay']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'intro', 'park', 'park-title', 'family', 'family-title', 'gallery']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Околиці» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
@@ -494,9 +492,9 @@ const PAGE_RULES = {
     if (!sameText(doc.querySelector('#family-title')?.text, t.family.heading) || !sameText(doc.querySelector('#family .lede')?.text, t.family.text)) f(`блок «З дітьми» не збігається з ${file}`);
     if (doc.querySelector('[id="weekend"]')) f('блока «Як провести вихідні» бути не повинно (знято, Макс 05.10.2026)');
     // де зупинитися: шість посилань
-    if (!sameText(doc.querySelector('#stay-title')?.text, t.stay.heading) || doc.querySelector('#stay .lede')) f(`блок «Де зупинитися поруч»: заголовок з ${file} і кнопки, без абзацу (Макс 06.10.2026: скорочення тексту)`);
-    const stay = doc.querySelectorAll('#stay a').map((a) => ({ t: norm(a.text), h: stripPrefix(a.getAttribute('href')) }));
-    if (!same(stay, t.stay.links.map((l) => ({ t: l.label, h: l.url })))) f('посилання в блоці «Де зупинитися поруч» не збігаються з texts (підпис і адреса)');
+    if (doc.querySelector('[id="stay"]')) f('блока «Де зупинитися поруч» бути не повинно (Макс 06.10.2026)');
+
+
     // кадри: шапка і галерея з texts, без повторів
     const hero = doc.querySelector(IMG_OR_PH('.page-hero'));
     if (photoIdOfEl(hero) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
@@ -516,7 +514,7 @@ const PAGE_RULES = {
     const file = 'texts/yak-distatysya.json';
     const site = readJson('site.json');
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'route', 'route-title', 'address', 'address-title', 'navigator', 'navigator-title', 'map', 'map-title', 'map-box', 'map-load', 'help', 'support']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'route', 'route-title', 'address', 'address-title', 'navigator', 'navigator-title', 'map', 'map-title', 'map-box', 'help', 'support']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Як доїхати» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
@@ -530,13 +528,13 @@ const PAGE_RULES = {
     const nav = doc.querySelectorAll('#navigator a.btn').map((a) => ({ t: norm(a.text), h: a.getAttribute('href'), target: a.getAttribute('target'), rel: a.getAttribute('rel') }));
     if (!same(nav, [{ t: site.cta.routeGoogle, h: site.links.googleMapsRoute, target: '_blank', rel: 'noopener' }, { t: site.cta.routeWaze, h: site.links.waze, target: '_blank', rel: 'noopener' }])) f('кнопки маршруту: «Відкрити в Google Maps» і «Відкрити у Waze» з адресами site.json, target=_blank, rel=noopener');
     if (doc.querySelector('#navigator')?.getAttribute('data-placement') !== 'route_buttons') f('блок навігатора: data-placement=route_buttons (подія map_route_click)');
-    // карта по кліку: ніякого iframe до натискання, адреса вбудови з site.json, кнопка керує контейнером
-    if (doc.querySelectorAll('iframe').length) f('до кліку iframe у розмітці бути не повинно');
-    const box = doc.querySelector('#map-box');
-    if (box?.getAttribute('data-src') !== site.links.mapEmbed) f('data-src карти має бути site.links.mapEmbed');
-    if (!/^Мапа проїзду до /.test(box?.getAttribute('data-title') || '')) f('data-title карти (назва для iframe) має починатися з «Мапа проїзду до»');
-    const mb = doc.querySelector('#map-load');
-    if (mb?.tagName.toLowerCase() !== 'button' || mb?.getAttribute('type') !== 'button' || mb?.getAttribute('aria-controls') !== 'map-box' || mb?.getAttribute('aria-expanded') !== 'false' || !sameText(mb?.text, t.map.button)) f(`кнопка карти: button type=button, aria-controls=map-box, aria-expanded=false, підпис «${t.map.button}»`);
+    // карта одразу (Макс 06.10.2026): iframe з адресою з site.json, lazy, з назвою
+    const fr = doc.querySelectorAll('#map-box iframe');
+    if (fr.length !== 1 || fr[0].getAttribute('src') !== site.links.mapEmbed || fr[0].getAttribute('loading') !== 'lazy') f('карта: один iframe у #map-box з src = site.links.mapEmbed і loading=lazy');
+    if (!/^Мапа проїзду до /.test(fr[0]?.getAttribute('title') || '')) f('title iframe карти має починатися з «Мапа проїзду до»');
+    if (doc.querySelector('#map-load')) f('кнопки «Показати карту» бути не повинно');
+
+
     if (!sameText(doc.querySelector('#map-title')?.text, t.map.heading) || doc.querySelector('#map-box .map-box__note')) f(`карта: заголовок з ${file}, без службової примітки (Макс 06.10.2026: скорочення тексту)`);
     // допомога (орієнтир, «куди їдете» і FAQ знято, Макс 05.10.2026)
     for (const id of ['landmark', 'stay', 'faq']) if (doc.querySelector(`[id="${id}"]`)) f(`блока #${id} на сторінці дороги бути не повинно (знято, Макс 05.10.2026)`);
