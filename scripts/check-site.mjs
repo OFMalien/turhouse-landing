@@ -197,7 +197,7 @@ for (const [url, { doc }] of docs) {
     if (/^https?:\/\//.test(href)) { if (!HEAD_EXTERNAL_OK.some((h) => href.startsWith(h))) f(`link ${rel}: зовнішня адреса «${href}» не з дозволеного списку`); continue; }
     localFile(url, href, `link ${rel}`);
   }
-  if (!doc.querySelectorAll('link[rel="stylesheet"]').some((l) => l.getAttribute('href') === `${prefix}/assets/css/main.css`)) f('немає link на main.css з префіксом');
+  if (!doc.querySelectorAll('link[rel="stylesheet"]').some((l) => new RegExp(`^${prefix}/assets/css/main\\.css\\?v=[0-9a-f]{10}$`).test(l.getAttribute('href') || ''))) f('немає link на main.css з префіксом');
   const scripts = doc.querySelectorAll('script[src]').map((s) => s.getAttribute('src'));
   for (const src of scripts) { if (/^https?:\/\//.test(src)) { if (!HEAD_EXTERNAL_OK.some((h) => src.startsWith(h))) f(`script: зовнішня адреса «${src}» не з дозволеного списку`); } else localFile(url, src, 'script'); }
   if (!scripts.includes(`${prefix}/assets/js/app.js`)) f('немає скрипта app.js');

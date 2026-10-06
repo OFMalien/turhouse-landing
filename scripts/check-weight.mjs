@@ -62,7 +62,7 @@ for (const file of pages) {
   let cssGz = 0;
   let jsGz = 0;
   for (const l of doc.querySelectorAll('link[rel="stylesheet"]')) {
-    const h = l.getAttribute('href');
+    const h = (l.getAttribute('href') || '').split('?')[0];
     if (h.startsWith(prefix + '/assets/')) cssGz += gz(fs.readFileSync(local(h)));
   }
   for (const s of doc.querySelectorAll('script[src]')) {
