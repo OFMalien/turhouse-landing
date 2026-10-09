@@ -354,7 +354,7 @@ else {
 
     if (/по два номери|\d+ номер/.test(nomery.types?.lead || '')) fail('texts/nomery.json: types.lead без кількості номерів (Макс 06.10.2026)');
   }
-  if (!same(nomery.variants?.photos, ['rooms/variant-rooms'])) fail('texts/nomery.json: variants.photos мають бути [rooms/variant-rooms] (Instagram, пост 13.05.2026)');
+  if (nomery.variants) fail('texts/nomery.json: графік з написами «Номери в готелі» знято (Оля через Макса 09.10.2026), variants бути не повинно');
   const IN_ROOM = ['Двоспальне ліжко', 'Телевізор і кондиціонер', 'Душ і туалет', 'Рушники та засоби гігієни', 'Міні-холодильник', 'Чайник і чайний набір'];
   if (!same(nomery.inRoom?.items, IN_ROOM)) fail(`texts/nomery.json: inRoom.items мають бути ${JSON.stringify(IN_ROOM)} (слова Олі 05.10.2026)`);
   if (nomery.types?.lead) fail('texts/nomery.json: абзацу під «Три види номерів» немає (Макс 06.10.2026: «лишний текст»), площа в картках');
@@ -368,8 +368,9 @@ else {
   // фото: hero і where без verify; галерея номерів 4 кадри, verify дозволений лише для них (тип номера не підтверджено, питання 8)
   const ROOM_GALLERY_OK = ['rooms/standard-bedroom', 'rooms/standard-tv', 'rooms/standard-bath-shower', 'rooms/standard-bath-sink', 'rooms/napivlyuks-bedroom', 'rooms/napivlyuks-tv', 'rooms/napivlyuks-bath', 'rooms/room-panorama-window'];
   checkPagePhotos('nomery.json', [nomery.hero?.photo]);
-  checkPagePhotos('nomery.json', nomery.gallery?.photos || [], ROOM_GALLERY_OK);
-  if (!same(nomery.gallery?.photos, ROOM_GALLERY_OK)) fail('texts/nomery.json: у галереї номерів 8 кадрів: 4 Стандарт і 3 Напівлюкс з фото Олі 09.10.2026, Люкс room-panorama-window; без room-burgundy і room-wood-wall (Оля 05.10.2026: фото 1 і 5 з документа не номери готелю)');
+  const roomGroups = nomery.gallery?.groups || [];
+  checkPagePhotos('nomery.json', roomGroups.flatMap((g) => g.photos), ROOM_GALLERY_OK);
+  if (!same(roomGroups.flatMap((g) => g.photos), ROOM_GALLERY_OK) || !same(roomGroups.map((g) => g.title), ['Стандарт', 'Напівлюкс', 'Люкс']) || !same(roomGroups.map((g) => g.photos.length), [4, 3, 1])) fail('texts/nomery.json: галерея номерів по типам (Оля через Макса 09.10.2026): Стандарт 4 кадри, Напівлюкс 3, Люкс 1 (room-panorama-window); без room-burgundy і room-wood-wall (Оля 05.10.2026: фото 1 і 5 з документа не номери готелю)');
 
   if (nomery.group) fail('texts/nomery.json: блоки «Якщо гостей…», «Якщо вас менше», «Баня і проживання», «Де зупинитися поруч» знято (Макс 06.10.2026: «лишнее»), перелінковка через меню і картки');
 }
@@ -406,7 +407,7 @@ else {
   if (kotedzhi.group) fail('texts/kotedzhi.json: блоки «Якщо гостей…», «Якщо вас менше», «Баня і проживання», «Де зупинитися поруч» знято (Макс 06.10.2026: «лишнее»), перелінковка через меню і картки');
 }
 
-// texts/barn-house.json: сторінка Барн-хауса (E3-T10): один дім, два тарифи; Великий будинок без цін, коротким блоком (Макс 05.10.2026); факти з barn.json і живого лендингу
+// texts/barn-house.json: сторінка Барн-хауса (E3-T10): один дім, два тарифи; Великий будинок на своїй сторінці /velykyi-budynok/ (Макс 09.10.2026); факти з barn.json і живого лендингу
 const barnPage = contentFiles.includes('barn-house.json') ? readContent('barn-house.json') : null;
 if (!barnPage) fail('texts/barn-house.json: немає файлу');
 else {
@@ -416,7 +417,7 @@ else {
   if (barnPage.intro) fail('texts/barn-house.json: вступ знято (Макс 06.10.2026: скорочення тексту: дубль «Що всередині»)');
 
   if (!/за добу/.test(barnPage.tariffs?.text || '')) fail('texts/barn-house.json: tariffs.text "... за добу"');
-  if (!/Великий будинок/.test(barnPage.bigHouse?.heading || '') || !/готельний корпус/.test(barnPage.bigHouse?.text || '') || !/до 12 гостей/.test(barnPage.bigHouse?.text || '') || /\d\s*грн/.test(barnPage.bigHouse?.text || '')) fail('texts/barn-house.json: bigHouse: коротко, шість двомісних номерів, до 12 гостей, без цін (Макс 05.10.2026)');
+  if (barnPage.bigHouse) fail('texts/barn-house.json: bigHouse знято (Оля через Макса 09.10.2026): Великий будинок тільки на сторінці /velykyi-budynok/');
   // inside і outside збігаються з підтвердженими пунктами barn.json
   const hl = barn?.highlights || [];
   const inside = `${barnPage.inside?.lead || ''}`;

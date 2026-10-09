@@ -29,9 +29,6 @@ analyticsKind: rooms
   </div>
 </section>
 
-{%- set variants = t.variants %}
-{% include "components/variants-block.njk" %}
-
 <section class="section section--alt" id="in-room" aria-labelledby="in-room-title">
   <div class="wrap">
     <h2 id="in-room-title">{{ t.inRoom.heading }}</h2>
@@ -47,7 +44,7 @@ analyticsKind: rooms
 {% include "components/included-block.njk" %}
 
 {%- set gallery = t.gallery %}
-{%- set galleryPhotos = t.gallery.photos %}
+{%- set galleryGroups = t.gallery.groups %}
 {% include "components/gallery-block.njk" %}
 
 {%- set booking = t.booking %}

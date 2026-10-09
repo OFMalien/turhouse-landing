@@ -424,9 +424,10 @@ for (const [url, { doc }] of docs) {
       if (!hi) f(`у шапці немає картинки (texts/${slug}.json hero.photo = ${t.hero.photo})`);
       else if (photoIdOfEl(hi) !== t.hero.photo) f(`картинка шапки має бути ${t.hero.photo}, є ${photoIdOfEl(hi)}`);
     }
-    if (Array.isArray(t.gallery?.photos)) {
+    const galWant = t.gallery?.groups ? t.gallery.groups.flatMap((g) => g.photos) : t.gallery?.photos;
+    if (Array.isArray(galWant)) {
       const got = doc.querySelectorAll('#gallery img, #gallery .photo-placeholder').map((i) => photoIdOfEl(i));
-      if (!same(got, t.gallery.photos)) f(`галерея: кадри мають бути ${JSON.stringify(t.gallery.photos)}, є ${JSON.stringify(got)}`);
+      if (!same(got, galWant)) f(`галерея: кадри мають бути ${JSON.stringify(galWant)}, є ${JSON.stringify(got)}`);
     }
   }
 }

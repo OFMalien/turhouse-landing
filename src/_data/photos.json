@@ -504,14 +504,6 @@
     ],
     "people": true
   },
-  "rooms/variant-rooms": {
-    "file": "rooms/variant-rooms.jpg",
-    "source": "photo/ig_accom_rooms_2026-05-13.jpg",
-    "alt": "Номер Tur House: двоспальне ліжко; на картинці: розраховані на 2 людини, можна доставити одне ліжко",
-    "uses": [
-      "nomery"
-    ]
-  },
   "territory/playground": {
     "file": "territory/playground.jpg",
     "source": "photo/ig_fun_playground_2026-06-23.jpg",

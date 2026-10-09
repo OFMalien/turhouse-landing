@@ -186,7 +186,19 @@ function listPage(cfg) {
     if (!doc.querySelector(`#booking a[href="${site.links.booking}"][rel~="noopener"]`) || !doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: BookmeNow, телефон і Instagram Direct');
     // галерея: стільки кадрів, скільки в texts, кожен з alt
     const gal = doc.querySelectorAll(IMG_OR_PH('#gallery'));
-    if (gal.length !== t.gallery.photos.length) f(`у галереї ${gal.length} кадрів, у ${file} ${t.gallery.photos.length}`);
+    const galIds = t.gallery.groups ? t.gallery.groups.flatMap((g) => g.photos) : t.gallery.photos;
+    if (gal.length !== galIds.length) f(`у галереї ${gal.length} кадрів, у ${file} ${galIds.length}`);
+    if (t.gallery.groups) {
+      // галерея по типам (Оля через Макса 09.10.2026): H3 з назвою типу і кадри групи у своїй сітці, у тому ж порядку
+      const titles = doc.querySelectorAll('#gallery h3').map((h) => norm(h.text));
+      if (!same(titles, t.gallery.groups.map((g) => norm(g.title)))) f(`заголовки груп галереї мають бути ${JSON.stringify(t.gallery.groups.map((g) => g.title))}, є ${JSON.stringify(titles)}`);
+      const grids = doc.querySelectorAll('#gallery .gallery-grid--group');
+      if (grids.length !== t.gallery.groups.length) f(`сіток у галереї ${grids.length}, груп у ${file} ${t.gallery.groups.length}`);
+      t.gallery.groups.forEach((g, i) => {
+        const got = (grids[i]?.querySelectorAll('img') || []).map((im) => photoIdOfEl(im));
+        if (!same(got, g.photos)) f(`група «${g.title}»: кадри мають бути ${JSON.stringify(g.photos)}, є ${JSON.stringify(got)}`);
+      });
+    }
     for (const img of gal) if (photoIdOfEl(img) !== 'placeholder' && !(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
     // контекст аналітики з даних
     const ctx = pageContextOf(doc);
@@ -312,7 +324,7 @@ const PAGE_RULES = {
     const file = 'texts/barn-house.json';
     const site = readJson('site.json');
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'tariffs', 'tariffs-title', barn.id, 'big-house', 'big-house-title', 'inside', 'inside-title', 'outside', 'outside-title', 'included', 'gallery', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'tariffs', 'tariffs-title', barn.id, 'inside', 'inside-title', 'outside', 'outside-title', 'included', 'gallery', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Барн-хаус» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
@@ -336,12 +348,8 @@ const PAGE_RULES = {
       if (!c.querySelector(`a.btn[href="${site.links.booking}"][data-item-name="${tfName}"][data-item-category="barn"][data-item-variant="${tf.label}"][data-value="${tf.amount}"]`)) f(`кнопка броні тарифу «${tf.label}» без data-item-name, data-item-category=barn, data-item-variant і data-value`);
     });
     if (doc.querySelectorAll('#tariffs .tariff-card h3').length !== ownTariffs.length) f('усі тарифи мають бути H3');
-    // Великий будинок: короткий текстовий блок без цін і кнопок; ціна 13 000 стоїть у картці тарифу вище (Макс 09.10.2026)
-    if (!sameText(doc.querySelector('#big-house-title')?.text, t.bigHouse.heading)) f(`H2 Великого будинку не збігається з ${file}`);
-    if (!sameText(doc.querySelector('#big-house .block-note')?.text, t.bigHouse.text)) f(`текст Великого будинку не збігається з ${file}`);
-    if (doc.querySelector('#big-house .price, #big-house .tariff-card')) f('у блоці Великого будинку немає цін і карток броні: вони на /velykyi-budynok/ (Макс 09.10.2026)');
-    const bhLink = doc.querySelector('#big-house a.btn');
-    if (!bhLink || stripPrefix(bhLink.getAttribute('href')) !== t.bigHouse.link.url || !sameText(bhLink.text, t.bigHouse.link.label)) f(`у блоці Великого будинку має бути кнопка-посилання на ${t.bigHouse.link.url} з підписом з ${file}`);
+    // Великий будинок знято зі сторінки Барн-хаусу (Оля через Макса 09.10.2026): він тільки на /velykyi-budynok/
+    if (doc.querySelector('[id="big-house"]')) f('блока «Великий будинок» на сторінці Барн-хаусу бути не повинно (Оля через Макса 09.10.2026)');
     // всередині і навколо
     if (!sameText(doc.querySelector('#inside-title')?.text, t.inside.heading)) f(`H2 «Що всередині» не збігається з ${file}`);
     const insideP = doc.querySelectorAll('#inside .split__copy:first-child .lede').map((p) => norm(p.text));

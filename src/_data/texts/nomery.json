@@ -15,12 +15,6 @@
     "heading": "Три види номерів",
     "note": "Ціни за добу. Напишіть нам, і ми підберемо дати та варіант проживання."
   },
-  "variants": {
-    "heading": "Номери в готелі",
-    "photos": [
-      "rooms/variant-rooms"
-    ]
-  },
   "inRoom": {
     "heading": "Що є в кожному номері",
     "items": [
@@ -56,15 +50,30 @@
   },
   "gallery": {
     "heading": "Як виглядають номери",
-    "photos": [
-      "rooms/standard-bedroom",
-      "rooms/standard-tv",
-      "rooms/standard-bath-shower",
-      "rooms/standard-bath-sink",
-      "rooms/napivlyuks-bedroom",
-      "rooms/napivlyuks-tv",
-      "rooms/napivlyuks-bath",
-      "rooms/room-panorama-window"
+    "groups": [
+      {
+        "title": "Стандарт",
+        "photos": [
+          "rooms/standard-bedroom",
+          "rooms/standard-tv",
+          "rooms/standard-bath-shower",
+          "rooms/standard-bath-sink"
+        ]
+      },
+      {
+        "title": "Напівлюкс",
+        "photos": [
+          "rooms/napivlyuks-bedroom",
+          "rooms/napivlyuks-tv",
+          "rooms/napivlyuks-bath"
+        ]
+      },
+      {
+        "title": "Люкс",
+        "photos": [
+          "rooms/room-panorama-window"
+        ]
+      }
     ]
   },
   "faq": {
