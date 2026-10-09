@@ -57,8 +57,13 @@
   "gallery": {
     "heading": "Як виглядають номери",
     "photos": [
-      "rooms/room-white-brown",
-      "rooms/room-blue",
+      "rooms/standard-bedroom",
+      "rooms/standard-tv",
+      "rooms/standard-bath-shower",
+      "rooms/standard-bath-sink",
+      "rooms/napivlyuks-bedroom",
+      "rooms/napivlyuks-tv",
+      "rooms/napivlyuks-bath",
       "rooms/room-panorama-window"
     ]
   },
@@ -71,8 +76,8 @@
         "a": "Так, це наш Великий будинок: готельний корпус до 12 гостей.",
         "links": [
           {
-            "url": "/barn-house/",
-            "label": "Барн-хаус і Великий будинок"
+            "url": "/velykyi-budynok/",
+            "label": "Великий будинок"
           }
         ]
       },

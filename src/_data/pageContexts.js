@@ -14,7 +14,9 @@ const range = (nums) => `${Math.min(...nums)}-${Math.max(...nums)}`;
 export default {
   rooms: { page_type: 'category', item_category: 'rooms', price_range: range(rooms.map((r) => r.price)), content_ids: rooms.map((r) => r.id) },
   cottages: { page_type: 'category', item_category: 'cottages', price_range: range(cottages.map((c) => c.price)), content_ids: cottages.map((c) => c.id) },
-  barn: { page_type: 'category', item_category: 'barn', price_range: range(barn.tariffs.map((t) => t.amount)), content_ids: [barn.id] },
+  barn: { page_type: 'category', item_category: 'barn', price_range: range(barn.tariffs.filter((t) => !t.name).map((t) => t.amount)), content_ids: [barn.id] },
+  // Великий будинок: тариф з name в barn.json, окрема сторінка (Макс 09.10.2026)
+  bigHouse: { page_type: 'category', item_category: 'barn', price_range: range(barn.tariffs.filter((t) => t.name).map((t) => t.amount)), content_ids: ['big-house'] },
   // ТЗ §9.3: для бані приклад '600-800' і 'banya-1h' (перша година плюс наступна)
   spa: { page_type: 'category', item_category: 'banya', price_range: `${spa.price.first}-${spa.price.first + spa.price.next}`, content_ids: ['banya-1h'] },
   cafe: { page_type: 'category', item_category: 'cafe', price_range: range(menu.sections.flatMap((s) => s.items.map((i) => i.price))), content_ids: [] },

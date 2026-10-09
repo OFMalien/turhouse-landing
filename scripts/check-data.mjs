@@ -49,7 +49,7 @@ for (const f of fs.readdirSync(dataDir).filter((n) => n.endsWith('.json'))) scan
 
 // nav: 9 розділів у заданому порядку
 const nav = readJson('nav.json');
-const NAV_URLS = ['/', '/nomery/', '/kotedzhi/', '/barn-house/', '/banya-ta-spa/', '/kafe/', '/okolitsi/', '/yak-distatysya/', '/kontakty/'];
+const NAV_URLS = ['/', '/nomery/', '/kotedzhi/', '/barn-house/', '/velykyi-budynok/', '/banya-ta-spa/', '/kafe/', '/okolitsi/', '/yak-distatysya/', '/kontakty/'];
 if (!nav || !same(nav.map((n) => n.url), NAV_URLS)) fail(`nav.json: адреси мають бути ${NAV_URLS.join(' ')}`);
 else for (const n of nav) if (!n.title || !n.key) fail(`nav.json: пункт ${n.url} без title або key`);
 
@@ -73,7 +73,7 @@ const cottages = readJson('cottages.json');
 if (!cottages || cottages.length !== 2) fail('cottages.json: має бути 2 види котеджів');
 else {
   if (!same(cottages.map((c) => c.price), [6000, 7000])) fail('cottages.json: ціни мають бути 6000 і 7000');
-  if (cottages[0].promoPrice !== 4800 || cottages[1].promoPrice !== undefined) fail('cottages.json: ціна акції 4800 тільки у котеджа на 4 гості (R9; Макс 05.10.2026: інші ціни не рахуємо)');
+  if (cottages[0].promoPrice !== 4800 || cottages[1].promoPrice !== undefined) fail('cottages.json: ціна акції 4800 тільки у котеджа на 4 гостя (R9; Макс 05.10.2026: інші ціни не рахуємо)');
   for (const c of cottages) {
     if (c.count !== undefined) fail(`cottages.json ${c.id}: кількість котеджів на сайті не вказуємо (Макс 06.10.2026: скорочення тексту), поле count не потрібне`);
     if (/12/.test(`${c.title} ${c.capacity}`)) fail(`cottages.json ${c.id}: "на 12" не має бути на сторінці котеджів (R5)`);
@@ -86,14 +86,14 @@ const photos = readJson('photos.json') || {};
 // Id заглушки замість відсутнього фото (шорткод photo в eleventy.config.js): у паспорті photos.json його немає, і так має бути.
 const PLACEHOLDER = 'placeholder';
 
-// barn: один дім, два тарифи (Макс 05.10.2026); Великий будинок без цін на сайті, лише короткий текст на /barn-house/
+// barn: Барн-хаус до 8 гостей 11000 і Великий будинок (корпус, до 12 гостей) 13000 як другий тариф з name (Макс 09.10.2026, замість 05.10: 13000 це Великий будинок)
 const barn = readJson('barn.json');
 if (!barn || Array.isArray(barn)) fail('barn.json: має бути один об\'єкт (Барн-хаус)');
 else {
   if (barn.title !== 'Барн-хаус') fail('barn.json: назва "Барн-хаус" (через дефіс)');
   if (barn.category !== 'barn') fail('barn.json: category barn');
   if (barn.price !== undefined) fail('barn.json: замість price мають бути tariffs (R6)');
-  if (!same(barn.tariffs, [{ label: 'до 8 гостей', amount: 11000 }, { label: 'до 12 гостей', amount: 13000 }])) fail('barn.json: tariffs мають бути "до 8 гостей" 11000 і "до 12 гостей" 13000, без цін акції');
+  if (!same(barn.tariffs, [{ label: 'до 8 гостей', amount: 11000 }, { name: 'Великий будинок', label: 'до 12 гостей', amount: 13000 }])) fail('barn.json: tariffs мають бути "до 8 гостей" 11000 і Великий будинок "до 12 гостей" 13000, без цін акції');
   if (!barn.included || !barn.included.some((t) => /Starlink/.test(t)) || !barn.included.some((t) => /BBQ/.test(t)) || !barn.included.some((t) => /басейн/i.test(t))) fail('barn.json: included має містити BBQ, басейн і Starlink (як на живому лендингу)');
   if (!Array.isArray(barn.highlights) || barn.highlights.length < 5) fail('barn.json: мало пунктів highlights');
   for (const id of [barn.photo, ...(barn.gallery || [])]) {
@@ -296,6 +296,7 @@ else {
     // описи карток форматів дослівно з живого лендингу (Макс 05.10.2026); кількість номерів і котеджів лежить у rooms.json і cottages.json (count)
     if (fmt[0].desc !== '2 особи, у головному корпусі') fail('texts/home.json: rooms.desc як на лендингу «2 особи, у головному корпусі»');
     if (fmt[1].desc !== 'Двокімнатні, кухня та зона BBQ') fail('texts/home.json: cottages.desc як на лендингу «Двокімнатні, кухня та зона BBQ»');
+    if (fmt[2].link2?.url !== '/velykyi-budynok/' || fmt[2].link2?.label !== 'Детальніше про Великий будинок') fail('texts/home.json: у картці barn друга кнопка link2 на /velykyi-budynok/ «Детальніше про Великий будинок» (Макс 09.10.2026)');
     if (fmt[2].desc !== 'Для компанії чи великої родини. Панорамний фасад на 2 поверхи, простора вітальня з каміном, обладнана кухня та спальні. Поруч басейн та газон.') fail('texts/home.json: barn.desc як на лендингу, без «для 8 гостей» (Барн-хаус вміщує до 12, Макс 05.10.2026)');
   }
   if (!/BBQ/.test(home.formats?.included || '') || !/басейн/.test(home.formats?.included || '')) fail('texts/home.json: formats.included має говорити про BBQ і басейн');
@@ -365,10 +366,10 @@ else {
   // зручності, яких немає в джерелах: площа, санвузол, кондиціонер, чайник, телевізор, сніданок, балкон, вид з вікна
   if (new RegExp(`(?<![${CYR_CLASS}])(кв\\.?\\s?м|м²|санвуз|ванн|балкон|вид з|вид на|кондиціонер|чайник|телевізор|снідан|холодильник|джакузі|сауна|посуд|фен|мінібар|wi-?fi)`, 'i').test(JSON.stringify(withoutConfirmed(nomery, { dropKeys: ['inRoom'], dropFaq: ['difference', 'in-room', 'breakfast'], blank: [['types', 'lead']] })))) fail('texts/nomery.json: у тексті є зручності, яких немає в джерелах (площа, санвузол, кондиціонер, сніданок тощо), C6');
   // фото: hero і where без verify; галерея номерів 4 кадри, verify дозволений лише для них (тип номера не підтверджено, питання 8)
-  const ROOM_GALLERY_OK = ['rooms/room-white-brown', 'rooms/room-blue', 'rooms/room-panorama-window'];
+  const ROOM_GALLERY_OK = ['rooms/standard-bedroom', 'rooms/standard-tv', 'rooms/standard-bath-shower', 'rooms/standard-bath-sink', 'rooms/napivlyuks-bedroom', 'rooms/napivlyuks-tv', 'rooms/napivlyuks-bath', 'rooms/room-panorama-window'];
   checkPagePhotos('nomery.json', [nomery.hero?.photo]);
   checkPagePhotos('nomery.json', nomery.gallery?.photos || [], ROOM_GALLERY_OK);
-  if (!same(nomery.gallery?.photos, ROOM_GALLERY_OK)) fail('texts/nomery.json: у галереї номерів 3 кадри: без room-burgundy і room-wood-wall (Оля 05.10.2026: фото 1 і 5 з документа не номери готелю)');
+  if (!same(nomery.gallery?.photos, ROOM_GALLERY_OK)) fail('texts/nomery.json: у галереї номерів 8 кадрів: 4 Стандарт і 3 Напівлюкс з фото Олі 09.10.2026, Люкс room-panorama-window; без room-burgundy і room-wood-wall (Оля 05.10.2026: фото 1 і 5 з документа не номери готелю)');
 
   if (nomery.group) fail('texts/nomery.json: блоки «Якщо гостей…», «Якщо вас менше», «Баня і проживання», «Де зупинитися поруч» знято (Макс 06.10.2026: «лишнее»), перелінковка через меню і картки');
 }
@@ -387,7 +388,7 @@ else {
   if (!/на 4 і на 6 гостей/.test(kotedzhi.hero?.lede || '') || !/двокімнатні/i.test(kotedzhi.hero?.lede || '')) fail('texts/kotedzhi.json: hero.lede "Двокімнатні ... на 4 і на 6 гостей"');
   if (kotedzhi.intro) fail('texts/kotedzhi.json: вступ знято (Макс 06.10.2026: скорочення тексту: дубль шапки)');
 
-  if (!same(kotedzhi.variants?.photos, ['cottages/variant-cottage-4', 'cottages/variant-cottage-6'])) fail('texts/kotedzhi.json: variants.photos мають бути два графіки котеджів (Instagram, пост 13.05.2026)');
+  if (kotedzhi.variants) fail('texts/kotedzhi.json: графіки котеджів з написами зняті (Оля через Макса 09.10.2026), variants бути не повинно');
   const IN_COTTAGE = ['Обладнана кухня: плита, мікрохвильовка, чайник', 'Електричне опалення та камін', 'Постільна білизна та засоби гігієни', 'Власна тераса та мангал', 'Своя зона BBQ біля кожного котеджу'];
   if (!same(kotedzhi.inCottage?.items, IN_COTTAGE)) fail(`texts/kotedzhi.json: inCottage.items мають бути ${JSON.stringify(IN_COTTAGE)} (слова Олі 05.10.2026)`);
   if (!(cottages || []).some((c) => /на 6 гостей/.test(c.title) && (c.features || []).some((f) => /[Рр]озкладний диван/.test(f)))) fail('cottages.json: розкладний диван у картці котеджа на 6 гостей (Оля 05.10.2026)');
@@ -409,9 +410,9 @@ else {
 const barnPage = contentFiles.includes('barn-house.json') ? readContent('barn-house.json') : null;
 if (!barnPage) fail('texts/barn-house.json: немає файлу');
 else {
-  checkMeta('barn-house.json', barnPage.meta, { titleHas: ['Барн-хаус', 'Tur House'], descHas: ['під Києвом', 'Барн-хаус', 'до 8 або до 12 гостей'] });
+  checkMeta('barn-house.json', barnPage.meta, { titleHas: ['Барн-хаус', 'Tur House'], descHas: ['під Києвом', 'Барн-хаус', 'до 8 гостей'] });
   if (!/Барн-хаус/.test(barnPage.hero?.h1 || '') || !/окремий будинок/i.test(barnPage.hero?.h1 || '')) fail('texts/barn-house.json: hero.h1 "Барн-хаус: окремий будинок ..."');
-  if (barnPage.hero?.lede !== 'До 8 або до 12 гостей.') fail('texts/barn-house.json: hero.lede «До 8 або до 12 гостей.» (H1 уже каже «окремий будинок»)');
+  if (barnPage.hero?.lede !== 'До 8 гостей.') fail('texts/barn-house.json: hero.lede «До 8 гостей.» (H1 уже каже «окремий будинок», Великий будинок до 12 окремою карткою)');
   if (barnPage.intro) fail('texts/barn-house.json: вступ знято (Макс 06.10.2026: скорочення тексту: дубль «Що всередині»)');
 
   if (!/за добу/.test(barnPage.tariffs?.text || '')) fail('texts/barn-house.json: tariffs.text "... за добу"');
@@ -621,8 +622,21 @@ else {
   if (collectLinks(notFound).length) fail('texts/404.json: посилання на розділи виводить шаблон із nav.json, у тексті їх немає');
 }
 
-// набір текстових файлів: по одному на кожну сторінку (9 контентних + політика + 404)
-const TEXT_FILES = ['404.json', 'banya-ta-spa.json', 'barn-house.json', 'home.json', 'kafe.json', 'kontakty.json', 'kotedzhi.json', 'nomery.json', 'okolitsi.json', 'pryvatnist.json', 'yak-distatysya.json'];
+
+// texts/velykyi-budynok.json: окрема сторінка Великого будинку (Макс 09.10.2026): текст Олі дослівно, довгі тире замінені двокрапкою (довгих тире на сайті немає); ціна 13000 з barn.json (тариф з name)
+const bigPage = contentFiles.includes('velykyi-budynok.json') ? readContent('velykyi-budynok.json') : null;
+if (!bigPage) fail('texts/velykyi-budynok.json: немає файлу');
+else {
+  checkMeta('velykyi-budynok.json', bigPage.meta, { titleHas: ['Великий будинок', 'Tur House'], descHas: ['до 12 гостей'] });
+  if (bigPage.hero?.h1 !== 'Великий будинок' || bigPage.hero?.lede !== 'Коли збирається велика компанія.') fail('texts/velykyi-budynok.json: hero.h1 «Великий будинок», hero.lede «Коли збирається велика компанія.» (текст Олі 09.10.2026)');
+  const BIG_STORY = ["Так, ви всі разом, але при цьому кожен має свій особистий простір.", "Поки друзі сміються у вітальні, співають караоке чи готують шашлик, ви можете спокійно відпочити у своїй кімнаті: почитати книгу, виспатися або просто побути в тиші. І ніхто нікому не заважає.", "6 кімнат, 8 санвузлів, до 12 гостей: максимум комфорту навіть для великої компанії."];
+  if (!same(bigPage.story?.paragraphs, BIG_STORY)) fail('texts/velykyi-budynok.json: story.paragraphs мають бути текстом Олі 09.10.2026 дослівно (тире замінені двокрапкою)');
+  checkPagePhotos('velykyi-budynok.json', [bigPage.hero?.photo, ...(bigPage.gallery?.photos || [])], ['barn/barn-table-flowers', 'rooms/room-white-brown', 'rooms/room-panorama-window']);
+  if (!/BookmeNow/.test(bigPage.booking?.text || '') || !/Direct/.test(bigPage.booking?.text || '')) fail('texts/velykyi-budynok.json: booking.text має згадувати BookmeNow і Instagram Direct');
+}
+
+// набір текстових файлів: по одному на кожну сторінку (10 контентних + політика + 404)
+const TEXT_FILES = ['404.json', 'banya-ta-spa.json', 'barn-house.json', 'home.json', 'kafe.json', 'kontakty.json', 'kotedzhi.json', 'nomery.json', 'okolitsi.json', 'pryvatnist.json', 'velykyi-budynok.json', 'yak-distatysya.json'];
 if (!same([...contentFiles].sort(), TEXT_FILES)) fail(`texts/: має бути рівно ${TEXT_FILES.length} файлів ${TEXT_FILES.join(', ')}, є ${[...contentFiles].sort().join(', ')}`);
 
 // promoItems (похідні від rooms і cottages): рівно ціни Олі

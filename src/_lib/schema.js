@@ -137,10 +137,11 @@ extras.nomery = roomsItemList;
 export const cottagesItemList = (data) => objectItemList(data, { list: data.cottages || [], type: 'VacationRental', pagePath: '/kotedzhi/', listName: data.texts.kotedzhi.types.heading, withAmenities: true });
 extras.kotedzhi = cottagesItemList;
 
-// Барн-хаус: один будинок і два тарифи (R6) -> один VacationRental з двома Offer. Ціна кожного Offer із barn.tariffs,
-// кількість гостей береться з підпису тарифу («до 8 гостей» -> eligibleQuantity.maxValue 8), місткість будинку це найбільший тариф.
+// Барн-хаус: VacationRental з Offer для тарифів без name (тариф з name це Великий будинок, окремий об'єкт, у цей вузол не входить). Ціна кожного Offer із barn.tariffs,
+// кількість гостей береться з підпису тарифу («до 8 гостей» -> eligibleQuantity.maxValue 8), місткість будинку це найбільший з його тарифів.
 export function barnVacationRental(data) {
   const barn = data.barn;
+  const tariffs = barn.tariffs.filter((t) => !t.name);
   const guests = (label) => Number(String(label).match(/\d+/)[0]);
   const id = abs(`/barn-house/#${barn.id}`);
   const node = {
@@ -149,10 +150,10 @@ export function barnVacationRental(data) {
     url: id,
     name: barn.title,
     description: data.texts['barn-house'].hero.lede,
-    occupancy: { '@type': 'QuantitativeValue', maxValue: Math.max(...barn.tariffs.map((t) => guests(t.label))) },
+    occupancy: { '@type': 'QuantitativeValue', maxValue: Math.max(...tariffs.map((t) => guests(t.label))) },
     containedInPlace: { '@id': abs('/#lodging') },
     amenityFeature: (barn.features || []).map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true })),
-    offers: barn.tariffs.map((t) => ({
+    offers: tariffs.map((t) => ({
       '@type': 'Offer',
       name: `${barn.title}, ${t.label}`,
       price: t.amount,

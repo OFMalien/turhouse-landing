@@ -1,0 +1,41 @@
+{
+  "meta": {
+    "title": "Великий будинок для компанії до 12 гостей | Tur House",
+    "description": "Великий будинок Tur House: 6 кімнат і 8 санвузлів, до 12 гостей. У кожного свій простір. Ціна за добу та бронювання.",
+    "breadcrumbTitle": "Великий будинок"
+  },
+  "hero": {
+    "h1": "Великий будинок",
+    "lede": "Коли збирається велика компанія.",
+    "photo": "bighouse/hall-dahlias"
+  },
+  "story": {
+    "paragraphs": [
+      "Так, ви всі разом, але при цьому кожен має свій особистий простір.",
+      "Поки друзі сміються у вітальні, співають караоке чи готують шашлик, ви можете спокійно відпочити у своїй кімнаті: почитати книгу, виспатися або просто побути в тиші. І ніхто нікому не заважає.",
+      "6 кімнат, 8 санвузлів, до 12 гостей: максимум комфорту навіть для великої компанії."
+    ]
+  },
+  "tariffs": {
+    "heading": "Ціна за добу"
+  },
+  "gallery": {
+    "heading": "Великий будинок на фото",
+    "photos": [
+      "barn/barn-table-flowers",
+      "bighouse/lemons-table",
+      "cafe/terrace-table",
+      "home/evening-pool",
+      "home/beanbags-lawn",
+      "bighouse/bbq-zone",
+      "rooms/room-white-brown",
+      "rooms/room-panorama-window",
+      "bighouse/room-gray",
+      "bighouse/bathroom"
+    ]
+  },
+  "booking": {
+    "heading": "Як забронювати Великий будинок",
+    "text": "Онлайн через BookmeNow, за телефоном або в Direct."
+  }
+}

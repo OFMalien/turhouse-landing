@@ -105,7 +105,7 @@ const photoIdOfEl = (el) => (/(^|\s)photo-placeholder(\s|$)/.test(el.getAttribut
 const PROMO_BANNER = new Set(['/']); // великий банер лише на головній (Макс 06.10.2026: скорочення тексту); номери й котеджі ведуть на нього
 const PROMO_MODAL = new Set(['/', '/nomery/', '/kotedzhi/']);
 
-// sitemap.xml і robots.txt: у sitemap рівно адреси всіх зібраних сторінок крім 404 (9 розділів + політика = 10), кожна збігається з canonical сторінки
+// sitemap.xml і robots.txt: у sitemap рівно адреси всіх зібраних сторінок крім 404 (10 розділів + політика = 11), кожна збігається з canonical сторінки
 {
   const smFile = path.join(siteDir, 'sitemap.xml');
   if (!fs.existsSync(smFile)) fail('sitemap.xml', 'файлу немає в збірці');
@@ -119,7 +119,7 @@ const PROMO_MODAL = new Set(['/', '/nomery/', '/kotedzhi/']);
     if (dupLocs.length) fail('sitemap.xml', `повторні адреси: ${[...new Set(dupLocs)].join(', ')}`);
     const wantLocs = [...docs.keys()].filter((u) => u !== '/404.html').map((u) => `${ORIGIN}${u}`);
     if (!same([...locs].sort(), [...wantLocs].sort())) fail('sitemap.xml', `адреси мають збігатися зі зібраними сторінками без 404: зайві ${JSON.stringify(locs.filter((x) => !wantLocs.includes(x)))}, відсутні ${JSON.stringify(wantLocs.filter((x) => !locs.includes(x)))}`);
-    if (locs.length !== 10) fail('sitemap.xml', `у sitemap має бути 10 адрес (9 розділів і політика), є ${locs.length}`);
+    if (locs.length !== 11) fail('sitemap.xml', `у sitemap має бути 11 адрес (10 розділів і політика), є ${locs.length}`);
     for (const loc of locs) {
       const page = [...docs.entries()].find(([u]) => `${ORIGIN}${u}` === loc);
       if (page && page[1].doc.querySelector('link[rel="canonical"]')?.getAttribute('href') !== loc) fail('sitemap.xml', `адреса ${loc} не збігається з canonical сторінки`);
@@ -436,8 +436,10 @@ for (const [url, { doc }] of docs) {
   const sectionUrls = new Set([...nav.map((n) => n.url), '/pryvatnist/']);
   // Макс 05.10.2026: з /kafe/ знято блок «Кафе і проживання», з /yak-distatysya/ і /kontakty/ блоки з кнопками на /okolitsi/ та інші (їх немає на лендингу): там лишається по одному посиланню
   // Макс 06.10.2026: блоки-перелінковки на номерах, котеджах, Барн-хаусі, бані й околицях знято («лишнее»); посилання між розділами лишаються в меню, картках і підвалі
-  const MIN_OUT = { '/kafe/': 1, '/banya-ta-spa/': 0, '/okolitsi/': 0 };
-  const MIN_IN = { '/okolitsi/': 1, '/nomery/': 1, '/kotedzhi/': 1 };
+  // Макс 09.10.2026: на новій сторінці Великого будинку блоків-перелінковки теж немає, лишається меню
+  const MIN_OUT = { '/kafe/': 1, '/banya-ta-spa/': 0, '/okolitsi/': 0, '/velykyi-budynok/': 0 };
+  // Макс 09.10.2026: ссылка из вопросов номеров теперь ведёт на Великий будинок, на Барн-хаус остаётся главная, меню и подвал
+  const MIN_IN = { '/okolitsi/': 1, '/nomery/': 1, '/kotedzhi/': 1, '/barn-house/': 1 };
   const outgoing = new Map();
   for (const [url, { doc }] of docs) {
     const targets = new Set();

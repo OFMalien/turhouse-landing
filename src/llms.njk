@@ -25,7 +25,7 @@ eleventyExcludeFromCollections: true
 - {{ c.title | safe }}: {{ c.price | price }} грн за добу
 {%- endfor %}
 {%- for t in barn.tariffs %}
-- {{ barn.title | safe }}, {{ t.label | safe }}: {{ t.amount | price }} грн за добу
+- {{ (t.name or barn.title) | safe }}, {{ t.label | safe }}: {{ t.amount | price }} грн за добу
 {%- endfor %}
 - Баня: {{ spa.price.first | price }} грн {{ spa.price.per | safe }} {{ spa.price.firstLabel | safe }}, {{ spa.price.next | price }} грн {{ spa.price.nextLabel | safe }}
 - {{ texts['banya-ta-spa'].booking.text | safe }}

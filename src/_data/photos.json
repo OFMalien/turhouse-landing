@@ -43,7 +43,8 @@
     "source": "photo/photo_8_2026-08-27_21-03-26.jpg",
     "alt": "Зона відпочинку просто неба: крісла-мішки на газоні біля будинку",
     "uses": [
-      "home"
+      "home",
+      "velykyi-budynok"
     ]
   },
   "home/stove-beanbag": {
@@ -70,7 +71,8 @@
     "source": "photo/photo_5_2026-08-27_21-03-26.jpg",
     "alt": "Корпус Tur House і басейн у вечірньому освітленні",
     "uses": [
-      "okolitsi"
+      "okolitsi",
+      "velykyi-budynok"
     ],
     "tempFor": [
       "okolitsi"
@@ -82,6 +84,102 @@
     "alt": "Шезлонги та парасоля біля басейну",
     "uses": [
       "banya"
+    ]
+  },
+  "rooms/standard-bedroom": {
+    "file": "rooms/standard-bedroom.jpg",
+    "source": "photo/room_standard_1_2026-10-09.jpg",
+    "alt": "Номер Стандарт: двоспальне ліжко із сірим покривалом, велике вікно",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/napivlyuks-bedroom": {
+    "file": "rooms/napivlyuks-bedroom.jpg",
+    "source": "photo/room_napivlyuks_1_2026-10-09.jpg",
+    "alt": "Номер Напівлюкс: двоспальне ліжко з білим покривалом, шпалери з видами Парижа",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/standard-tv": {
+    "file": "rooms/standard-tv.jpg",
+    "source": "photo/room_standard_2_2026-10-09.jpg",
+    "alt": "Номер Стандарт: телевізор на стіні з темного дерева",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/standard-bath-shower": {
+    "file": "rooms/standard-bath-shower.jpg",
+    "source": "photo/room_standard_3_2026-10-09.jpg",
+    "alt": "Ванна кімната номера Стандарт: душова кабіна",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/standard-bath-sink": {
+    "file": "rooms/standard-bath-sink.jpg",
+    "source": "photo/room_standard_4_2026-10-09.jpg",
+    "alt": "Ванна кімната номера Стандарт: умивальник із дзеркалом",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/napivlyuks-tv": {
+    "file": "rooms/napivlyuks-tv.jpg",
+    "source": "photo/room_napivlyuks_2_2026-10-09.jpg",
+    "alt": "Номер Напівлюкс: телевізор і дерев'яна шафа з дзеркалом",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/napivlyuks-bath": {
+    "file": "rooms/napivlyuks-bath.jpg",
+    "source": "photo/room_napivlyuks_3_2026-10-09.jpg",
+    "alt": "Ванна кімната номера Напівлюкс: душова кабіна й умивальник",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "bighouse/hall-dahlias": {
+    "file": "bighouse/hall-dahlias.jpg",
+    "source": "photo/bighouse_hall_dahlias_2026-10-09.jpg",
+    "alt": "Накритий довгий стіл із жовтими й помаранчевими квітами в залі",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "bighouse/lemons-table": {
+    "file": "bighouse/lemons-table.jpg",
+    "source": "photo/photo_19_2026-08-27_21-03-26.jpg",
+    "alt": "Святковий стіл із лимонами та польовими квітами біля великих вікон",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "bighouse/room-gray": {
+    "file": "bighouse/room-gray.jpg",
+    "source": "photo/bighouse_room_gray_2026-10-09.jpg",
+    "alt": "Кімната з двоспальним ліжком і сірими шпалерами з візерунком",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "bighouse/bbq-zone": {
+    "file": "bighouse/bbq-zone.jpg",
+    "source": "photo/bighouse_bbq_zone_2026-10-09.jpg",
+    "alt": "Зона BBQ із підвісним грилем і двома лавами",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "bighouse/bathroom": {
+    "file": "bighouse/bathroom.jpg",
+    "source": "photo/bighouse_bathroom_2026-10-09.jpg",
+    "alt": "Санвузол із душовою кабіною й умивальником",
+    "uses": [
+      "velykyi-budynok"
     ]
   },
   "rooms/room-wood-wall": {
@@ -108,16 +206,8 @@
     "source": "photo/photo_2_2026-07-29_07-37-58.jpg",
     "alt": "Номер Tur House зі світлим покривалом і коричневим узголів'ям",
     "uses": [
-      "nomery"
-    ],
-    "verify": true
-  },
-  "rooms/room-blue": {
-    "file": "rooms/room-blue.jpg",
-    "source": "photo/photo_7_2026-08-27_21-03-26.jpg",
-    "alt": "Номер Tur House з блакитним покривалом і візерунчастими шпалерами",
-    "uses": [
-      "nomery"
+      "nomery",
+      "velykyi-budynok"
     ],
     "verify": true
   },
@@ -126,7 +216,8 @@
     "source": "photo/photo_11_2026-08-27_21-03-26.jpg",
     "alt": "Номер Tur House з панорамним вікном і бордовим покривалом",
     "uses": [
-      "nomery"
+      "nomery",
+      "velykyi-budynok"
     ],
     "verify": true
   },
@@ -162,7 +253,7 @@
   "cottages/interior-living-purple": {
     "file": "cottages/interior-living-purple.jpg",
     "source": "img/photo_16_2026-07-29_07-37-59.jpg",
-    "alt": "Вітальня з їдальнею та кухнею в Tur House",
+    "alt": "Котедж на 6 гостей: вітальня з розкладним диваном, їдальня та кухня",
     "uses": [
       "kotedzhi"
     ]
@@ -170,7 +261,7 @@
   "cottages/interior-tv-purple": {
     "file": "cottages/interior-tv-purple.jpg",
     "source": "img/photo_7_2026-07-31_08-03-55.jpg",
-    "alt": "Вітальня з телевізором і обіднім столом у Tur House",
+    "alt": "Котедж на 4 гостя: вітальня з телевізором і обіднім столом",
     "uses": [
       "kotedzhi"
     ]
@@ -279,7 +370,8 @@
     "source": "photo/photo_2_2026-08-27_21-03-26.jpg",
     "alt": "Накритий довгий стіл із квітами біля печі",
     "uses": [
-      "barn-house"
+      "barn-house",
+      "velykyi-budynok"
     ],
     "verify": true
   },
@@ -391,10 +483,7 @@
     "source": "photo/photo_4_2026-08-27_21-03-26.jpg",
     "alt": "Накритий стіл на терасі Tur House",
     "uses": [
-      "kafe"
-    ],
-    "tempFor": [
-      "kafe"
+      "velykyi-budynok"
     ]
   },
   "promo/promo-budni-20": {
@@ -421,22 +510,6 @@
     "alt": "Номер Tur House: двоспальне ліжко; на картинці: розраховані на 2 людини, можна доставити одне ліжко",
     "uses": [
       "nomery"
-    ]
-  },
-  "cottages/variant-cottage-4": {
-    "file": "cottages/variant-cottage-4.jpg",
-    "source": "photo/ig_accom_cottage4_2026-05-13.jpg",
-    "alt": "Котедж на 4 гості: вітальня з фіолетовою стіною; на картинці: дві кімнати з двоспальними ліжками",
-    "uses": [
-      "kotedzhi"
-    ]
-  },
-  "cottages/variant-cottage-6": {
-    "file": "cottages/variant-cottage-6.jpg",
-    "source": "photo/ig_accom_cottage6_2026-05-13.jpg",
-    "alt": "Котедж на 6 гостей: вітальня з диваном; на картинці: дві кімнати та розкладний диван у вітальні",
-    "uses": [
-      "kotedzhi"
     ]
   },
   "territory/playground": {

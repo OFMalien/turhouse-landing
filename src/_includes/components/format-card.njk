@@ -24,5 +24,8 @@
       {%- endif %}
     </div>
     <a class="btn" href="{{ fmt.link.url | url }}">{{ fmt.link.label }}</a>
+    {%- if fmt.link2 %}
+    <a class="btn" href="{{ fmt.link2.url | url }}">{{ fmt.link2.label }}</a>
+    {%- endif %}
   </div>
 </article>

@@ -13,13 +13,6 @@
     "heading": "Два види котеджів",
     "note": "Ціни за добу. Напишіть нам, і ми підберемо дати та варіант проживання."
   },
-  "variants": {
-    "heading": "Котеджі на 4 і на 6 гостей",
-    "photos": [
-      "cottages/variant-cottage-4",
-      "cottages/variant-cottage-6"
-    ]
-  },
   "inCottage": {
     "heading": "Що є в котеджі",
     "items": [

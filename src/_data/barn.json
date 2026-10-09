@@ -2,13 +2,14 @@
   "id": "barn-house",
   "category": "barn",
   "title": "Барн-хаус",
-  "capacity": "до 8 або до 12 гостей",
+  "capacity": "до 8 гостей",
   "tariffs": [
     {
       "label": "до 8 гостей",
       "amount": 11000
     },
     {
+      "name": "Великий будинок",
       "label": "до 12 гостей",
       "amount": 13000
     }

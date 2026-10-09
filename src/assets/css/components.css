@@ -456,7 +456,7 @@ html.nav-open { overflow: hidden; }
 .price-list { display: flex; flex-direction: column; gap: 4px; }
 .price-list li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; font-size: var(--text-body); }
 .price-list span { color: var(--text-soft); }
-.price-list strong { font-weight: 700; }
+.price-list strong { font-weight: 700; margin-left: auto; } /* цена справа и тогда, когда подпись длинная и строка переносится (Великий будинок на главной) */
 .card-object .btn { margin-top: 10px; width: 100%; }
 /* Інформаційні карточки (баня, чан, басейн): примітка */
 .card-object__note { font-size: var(--text-small); font-weight: 600; color: var(--text-muted); }

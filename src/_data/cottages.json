@@ -2,13 +2,13 @@
   {
     "id": "cottage-4",
     "category": "cottages",
-    "title": "Котедж на 4 гості",
+    "title": "Котедж на 4 гостя",
     "promoLabel": "Котедж",
     "capacity": "до 4 гостей",
     "price": 6000,
     "promoPrice": 4800,
     "features": [],
-    "photo": "cottages/cottage-orange"
+    "photo": "cottages/interior-tv-purple"
   },
   {
     "id": "cottage-6",
@@ -19,6 +19,6 @@
     "features": [
       "Розкладний диван на 2 місця"
     ],
-    "photo": "cottages/cottage-lavender"
+    "photo": "cottages/interior-living-purple"
   }
 ]

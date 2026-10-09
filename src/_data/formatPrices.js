@@ -11,7 +11,7 @@ const barn = read('barn.json');
 
 const rows = (list, label) => list.map((i) => ({ label: label(i), amount: i.price, promo: i.promoPrice ?? null }));
 
-// Підпис рядка котеджу коротший за назву: «Котедж на 4 гості» -> «На 4 гості» (у карточці вже є заголовок «Котеджі»)
+// Підпис рядка котеджу коротший за назву: «Котедж на 4 гостя» -> «На 4 гостя» (у карточці вже є заголовок «Котеджі»)
 const short = (title) => {
   const s = title.replace(/^Котедж\s+/, '');
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -22,5 +22,5 @@ const wrap = (items) => ({ rows: items, hasPromo: items.some((i) => i.promo !== 
 export default {
   rooms: wrap(rows(rooms, (r) => r.title)),
   cottages: wrap(rows(cottages, (c) => short(c.title))),
-  barn: wrap(barn.tariffs.map((t) => ({ label: t.label, amount: t.amount, promo: null }))),
+  barn: wrap(barn.tariffs.map((t) => ({ label: `${t.name || barn.title}: ${t.label}`, amount: t.amount, promo: null }))),
 };

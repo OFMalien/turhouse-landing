@@ -164,11 +164,11 @@ function listPage(cfg) {
       }
     });
     // графіки варіантів розміщення (сторінки номерів і котеджів): ті самі кадри, що в texts
-    {
+    if (t.variants) {
       const vp = doc.querySelectorAll('#variants .variants-grid img');
       if (vp.length !== t.variants.photos.length) f(`у блоці варіантів ${vp.length} кадрів, у ${file} ${t.variants.photos.length}`);
       for (const img of vp) if (!(img.getAttribute('alt') || '').trim()) f('у графіка варіантів порожній alt');
-    }
+    } else if (doc.querySelector('#variants')) f(`блока #variants бути не повинно: у ${file} немає variants`);
     // що є в котеджі (тільки сторінка котеджів)
     if (cfg.slug === 'kotedzhi') {
       const cot = doc.querySelectorAll('#in-cottage .check-list li').map((li) => norm(li.text));
@@ -232,6 +232,12 @@ const PAGE_RULES = {
     for (const r of rooms) if (!text('rooms').includes(`${money(r.price)} грн / доба`)) f(`у картці номерів немає ціни ${r.title} ${money(r.price)} грн / доба`);
     for (const c of cottages) if (!text('cottages').includes(`${money(c.price)} грн / доба`)) f(`у картці котеджів немає ціни ${money(c.price)} грн / доба`);
     for (const tf of barn.tariffs) if (!text('barn').includes(`${tf.label}`) || !text('barn').includes(`${money(tf.amount)} грн / доба`)) f(`у картці Барн-хауса немає тарифу ${tf.label} ${money(tf.amount)} грн / доба`);
+    // вхід на Великий будинок: друга кнопка в картці Барн-хауса (Макс 09.10.2026)
+    {
+      const l2 = t.formats.items.find((i) => i.id === 'barn')?.link2;
+      const btn = doc.querySelector('[id="barn"] a.btn[href$="/velykyi-budynok/"]');
+      if (!l2 || !btn || !sameText(btn.text, l2.label)) f('у картці Барн-хауса на головній має бути друга кнопка на /velykyi-budynok/ з підписом з texts/home.json');
+    }
     if (!text('sauna').includes(`${money(spa.price.first)} грн`) || !text('sauna').includes(`${money(spa.price.next)} грн`)) f('у банному блоці немає цін 600 і 200 з spa.json');
     // у картках звичайні ціни, ціни акції тільки в банері #promo
     if (promo.enabled) {
@@ -315,23 +321,27 @@ const PAGE_RULES = {
     // тарифи: один будинок, дві картки з barn.json (R6), звичайні ціни, кнопка броні на кожен тариф
     if (!sameText(doc.querySelector('#tariffs-title')?.text, t.tariffs.heading)) f(`H2 тарифів не збігається з ${file}`);
     if (!sameText(doc.querySelector('#tariffs .lede')?.text, t.tariffs.text)) f(`текст про тарифи не збігається з ${file}`);
+    const ownTariffs = barn.tariffs.filter((x) => !x.name); // тариф з name це Великий будинок, його картка на /velykyi-budynok/ (Макс 09.10.2026)
     const cards = doc.querySelectorAll('#tariffs .tariff-card');
-    if (cards.length !== barn.tariffs.length) f(`карток тарифів ${cards.length}, у barn.json ${barn.tariffs.length}`);
-    barn.tariffs.forEach((tf, i) => {
+    if (cards.length !== ownTariffs.length) f(`карток тарифів ${cards.length}, у barn.json ${ownTariffs.length} тарифи Барн-хауса`);
+    ownTariffs.forEach((tf, i) => {
       const c = cards[i];
       if (!c) return;
-      if (!sameText(c.querySelector('h3')?.text, `${barn.title}: ${tf.label}`)) f(`заголовок картки тарифу ${i + 1} має бути «${barn.title}: ${tf.label}»`);
+      const tfName = tf.name || barn.title;
+      if (!sameText(c.querySelector('h3')?.text, `${tfName}: ${tf.label}`)) f(`заголовок картки тарифу ${i + 1} має бути «${tfName}: ${tf.label}»`);
       if (!norm(c.querySelector('.card-object__price')?.text).includes(`${money(tf.amount)} грн`)) f(`у картці «${tf.label}» немає ціни ${money(tf.amount)} грн`);
       if (norm(c.querySelector('.card-object__price .price')?.text) !== `${money(tf.amount)} грн / доба`) f(`ціна тарифу «${tf.label}» має бути «${money(tf.amount)} грн / доба»`);
-      if (c.querySelector('a.btn')?.getAttribute('aria-label') !== `Забронювати: ${barn.title}, ${tf.label}`) f(`aria-label кнопки тарифу «${tf.label}» має бути «Забронювати: ${barn.title}, ${tf.label}»`);
+      if (c.querySelector('a.btn')?.getAttribute('aria-label') !== `Забронювати: ${tfName}, ${tf.label}`) f(`aria-label кнопки тарифу «${tf.label}» має бути «Забронювати: ${tfName}, ${tf.label}»`);
       if (c.querySelector('s')) f(`у картці «${tf.label}» є викреслена ціна (ціни акції для Барн-хауса не показуємо, Макс 05.10.2026)`);
-      if (!c.querySelector(`a.btn[href="${site.links.booking}"][data-item-name="${barn.title}"][data-item-category="barn"][data-item-variant="${tf.label}"][data-value="${tf.amount}"]`)) f(`кнопка броні тарифу «${tf.label}» без data-item-name, data-item-category=barn, data-item-variant і data-value`);
+      if (!c.querySelector(`a.btn[href="${site.links.booking}"][data-item-name="${tfName}"][data-item-category="barn"][data-item-variant="${tf.label}"][data-value="${tf.amount}"]`)) f(`кнопка броні тарифу «${tf.label}» без data-item-name, data-item-category=barn, data-item-variant і data-value`);
     });
-    if (doc.querySelectorAll('#tariffs .tariff-card h3').length !== barn.tariffs.length) f('усі тарифи мають бути H3');
-    // Великий будинок: короткий блок без цін (Макс 05.10.2026)
+    if (doc.querySelectorAll('#tariffs .tariff-card h3').length !== ownTariffs.length) f('усі тарифи мають бути H3');
+    // Великий будинок: короткий текстовий блок без цін і кнопок; ціна 13 000 стоїть у картці тарифу вище (Макс 09.10.2026)
     if (!sameText(doc.querySelector('#big-house-title')?.text, t.bigHouse.heading)) f(`H2 Великого будинку не збігається з ${file}`);
     if (!sameText(doc.querySelector('#big-house .block-note')?.text, t.bigHouse.text)) f(`текст Великого будинку не збігається з ${file}`);
-    if (doc.querySelector('#big-house .price, #big-house .tariff-card, #big-house a.btn')) f('у блоці Великого будинку немає цін і кнопок броні (Макс 05.10.2026)');
+    if (doc.querySelector('#big-house .price, #big-house .tariff-card')) f('у блоці Великого будинку немає цін і карток броні: вони на /velykyi-budynok/ (Макс 09.10.2026)');
+    const bhLink = doc.querySelector('#big-house a.btn');
+    if (!bhLink || stripPrefix(bhLink.getAttribute('href')) !== t.bigHouse.link.url || !sameText(bhLink.text, t.bigHouse.link.label)) f(`у блоці Великого будинку має бути кнопка-посилання на ${t.bigHouse.link.url} з підписом з ${file}`);
     // всередині і навколо
     if (!sameText(doc.querySelector('#inside-title')?.text, t.inside.heading)) f(`H2 «Що всередині» не збігається з ${file}`);
     const insideP = doc.querySelectorAll('#inside .split__copy:first-child .lede').map((p) => norm(p.text));
@@ -350,10 +360,43 @@ const PAGE_RULES = {
     for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
     // контекст аналітики з даних
     const ctx = pageContextOf(doc);
-    const exp = { event: 'page_context', page_type: 'category', item_category: 'barn', price_range: `${Math.min(...barn.tariffs.map((x) => x.amount))}-${Math.max(...barn.tariffs.map((x) => x.amount))}`, content_ids: [barn.id] };
+    const exp = { event: 'page_context', page_type: 'category', item_category: 'barn', price_range: `${Math.min(...ownTariffs.map((x) => x.amount))}-${Math.max(...ownTariffs.map((x) => x.amount))}`, content_ids: [barn.id] };
     if (!ctx || JSON.stringify(ctx) !== JSON.stringify(exp)) f(`dataLayer page_context: очікується ${JSON.stringify(exp)}, є ${JSON.stringify(ctx)}`);
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
     for (const u of ['/nomery/', '/kotedzhi/', '/banya-ta-spa/', '/kafe/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
+  },
+  '/velykyi-budynok/'(doc, f) {
+    const t = texts('velykyi-budynok');
+    const file = 'texts/velykyi-budynok.json';
+    const site = readJson('site.json');
+    const bh = barn.tariffs.filter((x) => x.name);
+    if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
+    for (const id of ['page-title', 'story', 'tariffs', 'tariffs-title', 'big-house', 'gallery', 'booking']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
+    if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Великий будинок» з aria-current на останньому');
+    if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
+    // текст Олі 09.10.2026 дослівно, абзаци з texts
+    if (!same(doc.querySelectorAll('#story .lede').map((p) => norm(p.text)), t.story.paragraphs.map(norm))) f(`абзаци тексту Олі не збігаються з ${file}`);
+    // ціна: одна картка з barn.json (тариф з name), кнопка броні з аналітикою
+    const cards = doc.querySelectorAll('#tariffs .tariff-card');
+    if (bh.length !== 1 || cards.length !== 1) f(`має бути одна картка Великого будинку (тариф з name у barn.json): карток ${cards.length}, тарифів ${bh.length}`);
+    else {
+      const tf = bh[0];
+      const c = cards[0];
+      if (!sameText(c.querySelector('h3')?.text, `${tf.name}: ${tf.label}`)) f(`заголовок картки має бути «${tf.name}: ${tf.label}»`);
+      if (norm(c.querySelector('.card-object__price .price')?.text) !== `${money(tf.amount)} грн / доба`) f(`ціна має бути «${money(tf.amount)} грн / доба»`);
+      if (c.querySelector('s')) f('у картці є викреслена ціна (акція на Великий будинок не діє)');
+      if (c.querySelector('a.btn')?.getAttribute('aria-label') !== `Забронювати: ${tf.name}, ${tf.label}`) f('aria-label кнопки броні Великого будинку');
+      if (!c.querySelector(`a.btn[href="${site.links.booking}"][data-item-name="${tf.name}"][data-item-category="barn"][data-item-variant="${tf.label}"][data-value="${tf.amount}"]`)) f('кнопка броні без data-item-name, data-item-category=barn, data-item-variant і data-value');
+      const ctx = pageContextOf(doc);
+      const exp = { event: 'page_context', page_type: 'category', item_category: 'barn', price_range: `${tf.amount}-${tf.amount}`, content_ids: ['big-house'] };
+      if (!ctx || JSON.stringify(ctx) !== JSON.stringify(exp)) f(`dataLayer page_context: очікується ${JSON.stringify(exp)}, є ${JSON.stringify(ctx)}`);
+    }
+    // галерея: кадри з texts у цьому порядку, кожен з alt
+    const gal = doc.querySelectorAll('#gallery img');
+    if (!same(gal.map((i) => photoIdOf(i.getAttribute('src'))), t.gallery.photos)) f(`галерея: кадри мають бути ${JSON.stringify(t.gallery.photos)} у цьому порядку`);
+    for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
+    if (!doc.querySelector(`#booking a[href="${site.links.booking}"][rel~="noopener"]`) || !doc.querySelector(`#booking a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#booking a[href="${site.links.instagramDirect}"]`)) f('блок броні: BookmeNow, телефон і Instagram Direct');
   },
   '/banya-ta-spa/'(doc, f) {
     const t = texts('banya-ta-spa');

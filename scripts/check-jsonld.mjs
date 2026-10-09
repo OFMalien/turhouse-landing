@@ -270,7 +270,8 @@ for (const f of htmlFiles) {
         if (v.name !== barn.title) fail(`${name}: VacationRental.name не збігається з barn.json`);
         if (v.url !== v['@id']) fail(`${name}: VacationRental.url має збігатися з @id`);
         if (!v.containedInPlace || v.containedInPlace['@id'] !== `${ORIGIN}/#lodging`) fail(`${name}: VacationRental.containedInPlace має вести на ${ORIGIN}/#lodging`);
-        const maxGuests = Math.max(...barn.tariffs.map((t) => guestsOf(t.label)));
+        const ownTariffs = barn.tariffs.filter((t) => !t.name); // тариф з name це Великий будинок, окремий об'єкт
+        const maxGuests = Math.max(...ownTariffs.map((t) => guestsOf(t.label)));
         if (!v.occupancy || v.occupancy.maxValue !== maxGuests) fail(`${name}: VacationRental.occupancy.maxValue має бути ${maxGuests}`);
         const got = (v.amenityFeature || []).map((a) => a.name);
         if (JSON.stringify(got) !== JSON.stringify(barn.features)) fail(`${name}: VacationRental.amenityFeature має збігатися з features у barn.json`);
@@ -279,8 +280,8 @@ for (const f of htmlFiles) {
         const okKeys = new Set(['@type', '@id', 'url', 'name', 'description', 'occupancy', 'containedInPlace', 'amenityFeature', 'offers']);
         for (const k of Object.keys(v)) if (!okKeys.has(k)) fail(`${name}: у VacationRental невідоме поле «${k}»`);
         const offers = Array.isArray(v.offers) ? v.offers : [];
-        if (offers.length !== barn.tariffs.length) fail(`${name}: у VacationRental ${offers.length} Offer, у barn.json ${barn.tariffs.length} тарифи`);
-        barn.tariffs.forEach((t, i) => {
+        if (offers.length !== ownTariffs.length) fail(`${name}: у VacationRental ${offers.length} Offer, у barn.json ${ownTariffs.length} тарифи Барн-хауса`);
+        ownTariffs.forEach((t, i) => {
           const o = offers[i] || {};
           if (o['@type'] !== 'Offer' || o.priceCurrency !== 'UAH') fail(`${name}: Offer[${i}] має бути Offer з priceCurrency UAH`);
           if (o.price !== t.amount) fail(`${name}: Offer[${i}].price ${o.price} не збігається з barn.json (${t.amount})`);

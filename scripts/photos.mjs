@@ -13,7 +13,7 @@ const SOURCE_DIR = path.join(root, 'src/assets/img/source');
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'src/_data/photos.json'), 'utf8'));
 
 const BUDGET = {
-  maxFiles: 60,
+  maxFiles: 70,
   maxFileBytes: 400 * 1024,
   maxTotalBytes: 15 * 1024 * 1024,
   maxLongSide: 1920,
