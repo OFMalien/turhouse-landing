@@ -412,8 +412,8 @@ const barnPage = contentFiles.includes('barn-house.json') ? readContent('barn-ho
 if (!barnPage) fail('texts/barn-house.json: немає файлу');
 else {
   checkMeta('barn-house.json', barnPage.meta, { titleHas: ['Барн-хаус', 'Tur House'], descHas: ['під Києвом', 'Барн-хаус', 'до 8 гостей'] });
-  if (!/Барн-хаус/.test(barnPage.hero?.h1 || '') || !/окремий будинок/i.test(barnPage.hero?.h1 || '')) fail('texts/barn-house.json: hero.h1 "Барн-хаус: окремий будинок ..."');
-  if (barnPage.hero?.lede !== 'До 8 гостей.') fail('texts/barn-house.json: hero.lede «До 8 гостей.» (H1 уже каже «окремий будинок», Великий будинок до 12 окремою карткою)');
+  if (barnPage.hero?.h1 !== 'Барн-хаус') fail('texts/barn-house.json: hero.h1 «Барн-хаус» (Макс 10.10.2026: без «окремий будинок для компанії»)');
+  if (barnPage.hero?.lede !== 'До 8 гостей.') fail('texts/barn-house.json: hero.lede «До 8 гостей.» (Великий будинок до 12 окремою сторінкою)');
   if (barnPage.intro) fail('texts/barn-house.json: вступ знято (Макс 06.10.2026: скорочення тексту: дубль «Що всередині»)');
 
   if (!/за добу/.test(barnPage.tariffs?.text || '')) fail('texts/barn-house.json: tariffs.text "... за добу"');
@@ -491,12 +491,8 @@ else {
   const pizzaItems = (menu?.sections || []).find((s) => s.id === 'pizza')?.items || [];
   if (pizzaItems.length !== 4) fail('texts/kafe.json: у menu.json має бути 4 піци');
   if (!/чотири види піци/.test(kafePage.meta?.description || '')) fail('texts/kafe.json: «чотири види піци» у meta.description (4 позиції піци в menu.json)');
-  // дата меню = cafe.menuUpdated
-  const MONTHS = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня', 'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
-  const [yy, mm, dd] = (cafe?.menuUpdated || '').split('-').map(Number);
-  const menuDate = `${dd} ${MONTHS[mm - 1]} ${yy} року`;
-  if (!(kafePage.menu?.note || '').includes(`станом на ${menuDate}`)) fail(`texts/kafe.json: menu.note має містити "станом на ${menuDate}" (cafe.menuUpdated)`);
-  if (!/Direct/.test(kafePage.menu?.note || '') || !/телефоном/.test(kafePage.menu?.note || '')) fail('texts/kafe.json: menu.note має відсилати до телефону та Instagram Direct');
+  // примітку «Меню станом на …» знято (Макс 10.10.2026: зайва інформація)
+  if (kafePage.menu?.note) fail('texts/kafe.json: menu.note знято (Макс 10.10.2026)');
   // години роботи (Оля 05.10.2026): з 9:00 до 21:00, текст кажe це і відсилає до телефону / Direct
   if (!/Години роботи/.test(kafePage.hours?.heading || '') || !(kafePage.hours?.text || '').includes(`з ${cafe?.hours?.from} до ${cafe?.hours?.to}`) || /без проживання/.test(kafePage.hours?.text || '') || !/телефоном/.test(kafePage.hours?.text || '') || !/Direct/.test(kafePage.hours?.text || '')) fail('texts/kafe.json: hours.text: «з 9:00 до 21:00», «без проживання», телефон і Direct (Оля 05.10.2026)');
   // чого в джерелах немає
@@ -517,13 +513,12 @@ const okolitsi = contentFiles.includes('okolitsi.json') ? readContent('okolitsi.
 if (!okolitsi) fail('texts/okolitsi.json: немає файлу');
 else {
   checkMeta('okolitsi.json', okolitsi.meta, { titleHas: ['парк природи «Беремицьке»', 'Tur House'], descHas: ['парк природи «Беремицьке»', 'під Києвом', 'дітьми'] });
-  if (!/парк природи «Беремицьке»/.test(okolitsi.hero?.h1 || '') || !/Десна/.test(okolitsi.hero?.h1 || '')) fail('texts/okolitsi.json: hero.h1 має містити «парк природи «Беремицьке»» і «Десна»');
+  if (okolitsi.hero?.h1 !== 'Околиці Tur House') fail('texts/okolitsi.json: hero.h1 «Околиці Tur House» (Макс 10.10.2026)');
   if (!/Чернігівщин/.test(okolitsi.hero?.lede || '') || !/поруч із парком природи «Беремицьке»/.test(okolitsi.hero?.lede || '')) fail('texts/okolitsi.json: hero.lede про Чернігівщину та «поруч із парком природи «Беремицьке»»');
   const introO = okolitsi.intro?.text || '';
   if (!/^За кілька хвилин їзди знаходиться парк природи «Беремицьке»/.test(introO)) fail('texts/okolitsi.json: вступ як «Що навколо» на живому лендингу («За кілька хвилин їзди знаходиться парк природи «Беремицьке»…»)');
-  // Tur House і парк окремі (ТЗ §6): одна фраза в блоці про парк (Макс 05.10.2026, замість довідки з сайту парку)
-  const parkT = okolitsi.park?.text || '';
-  if (!parkT.includes('Парк працює окремо: години роботи та вартість квитків краще уточнити в самому парку.')) fail('texts/okolitsi.json: у park.text має бути «Парк працює окремо: години роботи та вартість квитків краще уточнити в самому парку.» (ТЗ §6: не називати себе частиною парку)');
+  // заголовок блоку про парк і фразу «Парк працює окремо…» знято (Макс 10.10.2026)
+  if (okolitsi.park?.heading || /Парк працює окремо/.test(okolitsi.park?.text || '')) fail('texts/okolitsi.json: park.heading і «Парк працює окремо…» знято (Макс 10.10.2026)');
   if (okolitsi.park?.link || /beremytske\.com\.ua|сайт[іу]? парку[^,]/i.test(JSON.stringify(okolitsi.park || {}).replace('За інформацією на сайті парку,', ''))) fail('texts/okolitsi.json: посилання на сайт парку і відсилання «дивіться на сайті парку» знято (питання 24б)');
   if (!/дитячий майданчик/.test(okolitsi.family?.text || '')) fail('texts/okolitsi.json: family.text про дитячий майданчик (barn.json)');
   if (okolitsi.weekend) fail('texts/okolitsi.json: блок weekend знято (Макс 05.10.2026: самодельний SEO-абзац)');
@@ -548,7 +543,8 @@ else {
   if (!/парком природи «Беремицьке»/.test(routePage.hero?.lede || '') || !/Чернігівщин/.test(routePage.hero?.lede || '')) fail('texts/yak-distatysya.json: hero.lede про парк природи «Беремицьке» і Чернігівщину');
   if (routePage.route?.heading !== 'Як доїхати в Беремицьке з Києва') fail('texts/yak-distatysya.json: route.heading «Як доїхати в Беремицьке з Києва» (кластер ТЗ §6, слова лендингу)');
   // маршрут дослівно з живого лендингу (узгоджений з клієнтом, C5): Броварським проспектом, далі на Зазим'я та Літки
-  if (routePage.route?.text !== "Дорога з Києва: Броварським проспектом, далі на Зазим'я та Літки.") fail("texts/yak-distatysya.json: route.text має бути маршрутом з живого лендингу («Броварським проспектом, далі на Зазим'я та Літки»)");
+  // «Дорога з Києва:» знято як повтор заголовка (Макс 10.10.2026)
+  if (routePage.route?.text !== "Броварським проспектом, далі на Зазим'я та Літки.") fail("texts/yak-distatysya.json: route.text має бути маршрутом з живого лендингу («Броварським проспектом, далі на Зазим'я та Літки»)");
   if (routePage.navigator?.text) fail('texts/yak-distatysya.json: navigator.text знято (Макс 06.10.2026: скорочення тексту: повторює кнопки)');
   if (routePage.map?.button || routePage.map?.note) fail('texts/yak-distatysya.json: карта показується одразу, без кнопки й примітки (Макс 06.10.2026: «Карта должна сразу подгружаться»)');
   if (routePage.landmark || routePage.stay || routePage.faq) fail('texts/yak-distatysya.json: блоки landmark, stay, faq знято (Макс 05.10.2026: на лендингу їх немає)');

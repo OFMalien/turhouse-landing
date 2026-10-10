@@ -482,7 +482,7 @@ const PAGE_RULES = {
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
     for (const id of ['cafe', 'pizza', 'stay']) if (doc.querySelector(`[id="${id}"]`)) f(`блока #${id} на сторінці кафе бути не повинно (знято, Макс 05.10.2026)`);
     // меню: усі розділи і всі позиції menu.json, ціни, вага, склад, варіанти
-    if (!sameText(doc.querySelector('#menu-title')?.text, t.menu.heading) || !sameText(doc.querySelector('#menu > .wrap > .lede')?.text, t.menu.note)) f(`заголовок і примітка меню не збігаються з ${file}`);
+    if (!sameText(doc.querySelector('#menu-title')?.text, t.menu.heading) || doc.querySelector('#menu > .wrap > .lede')) f(`заголовок меню не збігається з ${file} або є примітка (знято, Макс 10.10.2026)`);
     const secs = doc.querySelectorAll('#menu .menu-section');
     if (secs.length !== menu.sections.length) f(`розділів меню ${secs.length}, у menu.json ${menu.sections.length}`);
     menu.sections.forEach((sec, si) => {
@@ -529,13 +529,13 @@ const PAGE_RULES = {
     const t = texts('okolitsi');
     const file = 'texts/okolitsi.json';
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f(`H1 має збігатися з ${file}`);
-    for (const id of ['page-title', 'intro', 'park', 'park-title', 'family', 'family-title', 'gallery']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
+    for (const id of ['page-title', 'intro', 'park', 'family', 'family-title', 'gallery']) if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока #${id}`);
     const crumbs = doc.querySelectorAll('nav.breadcrumbs li');
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f('хлібні крихти мають бути «Головна / Околиці» з aria-current на останньому');
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
     if (!sameText(doc.querySelector('#intro .lede')?.text, t.intro.text)) f(`вступ не збігається з ${file}`);
     // парк: текст з джерелом, без посилання на сайт парку (питання 24б: парк конкурент по проживанню), без цін і годин
-    if (!sameText(doc.querySelector('#park-title')?.text, t.park.heading) || !sameText(doc.querySelector('#park .lede')?.text, t.park.text)) f(`блок про парк не збігається з ${file}`);
+    if (doc.querySelector('#park-title') || !sameText(doc.querySelector('#park .lede')?.text, t.park.text)) f(`блок про парк не збігається з ${file}`);
     const parkLinks = doc.querySelectorAll('#park a');
     if (parkLinks.length) f(`у блоці про парк не має бути посилань (питання 24б), є ${parkLinks.length}`);
     // Десна, діти, вихідні

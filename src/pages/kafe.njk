@@ -14,7 +14,6 @@ analyticsKind: cafe
 <section class="section section--alt" id="menu" aria-labelledby="menu-title">
   <div class="wrap">
     <h2 id="menu-title">{{ t.menu.heading }}</h2>
-    <p class="lede block-note">{{ t.menu.note }}</p>
     <div class="menu-columns">
       {%- for sec in menu.sections %}
       <div class="menu-section{% if sec.items.length > 8 %} menu-section--long{% endif %}" id="menu-{{ sec.id }}">
