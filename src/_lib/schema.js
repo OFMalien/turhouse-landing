@@ -292,7 +292,8 @@ export function okolitsiNodes(data) {
     {
       '@type': 'TouristAttraction',
       '@id': parkId,
-      name: page.park.heading,
+      // назва парку тут, бо заголовок блоку на сторінці знято (Макс 10.10.2026)
+      name: 'Парк природи «Беремицьке»',
       description: page.park.text,
     },
   ];

@@ -380,7 +380,7 @@ for (const f of htmlFiles) {
         const [a] = articles;
         const [p] = attractions;
         const wantA = { '@type': 'Article', '@id': `${ORIGIN}/okolitsi/#article`, headline: ok.hero.h1, description: ok.meta.description, url: `${ORIGIN}/okolitsi/`, mainEntityOfPage: `${ORIGIN}/okolitsi/`, inLanguage: 'uk', about: { '@id': `${ORIGIN}/okolitsi/#park` }, publisher: { '@id': `${ORIGIN}/#lodging` } };
-        const wantP = { '@type': 'TouristAttraction', '@id': `${ORIGIN}/okolitsi/#park`, name: ok.park.heading, description: ok.park.text };
+        const wantP = { '@type': 'TouristAttraction', '@id': `${ORIGIN}/okolitsi/#park`, name: 'Парк природи «Беремицьке»', description: ok.park.text };
         for (const [label, got, want] of [['Article', a, wantA], ['TouristAttraction', p, wantP]]) {
           for (const k of Object.keys(got)) if (!(k in want)) fail(`${name}: у ${label} невідоме поле «${k}» (адреси, координат, годин і квитків парку в джерелах немає)`);
           for (const [k, v] of Object.entries(want)) if (!same(got[k], v)) fail(`${name}: ${label}.${k} має бути ${JSON.stringify(v)}, є ${JSON.stringify(got[k])}`);
