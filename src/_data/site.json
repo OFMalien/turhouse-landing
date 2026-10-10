@@ -24,7 +24,7 @@
     "googleMaps": "https://maps.google.com/?cid=2762823765818742466",
     "googleMapsRoute": "https://www.google.com/maps/dir/?api=1&destination=TUR+House%2C+%D0%9B%D1%83%D0%B3%D0%BE%D0%B2%D0%B0%2C+%D0%91%D0%B5%D1%80%D0%B5%D0%BC%D0%B8%D1%86%D1%8C%D0%BA%D0%B5",
     "waze": "https://waze.com/ul?q=TUR+House+%D0%91%D0%B5%D1%80%D0%B5%D0%BC%D0%B8%D1%86%D1%8C%D0%BA%D0%B5",
-    "mapEmbed": "https://maps.google.com/maps?q=TUR%20House%2C%20%D0%9B%D1%83%D0%B3%D0%BE%D0%B2%D0%B0%2C%20%D0%91%D0%B5%D1%80%D0%B5%D0%BC%D0%B8%D1%86%D1%8C%D0%BA%D0%B5&z=12&hl=uk&output=embed"
+    "mapEmbed": "https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d646862.2082150666!2d30.119648310686372!3d50.70499378895343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x40d4cf4ee15a4505%3A0x764931d2170146fe!2z0JrQuNGX0LIsIDAyMDAw!3m2!1d50.4503596!2d30.524502499999997!4m5!1s0x40d535f56c76f08b%3A0x26578593b2a216c2!2zVFVSIEhvdXNlLCAyNCwgc3RyLkx1aG92YSwg0JHQtdGA0LXQvNC40YbRjNC60LUsINCn0LXRgNC90ZbQs9GW0LLRgdGM0LrQsCDQvtCx0LvQsNGB0YLRjCwgMTcwNDQ!3m2!1d50.886859799999996!2d30.8388183!5e0!3m2!1suk!2sua!4v1791624110497!5m2!1suk!2sua"
   },
   "analytics": {
     "gtm": [
