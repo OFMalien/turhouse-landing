@@ -966,8 +966,19 @@ body { background-image: var(--leaf-pattern-light); background-size: 220px 220px
 .page-hero h1 { max-width: 18ch; font-size: clamp(30px, 4.4vw, 54px); }
 .page-hero__inner--text .page-hero__copy { max-width: 780px; }
 .page-hero__inner--text h1 { max-width: 22ch; }
-.page-hero__media picture { display: block; }
-.page-hero__media img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line-on-dark); }
+.page-hero__media { display: flex; justify-content: center; align-items: center; }
+.page-hero__media picture { display: block; max-width: 100%; }
+.page-hero__media img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: clamp(320px, 55vh, 520px);
+  object-fit: contain;
+  border: 1px solid var(--line-on-dark);
+  border-radius: var(--radius-md);
+  margin-inline: auto;
+}
 @media (min-width: 960px) {
   .page-hero__inner:not(.page-hero__inner--text) { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 56px; }
 }
