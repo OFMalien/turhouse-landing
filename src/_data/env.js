@@ -24,4 +24,6 @@ export default {
   analyticsEnabled: isProduction,
   // Превью закрите від індексації; бойова збірка відкрита.
   noindex: !isProduction,
+  // Дата збірки (YYYY-MM-DD) для sitemap.xml <lastmod>
+  buildDate: new Date().toISOString().slice(0, 10),
 };
