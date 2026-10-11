@@ -38,7 +38,7 @@
           <ul class="gallery-carousel__track gallery-grid--group" data-carousel-track>
             {%- asyncEach id in group.photos %}
             <li class="gallery-carousel__slide">
-              {% photo id, { sizes: "(min-width: 1260px) 780px, (min-width: 800px) 75vw, 100vw", class: "media" } %}
+              {% photo id, { sizes: "(min-width: 600px) 500px, 100vw", class: "media" } %}
             </li>
             {%- endeach %}
           </ul>
