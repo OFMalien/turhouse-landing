@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import Image from '@11ty/eleventy-img';
 import { bundle } from 'lightningcss';
+import { minify } from 'terser';
 import env from './src/_data/env.js';
 
 // Зображення: web-ready оригінали лежать у src/assets/img/source/, похідні (AVIF, WebP, JPEG)
@@ -92,12 +93,34 @@ export default function (eleventyConfig) {
     usedImageFiles.clear();
   });
 
-  eleventyConfig.on('eleventy.after', ({ dir }) => {
+  eleventyConfig.on('eleventy.after', async ({ dir }) => {
     // Копіюємо в збірку тільки використані похідні зображення.
     if (usedImageFiles.size) {
       const target = path.join(dir.output, 'assets', 'img');
       fs.mkdirSync(target, { recursive: true });
       for (const file of usedImageFiles) fs.copyFileSync(file, path.join(target, path.basename(file)));
+    }
+
+    // Мініфікація JS для оптимізації та усунення зауважень Semrush / PageSpeed
+    const jsDir = path.join(dir.output, 'assets', 'js');
+    if (fs.existsSync(jsDir)) {
+      for (const file of fs.readdirSync(jsDir)) {
+        if (file.endsWith('.js')) {
+          const filePath = path.join(jsDir, file);
+          const rawCode = fs.readFileSync(filePath, 'utf8');
+          try {
+            const minified = await minify(rawCode, {
+              compress: true,
+              mangle: true,
+            });
+            if (minified.code) {
+              fs.writeFileSync(filePath, minified.code);
+            }
+          } catch (e) {
+            console.warn(`Помилка мініфікації ${file}:`, e.message);
+          }
+        }
+      }
     }
 
     // GitHub Pages не має обробляти файли Jekyll'ом.
