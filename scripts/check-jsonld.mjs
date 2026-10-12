@@ -250,7 +250,7 @@ for (const f of htmlFiles) {
         if (o['@type'] !== 'Offer' || o.priceCurrency !== 'UAH') fail(`${name}: ItemList[${i}].offers має бути Offer з priceCurrency UAH`);
         if (it.url !== it['@id']) fail(`${name}: ItemList[${i}].url має збігатися з @id (${it['@id']})`);
         if (o.url !== readData('site.json').links.booking) fail(`${name}: ItemList[${i}].offers.url має вести на BookmeNow з site.json`);
-        for (const k of Object.keys(it)) if (!['@type', '@id', 'url', 'name', 'occupancy', 'containedInPlace', 'amenityFeature', 'offers'].includes(k)) fail(`${name}: у ItemList[${i}] невідоме поле «${k}»`);
+        for (const k of Object.keys(it)) if (!['@type', '@id', 'url', 'name', 'occupancy', 'containedInPlace', 'amenityFeature', 'offers', 'image', 'address', 'geo'].includes(k)) fail(`${name}: у ItemList[${i}] невідоме поле «${k}»`);
         for (const k of Object.keys(o)) if (!['@type', 'price', 'priceCurrency', 'url'].includes(k)) fail(`${name}: в ItemList[${i}].offers невідоме поле «${k}»`);
         if (!it.containedInPlace || it.containedInPlace['@id'] !== `${ORIGIN}/#lodging`) fail(`${name}: ItemList[${i}].containedInPlace має вести на ${ORIGIN}/#lodging`);
         if (o.price !== x.price) fail(`${name}: ItemList[${i}].offers.price ${o.price} не збігається з ${rule.file} (${x.price})`);
@@ -277,7 +277,7 @@ for (const f of htmlFiles) {
         if (JSON.stringify(got) !== JSON.stringify(barn.features)) fail(`${name}: VacationRental.amenityFeature має збігатися з features у barn.json`);
         if ((v.amenityFeature || []).some((a) => a['@type'] !== 'LocationFeatureSpecification' || a.value !== true)) fail(`${name}: VacationRental.amenityFeature: LocationFeatureSpecification з value true`);
         // лише відомі поля: жодних lowPrice, highPrice, priceSpecification з невідомою ціною (знижки на Барн-хаус не підтверджені)
-        const okKeys = new Set(['@type', '@id', 'url', 'name', 'description', 'occupancy', 'containedInPlace', 'amenityFeature', 'offers']);
+        const okKeys = new Set(['@type', '@id', 'url', 'name', 'description', 'occupancy', 'containedInPlace', 'amenityFeature', 'offers', 'image', 'address', 'geo']);
         for (const k of Object.keys(v)) if (!okKeys.has(k)) fail(`${name}: у VacationRental невідоме поле «${k}»`);
         const offers = Array.isArray(v.offers) ? v.offers : [];
         if (offers.length !== ownTariffs.length) fail(`${name}: у VacationRental ${offers.length} Offer, у barn.json ${ownTariffs.length} тарифи Барн-хауса`);

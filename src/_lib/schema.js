@@ -20,6 +20,25 @@ function priceRange(data) {
   return `${Math.min(...nums)}-${Math.max(...nums)} UAH`;
 }
 
+function postalAddress(site) {
+  return {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.locality,
+    addressRegion: site.address.region,
+    postalCode: site.address.postalCode,
+    addressCountry: site.address.country,
+  };
+}
+
+function geoCoordinates(site) {
+  return {
+    '@type': 'GeoCoordinates',
+    latitude: site.geo.latitude,
+    longitude: site.geo.longitude,
+  };
+}
+
 // Опис, зручності і тварини беруться з видимого тексту головної (hero.lede, теги першого екрана hero.tags) і FAQ (питання про тварин),
 // щоб пошуковики і ІІ-асистенти бачили ті самі факти, що й гість (T2). Без FAQ про тварин petsAllowed не пишемо.
 export function lodgingBusiness(data) {
@@ -35,19 +54,12 @@ export function lodgingBusiness(data) {
     image: abs(`/assets/img/static/${site.ogImage.file}`),
     logo: abs('/apple-touch-icon.png'),
     priceRange: priceRange(data),
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: site.address.street,
-      addressLocality: site.address.locality,
-      addressRegion: site.address.region,
-      postalCode: site.address.postalCode,
-      addressCountry: site.address.country,
-    },
+    address: postalAddress(site),
     hasMap: site.links.googleMaps,
     sameAs: [site.links.instagram, site.links.googleMaps],
   };
   if (site.geo) {
-    node.geo = { '@type': 'GeoCoordinates', latitude: site.geo.latitude, longitude: site.geo.longitude };
+    node.geo = geoCoordinates(site);
   }
   const tags = home?.hero?.tags || [];
   if (tags.length) node.amenityFeature = tags.map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true }));
@@ -124,6 +136,11 @@ function objectItemList(data, { list, type, pagePath, listName, withAmenities })
           containedInPlace: { '@id': abs('/#lodging') },
           offers: { '@type': 'Offer', price: r.price, priceCurrency: 'UAH', url: data.site.links.booking },
         };
+        if (type === 'VacationRental') {
+          item.image = abs('/assets/img/static/og-default.jpg');
+          item.address = postalAddress(data.site);
+          item.geo = geoCoordinates(data.site);
+        }
         if (withAmenities && r.features?.length) item.amenityFeature = r.features.map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true }));
         return { '@type': 'ListItem', position: i + 1, item };
       }),
@@ -150,6 +167,9 @@ export function barnVacationRental(data) {
     url: id,
     name: barn.title,
     description: data.texts['barn-house'].hero.lede,
+    image: abs('/assets/img/static/og-default.jpg'),
+    address: postalAddress(data.site),
+    geo: geoCoordinates(data.site),
     occupancy: { '@type': 'QuantitativeValue', maxValue: Math.max(...tariffs.map((t) => guests(t.label))) },
     containedInPlace: { '@id': abs('/#lodging') },
     amenityFeature: (barn.features || []).map((name) => ({ '@type': 'LocationFeatureSpecification', name, value: true })),
