@@ -116,7 +116,7 @@ function occupancy(capacity) {
   return /^до\s/i.test(String(capacity)) ? { '@type': 'QuantitativeValue', maxValue: n } : { '@type': 'QuantitativeValue', value: n };
 }
 
-// ItemList об'єктів проживання з даних (номери: HotelRoom, котеджі: VacationRental): назва, місткість, ціна за добу, UAH, особливості.
+// ItemList об'єктів проживання з даних (номери: HotelRoom, котеджі: House): назва, місткість, ціна за добу, UAH, особливості.
 // Ціни акції в розмітку не йдуть: вона діє лише по буднях (R9).
 function objectItemList(data, { list, type, pagePath, listName, withAmenities }) {
   const url = (id) => abs(`${pagePath}#${id}`);
@@ -136,7 +136,7 @@ function objectItemList(data, { list, type, pagePath, listName, withAmenities })
           containedInPlace: { '@id': abs('/#lodging') },
           offers: { '@type': 'Offer', price: r.price, priceCurrency: 'UAH', url: data.site.links.booking },
         };
-        if (type === 'VacationRental') {
+        if (type === 'House' || type === 'VacationRental') {
           item.image = abs('/assets/img/static/og-default.jpg');
           item.address = postalAddress(data.site);
           item.geo = geoCoordinates(data.site);
@@ -151,10 +151,10 @@ function objectItemList(data, { list, type, pagePath, listName, withAmenities })
 export const roomsItemList = (data) => objectItemList(data, { list: data.rooms || [], type: 'HotelRoom', pagePath: '/nomery/', listName: data.texts.nomery.types.heading });
 extras.nomery = roomsItemList;
 
-export const cottagesItemList = (data) => objectItemList(data, { list: data.cottages || [], type: 'VacationRental', pagePath: '/kotedzhi/', listName: data.texts.kotedzhi.types.heading, withAmenities: true });
+export const cottagesItemList = (data) => objectItemList(data, { list: data.cottages || [], type: 'House', pagePath: '/kotedzhi/', listName: data.texts.kotedzhi.types.heading, withAmenities: true });
 extras.kotedzhi = cottagesItemList;
 
-// Барн-хаус: VacationRental з Offer для тарифів без name (тариф з name це Великий будинок, окремий об'єкт, у цей вузол не входить). Ціна кожного Offer із barn.tariffs,
+// Барн-хаус: House з Offer для тарифів без name (тариф з name це Великий будинок, окремий об'єкт, у цей вузол не входить). Ціна кожного Offer із barn.tariffs,
 // кількість гостей береться з підпису тарифу («до 8 гостей» -> eligibleQuantity.maxValue 8), місткість будинку це найбільший з його тарифів.
 export function barnVacationRental(data) {
   const barn = data.barn;
@@ -162,7 +162,7 @@ export function barnVacationRental(data) {
   const guests = (label) => Number(String(label).match(/\d+/)[0]);
   const id = abs(`/barn-house/#${barn.id}`);
   const node = {
-    '@type': 'VacationRental',
+    '@type': 'House',
     '@id': id,
     url: id,
     name: barn.title,

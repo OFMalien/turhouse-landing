@@ -71,7 +71,7 @@ for (const f of htmlFiles) {
     const pageUrl = name === 'index.html' ? '/' : `/${name.replace(/index\.html$/, '')}`;
     const slug = name === 'index.html' ? 'home' : name.replace(/\/index\.html$/, '');
     const textsOf = (s) => readData(`texts/${s}.json`);
-    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction', 'WebPage', 'Place', 'ContactPage', 'WebSite']);
+    const ALLOWED_TYPES = new Set(['LodgingBusiness', 'PostalAddress', 'GeoCoordinates', 'BreadcrumbList', 'ListItem', 'FAQPage', 'Question', 'Answer', 'ItemList', 'HotelRoom', 'House', 'VacationRental', 'QuantitativeValue', 'Offer', 'LocationFeatureSpecification', 'DaySpa', 'Service', 'UnitPriceSpecification', 'CafeOrCoffeeShop', 'Menu', 'MenuSection', 'MenuItem', 'Article', 'TouristAttraction', 'WebPage', 'Place', 'ContactPage', 'WebSite']);
     const defined = [];
     const referenced = [];
     (function walkLd(node) {
@@ -86,7 +86,7 @@ for (const f of htmlFiles) {
     const dupIds = defined.filter((x, i) => defined.indexOf(x) !== i);
     if (dupIds.length) fail(`${name}: повторні @id: ${[...new Set(dupIds)].join(', ')}`);
     for (const r of referenced) if (!defined.includes(r)) fail(`${name}: посилання на неіснуючий вузол @id ${r}`);
-    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['VacationRental'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/yak-distatysya/': ['WebPage', 'Place'], '/kontakty/': ['ContactPage'] };
+    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['House'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/yak-distatysya/': ['WebPage', 'Place'], '/kontakty/': ['ContactPage'] };
     // Внутрішні сторінки з блоком «Питання та відповіді» (texts/<сторінка>.json -> faq.items) мають ще FAQPage з тими самими питаннями
     const pageFaqItems = slug !== 'home' && fs.existsSync(new URL(`../src/_data/texts/${slug}.json`, import.meta.url)) ? textsOf(slug).faq?.items : null;
     if (pageFaqItems?.length) {
@@ -153,8 +153,8 @@ for (const f of htmlFiles) {
     }
     // Текстові поля вузлів страниць дослівно з texts і даних
     const tx = fs.existsSync(new URL(`../src/_data/texts/${slug}.json`, import.meta.url)) ? textsOf(slug) : null;
-    const vr = graph.find((n) => n['@type'] === 'VacationRental');
-    if (vr && tx && vr.description !== tx.hero.lede) fail(`${name}: VacationRental.description має збігатися з hero.lede у texts/${slug}.json`);
+    const vr = graph.find((n) => n['@type'] === 'House');
+    if (vr && tx && vr.description !== tx.hero.lede) fail(`${name}: House.description має збігатися з hero.lede у texts/${slug}.json`);
     const ds = graph.find((n) => n['@type'] === 'DaySpa');
     if (ds && tx) {
       if (ds.description !== tx.hero.lede) fail(`${name}: DaySpa.description має збігатися з hero.lede у texts/${slug}.json`);
@@ -218,7 +218,7 @@ for (const f of htmlFiles) {
     const listNode = graph.find((n) => n['@type'] === 'ItemList');
     const LIST_RULES = {
       'nomery/index.html': { file: 'rooms.json', type: 'HotelRoom', base: '/nomery/#' },
-      'kotedzhi/index.html': { file: 'cottages.json', type: 'VacationRental', base: '/kotedzhi/#', amenities: true },
+      'kotedzhi/index.html': { file: 'cottages.json', type: 'House', base: '/kotedzhi/#', amenities: true },
     };
     const rule = LIST_RULES[name];
     if (rule && !listNode) fail(`${name}: має бути ItemList (${rule.type})`);
@@ -258,29 +258,29 @@ for (const f of htmlFiles) {
       });
     }
 
-    // Барн-хаус (R6): один будинок -> один VacationRental з двома Offer (по одному на тариф з barn.json), ціни без акції, ItemList немає
-    const rentals = graph.filter((n) => n['@type'] === 'VacationRental');
+    // Барн-хаус (R6): один будинок -> один House з двома Offer (по одному на тариф з barn.json), ціни без акції, ItemList немає
+    const rentals = graph.filter((n) => n['@type'] === 'House');
     if (name === 'barn-house/index.html') {
       const barn = JSON.parse(fs.readFileSync(new URL('../src/_data/barn.json', import.meta.url), 'utf8'));
       const guestsOf = (label) => Number(String(label).match(/\d+/)[0]);
-      if (rentals.length !== 1) fail(`${name}: має бути один VacationRental (один будинок, R6), є ${rentals.length}`);
+      if (rentals.length !== 1) fail(`${name}: має бути один House (один будинок, R6), є ${rentals.length}`);
       else {
         const v = rentals[0];
-        if (v['@id'] !== `${ORIGIN}/barn-house/#${barn.id}`) fail(`${name}: VacationRental['@id'] ${v['@id']} не ${ORIGIN}/barn-house/#${barn.id}`);
-        if (v.name !== barn.title) fail(`${name}: VacationRental.name не збігається з barn.json`);
-        if (v.url !== v['@id']) fail(`${name}: VacationRental.url має збігатися з @id`);
-        if (!v.containedInPlace || v.containedInPlace['@id'] !== `${ORIGIN}/#lodging`) fail(`${name}: VacationRental.containedInPlace має вести на ${ORIGIN}/#lodging`);
+        if (v['@id'] !== `${ORIGIN}/barn-house/#${barn.id}`) fail(`${name}: House['@id'] ${v['@id']} не ${ORIGIN}/barn-house/#${barn.id}`);
+        if (v.name !== barn.title) fail(`${name}: House.name не збігається з barn.json`);
+        if (v.url !== v['@id']) fail(`${name}: House.url має збігатися з @id`);
+        if (!v.containedInPlace || v.containedInPlace['@id'] !== `${ORIGIN}/#lodging`) fail(`${name}: House.containedInPlace має вести на ${ORIGIN}/#lodging`);
         const ownTariffs = barn.tariffs.filter((t) => !t.name); // тариф з name це Великий будинок, окремий об'єкт
         const maxGuests = Math.max(...ownTariffs.map((t) => guestsOf(t.label)));
-        if (!v.occupancy || v.occupancy.maxValue !== maxGuests) fail(`${name}: VacationRental.occupancy.maxValue має бути ${maxGuests}`);
+        if (!v.occupancy || v.occupancy.maxValue !== maxGuests) fail(`${name}: House.occupancy.maxValue має бути ${maxGuests}`);
         const got = (v.amenityFeature || []).map((a) => a.name);
-        if (JSON.stringify(got) !== JSON.stringify(barn.features)) fail(`${name}: VacationRental.amenityFeature має збігатися з features у barn.json`);
-        if ((v.amenityFeature || []).some((a) => a['@type'] !== 'LocationFeatureSpecification' || a.value !== true)) fail(`${name}: VacationRental.amenityFeature: LocationFeatureSpecification з value true`);
+        if (JSON.stringify(got) !== JSON.stringify(barn.features)) fail(`${name}: House.amenityFeature має збігатися з features у barn.json`);
+        if ((v.amenityFeature || []).some((a) => a['@type'] !== 'LocationFeatureSpecification' || a.value !== true)) fail(`${name}: House.amenityFeature: LocationFeatureSpecification з value true`);
         // лише відомі поля: жодних lowPrice, highPrice, priceSpecification з невідомою ціною (знижки на Барн-хаус не підтверджені)
         const okKeys = new Set(['@type', '@id', 'url', 'name', 'description', 'occupancy', 'containedInPlace', 'amenityFeature', 'offers', 'image', 'address', 'geo']);
-        for (const k of Object.keys(v)) if (!okKeys.has(k)) fail(`${name}: у VacationRental невідоме поле «${k}»`);
+        for (const k of Object.keys(v)) if (!okKeys.has(k)) fail(`${name}: у House невідоме поле «${k}»`);
         const offers = Array.isArray(v.offers) ? v.offers : [];
-        if (offers.length !== ownTariffs.length) fail(`${name}: у VacationRental ${offers.length} Offer, у barn.json ${ownTariffs.length} тарифи Барн-хауса`);
+        if (offers.length !== ownTariffs.length) fail(`${name}: у House ${offers.length} Offer, у barn.json ${ownTariffs.length} тарифи Барн-хауса`);
         ownTariffs.forEach((t, i) => {
           const o = offers[i] || {};
           if (o['@type'] !== 'Offer' || o.priceCurrency !== 'UAH') fail(`${name}: Offer[${i}] має бути Offer з priceCurrency UAH`);
@@ -293,7 +293,7 @@ for (const f of htmlFiles) {
           for (const k of Object.keys(o)) if (!okOffer.has(k)) fail(`${name}: в Offer[${i}] невідоме поле «${k}» (lowPrice і подібні заборонені: знижки на Барн-хаус не підтверджені)`);
         });
       }
-    } else if (rentals.length) fail(`${name}: окремий VacationRental лише на /barn-house/ (у списках номерів і котеджів вони всередині ItemList)`);
+    } else if (rentals.length) fail(`${name}: окремий House лише на /barn-house/ (у списках номерів і котеджів вони всередині ItemList)`);
 
     // Баня та спа: DaySpa + Service з двома цінами за годину (spa.json): 600 перша година з особи, 200 кожна наступна; інших цін немає
     const daySpa = graph.filter((n) => n['@type'] === 'DaySpa');
