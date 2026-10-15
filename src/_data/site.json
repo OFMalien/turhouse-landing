@@ -1,0 +1,62 @@
+{
+  "name": "Tur House",
+  "tagline": "Готельно-банний комплекс",
+  "locale": "uk_UA",
+  "phone": {
+    "display": "+38 096 127-55-53",
+    "tel": "+380961275553"
+  },
+  "address": {
+    "street": "вул. Лугова, 24",
+    "locality": "с. Беремицьке",
+    "region": "Чернігівська область",
+    "postalCode": "17044",
+    "country": "UA",
+    "short": "с. Беремицьке, Чернігівщина",
+    "full": "вул. Лугова, 24, с. Беремицьке, Чернігівська обл.",
+    "line": "с. Беремицьке, вул. Лугова, 24"
+  },
+  "links": {
+    "booking": "https://go.bookmenow.pro/t/turhouse",
+    "instagram": "https://www.instagram.com/tur_house_/",
+    "instagramHandle": "@tur_house_",
+    "instagramDirect": "https://ig.me/m/tur_house_",
+    "googleMaps": "https://maps.google.com/?cid=2762823765818742466",
+    "googleMapsRoute": "https://www.google.com/maps/dir/?api=1&destination=TUR+House%2C+%D0%9B%D1%83%D0%B3%D0%BE%D0%B2%D0%B0%2C+%D0%91%D0%B5%D1%80%D0%B5%D0%BC%D0%B8%D1%86%D1%8C%D0%BA%D0%B5",
+    "waze": "https://waze.com/ul?q=TUR+House+%D0%91%D0%B5%D1%80%D0%B5%D0%BC%D0%B8%D1%86%D1%8C%D0%BA%D0%B5",
+    "mapEmbed": "https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d646862.2082150666!2d30.119648310686372!3d50.70499378895343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x40d4cf4ee15a4505%3A0x764931d2170146fe!2z0JrQuNGX0LIsIDAyMDAw!3m2!1d50.4503596!2d30.524502499999997!4m5!1s0x40d535f56c76f08b%3A0x26578593b2a216c2!2zVFVSIEhvdXNlLCAyNCwgc3RyLkx1aG92YSwg0JHQtdGA0LXQvNC40YbRjNC60LUsINCn0LXRgNC90ZbQs9GW0LLRgdGM0LrQsCDQvtCx0LvQsNGB0YLRjCwgMTcwNDQ!3m2!1d50.886859799999996!2d30.8388183!5e0!3m2!1suk!2sua!4v1791624110497!5m2!1suk!2sua"
+  },
+  "analytics": {
+    "gtm": [
+      "GTM-T97JFZCZ",
+      "GTM-MW9BMZ6F"
+    ],
+    "gtmDelayMs": 4000,
+    "metaPixel": "548259214495555"
+  },
+  "geo": {
+    "latitude": 50.88686,
+    "longitude": 30.838818
+  },
+  "descriptor": "Заміський готельний комплекс",
+  "cta": {
+    "caption": "Спокій чекає на тебе",
+    "heading": "Tur House",
+    "booking": "Перевірити вільні дати",
+    "instagram": "Написати в Instagram",
+    "routeGoogle": "Відкрити в Google Maps",
+    "routeWaze": "Відкрити у Waze",
+    "call": "Зателефонувати",
+    "direct": "Написати в Direct"
+  },
+  "bookingByContactPages": [
+    "/banya-ta-spa/"
+  ],
+  "ogImage": {
+    "file": "og-default.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "Tur House: готельно-банний комплекс"
+  },
+  "themeColor": "#d8cbb8"
+}

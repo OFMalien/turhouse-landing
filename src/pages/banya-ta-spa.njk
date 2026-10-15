@@ -1,0 +1,80 @@
+---
+permalink: "/banya-ta-spa/"
+eleventyComputed:
+  title: "{{ texts['banya-ta-spa'].meta.title | safe }}"
+  description: "{{ texts['banya-ta-spa'].meta.description | safe }}"
+  breadcrumbTitle: "{{ texts['banya-ta-spa'].meta.breadcrumbTitle | safe }}"
+schemaType: banya-ta-spa
+analyticsKind: spa
+---
+{%- set t = texts['banya-ta-spa'] %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section section--tight" id="complex" aria-labelledby="complex-title">
+  <div class="wrap">
+    <h2 id="complex-title">{{ t.complex.heading }}</h2>
+    <ul class="feature-list complex-list">
+      {%- for c in spa.complex %}
+      <li>{{ c }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="section section--alt" id="price" aria-labelledby="price-title">
+  <div class="wrap">
+    <h2 id="price-title">{{ t.price.heading }}</h2>
+    <p class="lede block-note">{{ t.price.text }}</p>
+    <div class="cards-grid" data-placement="spa_price">
+      <div class="card-object tariff-card" id="price-first">
+        <div class="card-object__body">
+          <p class="card-object__meta">{{ spa.price.firstLabel | capitalize }}</p>
+          <p class="price"><strong>{{ spa.price.first | price }}&nbsp;грн</strong> <span class="price__unit">{{ spa.price.per }}</span></p>
+        </div>
+      </div>
+      <div class="card-object tariff-card" id="price-next">
+        <div class="card-object__body">
+          <p class="card-object__meta">{{ spa.price.nextLabel | capitalize }}</p>
+          <p class="price"><strong>{{ spa.price.next | price }}&nbsp;грн</strong> <span class="price__unit">{{ spa.price.per }}</span></p>
+        </div>
+      </div>
+      {%- for x in spa.extras %}
+      <div class="card-object tariff-card" id="price-{{ x.id }}">
+        <div class="card-object__body">
+          <p class="card-object__meta">{{ x.label }}</p>
+          <p class="price"><strong>{{ x.amount | price }}&nbsp;грн</strong> <span class="price__unit">{{ x.unit }}</span></p>
+          {%- if x.note %}
+          <p class="card-object__note">{{ x.note }}</p>
+          {%- endif %}
+        </div>
+      </div>
+      {%- endfor %}
+    </div>
+    {%- if spa.pricePoster %}
+    <figure class="price-poster">
+      {% photo spa.pricePoster, { sizes: "(min-width: 700px) 420px, 100vw", class: "media" } %}
+    </figure>
+    {%- endif %}
+  </div>
+</section>
+
+<section class="section section--tight" id="cards" aria-labelledby="cards-title">
+  <div class="wrap">
+    <h2 id="cards-title">{{ t.cards.heading }}</h2>
+    {%- set cardInfoOnly = true %}
+    <div class="cards-grid" data-placement="spa_cards">
+      {%- asyncEach item in spa.cards %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+    </div>
+  </div>
+</section>
+
+{%- set gallery = t.gallery %}
+{%- set galleryPhotos = spaGallery %}
+{% include "components/gallery-block.njk" %}
+
+{%- set booking = t.booking %}
+{%- set bookingNoOnline = true %}
+{% include "components/booking-block.njk" %}

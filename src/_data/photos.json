@@ -1,0 +1,567 @@
+{
+  "home/hero-chan": {
+    "file": "home/hero-chan.jpg",
+    "source": "img/photo_7_2026-07-29_07-37-59.jpg",
+    "alt": "Гостя у чані просто неба з цитрусовими та виноградом",
+    "uses": [
+      "home",
+      "banya"
+    ],
+    "people": true
+  },
+  "home/terrace-flowers": {
+    "file": "home/terrace-flowers.jpg",
+    "source": "img/photo_14_2026-07-29_07-37-59.jpg",
+    "alt": "Тераса з кріслами та петуніями, за нею корпус і басейн",
+    "uses": [
+      "home",
+      "yak-distatysya"
+    ]
+  },
+  "home/hammock": {
+    "file": "home/hammock.jpg",
+    "source": "img/photo_11_2026-07-29_07-37-59.jpg",
+    "alt": "Гамак на газоні біля будинку Tur House",
+    "uses": [
+      "home",
+      "okolitsi"
+    ],
+    "tempFor": [
+      "okolitsi"
+    ]
+  },
+  "home/building-pool-sky": {
+    "file": "home/building-pool-sky.jpg",
+    "source": "img/photo_4_2026-07-29_07-37-59.jpg",
+    "alt": "Корпус Tur House і басейн у сонячний день",
+    "uses": [
+      "home"
+    ]
+  },
+  "home/beanbags-lawn": {
+    "file": "home/beanbags-lawn.jpg",
+    "source": "photo/photo_8_2026-08-27_21-03-26.jpg",
+    "alt": "Зона відпочинку просто неба: крісла-мішки на газоні біля будинку",
+    "uses": [
+      "home",
+      "velykyi-budynok"
+    ]
+  },
+  "home/stove-beanbag": {
+    "file": "home/stove-beanbag.jpg",
+    "source": "img/photo_2026-07-31_11-19-11.jpg",
+    "alt": "Піч із живим вогнем і крісло-мішок у кімнаті",
+    "uses": [
+      "home"
+    ],
+    "verify": true
+  },
+  "home/building-pool-main": {
+    "file": "home/building-pool-main.jpg",
+    "source": "photo/photo_6_2026-07-31_08-03-55.jpg",
+    "alt": "Головний корпус Tur House і басейн",
+    "uses": [
+      "home",
+      "nomery",
+      "kontakty"
+    ]
+  },
+  "home/evening-pool": {
+    "file": "home/evening-pool.jpg",
+    "source": "photo/photo_5_2026-08-27_21-03-26.jpg",
+    "alt": "Корпус Tur House і басейн у вечірньому освітленні",
+    "uses": [
+      "okolitsi",
+      "velykyi-budynok"
+    ],
+    "tempFor": [
+      "okolitsi"
+    ]
+  },
+  "home/pool-loungers": {
+    "file": "home/pool-loungers.jpg",
+    "source": "img/photo_10_2026-07-29_07-37-59.jpg",
+    "alt": "Шезлонги та парасоля біля басейну",
+    "uses": [
+      "banya"
+    ]
+  },
+  "rooms/standard-bedroom": {
+    "file": "rooms/standard-bedroom.jpg",
+    "source": "photo/room_standard_1_2026-10-09.jpg",
+    "alt": "Номер Стандарт: двоспальне ліжко із сірим покривалом, велике вікно",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/napivlyuks-bedroom": {
+    "file": "rooms/napivlyuks-bedroom.jpg",
+    "source": "photo/room_napivlyuks_1_2026-10-09.jpg",
+    "alt": "Номер Напівлюкс: двоспальне ліжко з білим покривалом, шпалери з видами Парижа",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/standard-tv": {
+    "file": "rooms/standard-tv.jpg",
+    "source": "photo/room_standard_2_2026-10-09.jpg",
+    "alt": "Номер Стандарт: телевізор на стіні з темного дерева",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/standard-bath-shower": {
+    "file": "rooms/standard-bath-shower.jpg",
+    "source": "photo/room_standard_3_2026-10-09.jpg",
+    "alt": "Ванна кімната номера Стандарт: душова кабіна",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/standard-bath-sink": {
+    "file": "rooms/standard-bath-sink.jpg",
+    "source": "photo/room_standard_4_2026-10-09.jpg",
+    "alt": "Ванна кімната номера Стандарт: умивальник із дзеркалом",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/napivlyuks-tv": {
+    "file": "rooms/napivlyuks-tv.jpg",
+    "source": "photo/room_napivlyuks_2_2026-10-09.jpg",
+    "alt": "Номер Напівлюкс: телевізор і дерев'яна шафа з дзеркалом",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "rooms/napivlyuks-bath": {
+    "file": "rooms/napivlyuks-bath.jpg",
+    "source": "photo/room_napivlyuks_3_2026-10-09.jpg",
+    "alt": "Ванна кімната номера Напівлюкс: душова кабіна й умивальник",
+    "uses": [
+      "nomery"
+    ]
+  },
+  "bighouse/hall-dahlias": {
+    "file": "bighouse/hall-dahlias.jpg",
+    "source": "photo/bighouse_hall_dahlias_2026-10-09.jpg",
+    "alt": "Накритий довгий стіл із жовтими й помаранчевими квітами в залі",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "bighouse/lemons-table": {
+    "file": "bighouse/lemons-table.jpg",
+    "source": "photo/photo_19_2026-08-27_21-03-26.jpg",
+    "alt": "Святковий стіл із лимонами та польовими квітами біля великих вікон",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "bighouse/room-gray": {
+    "file": "bighouse/room-gray.jpg",
+    "source": "photo/bighouse_room_gray_2026-10-09.jpg",
+    "alt": "Кімната з двоспальним ліжком і сірими шпалерами з візерунком",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "bighouse/bbq-zone": {
+    "file": "bighouse/bbq-zone.jpg",
+    "source": "photo/bighouse_bbq_zone_2026-10-09.jpg",
+    "alt": "Зона BBQ із підвісним грилем і двома лавами",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "bighouse/bathroom": {
+    "file": "bighouse/bathroom.jpg",
+    "source": "photo/bighouse_bathroom_2026-10-09.jpg",
+    "alt": "Санвузол із душовою кабіною й умивальником",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "rooms/room-wood-wall": {
+    "file": "rooms/room-wood-wall.jpg",
+    "source": "img/photo_3_2026-07-29_07-37-58.jpg",
+    "alt": "Спальня в номері Tur House: дерев'яна стіна, двоспальне ліжко, підвісна лампа",
+    "uses": [
+      "home",
+      "nomery"
+    ],
+    "verify": true
+  },
+  "rooms/room-burgundy": {
+    "file": "rooms/room-burgundy.jpg",
+    "source": "img/photo_1_2026-07-29_07-37-58.jpg",
+    "alt": "Номер Tur House: двоспальне ліжко з бордовим покривалом",
+    "uses": [
+      "nomery"
+    ],
+    "verify": true
+  },
+  "rooms/room-white-brown": {
+    "file": "rooms/room-white-brown.jpg",
+    "source": "photo/photo_2_2026-07-29_07-37-58.jpg",
+    "alt": "Номер Tur House зі світлим покривалом і коричневим узголів'ям",
+    "uses": [
+      "nomery",
+      "velykyi-budynok"
+    ],
+    "verify": true
+  },
+  "rooms/room-panorama-window": {
+    "file": "rooms/room-panorama-window.jpg",
+    "source": "photo/photo_11_2026-08-27_21-03-26.jpg",
+    "alt": "Номер Tur House з панорамним вікном і бордовим покривалом",
+    "uses": [
+      "nomery",
+      "velykyi-budynok"
+    ],
+    "verify": true
+  },
+  "cottages/cottage-lavender": {
+    "file": "cottages/cottage-lavender.jpg",
+    "source": "img/cottage.jpg",
+    "alt": "Лаванда на території Tur House, вдалині котеджі",
+    "uses": [
+      "kotedzhi"
+    ]
+  },
+  "cottages/cottage-orange": {
+    "file": "cottages/cottage-orange.jpg",
+    "source": "img/photo_5_2026-07-29_07-37-59.jpg",
+    "alt": "Котедж Tur House з помаранчевим фасадом і садом",
+    "uses": [
+      "home",
+      "kotedzhi"
+    ]
+  },
+  "cottages/cottages-sunset": {
+    "file": "cottages/cottages-sunset.jpg",
+    "source": "photo/photo_3_2026-08-27_21-03-26.jpg",
+    "alt": "Котеджі Tur House ввечері, захід сонця над газоном",
+    "uses": [
+      "kotedzhi",
+      "okolitsi"
+    ],
+    "tempFor": [
+      "okolitsi"
+    ]
+  },
+  "cottages/interior-living-purple": {
+    "file": "cottages/interior-living-purple.jpg",
+    "source": "img/photo_16_2026-07-29_07-37-59.jpg",
+    "alt": "Котедж на 6 гостей: вітальня з розкладним диваном, їдальня та кухня",
+    "uses": [
+      "kotedzhi"
+    ]
+  },
+  "cottages/interior-tv-purple": {
+    "file": "cottages/interior-tv-purple.jpg",
+    "source": "img/photo_7_2026-07-31_08-03-55.jpg",
+    "alt": "Котедж на 4 гостя: вітальня з телевізором і обіднім столом",
+    "uses": [
+      "kotedzhi"
+    ]
+  },
+  "barn/barn-01-fasad": {
+    "file": "barn/barn-01-fasad.jpg",
+    "source": "img/barn/barn-01-fasad.jpg",
+    "alt": "Барн-хаус Tur House: фасад із панорамним склінням і газон",
+    "uses": [
+      "home",
+      "barn-house"
+    ]
+  },
+  "barn/barn-02-panorama": {
+    "file": "barn/barn-02-panorama.jpg",
+    "source": "img/barn/barn-02-panorama.jpg",
+    "alt": "Двосвітла вітальня Барн-хауса з панорамними вікнами",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-03-vitalnya-kamin": {
+    "file": "barn/barn-03-vitalnya-kamin.jpg",
+    "source": "img/barn/barn-03-vitalnya-kamin.jpg",
+    "alt": "Вітальня Барн-хауса з каміном і диваном",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-04-kukhnya": {
+    "file": "barn/barn-04-kukhnya.jpg",
+    "source": "img/barn/barn-04-kukhnya.jpg",
+    "alt": "Кухня Барн-хауса з технікою та обіднім столом",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-05-spalnya": {
+    "file": "barn/barn-05-spalnya.jpg",
+    "source": "img/barn/barn-05-spalnya.jpg",
+    "alt": "Спальня Барн-хауса з двоспальним ліжком і дерев'яною стіною",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-06-spalnya-verkh": {
+    "file": "barn/barn-06-spalnya-verkh.jpg",
+    "source": "img/barn/barn-06-spalnya-verkh.jpg",
+    "alt": "Спальня на другому поверсі Барн-хауса з диваном",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-07-tv-zona": {
+    "file": "barn/barn-07-tv-zona.jpg",
+    "source": "img/barn/barn-07-tv-zona.jpg",
+    "alt": "Зона відпочинку з телевізором на другому поверсі Барн-хауса",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-08-vanna": {
+    "file": "barn/barn-08-vanna.jpg",
+    "source": "img/barn/barn-08-vanna.jpg",
+    "alt": "Ванна кімната Барн-хауса з окремою ванною",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-09-dush": {
+    "file": "barn/barn-09-dush.jpg",
+    "source": "img/barn/barn-09-dush.jpg",
+    "alt": "Санвузол Барн-хауса з душовою кабіною",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-sunset": {
+    "file": "barn/barn-sunset.jpg",
+    "source": "img/photo_15_2026-07-29_07-37-59.jpg",
+    "alt": "Скляний фасад Барн-хауса на заході сонця",
+    "uses": [
+      "barn-house"
+    ]
+  },
+  "barn/barn-bbq-terrace": {
+    "file": "barn/barn-bbq-terrace.jpg",
+    "source": "photo/photo_9_2026-08-27_21-03-26.jpg",
+    "alt": "Фасад Барн-хауса, тераса й мангал",
+    "uses": [
+      "barn-house"
+    ],
+    "verify": true
+  },
+  "barn/barn-long-table": {
+    "file": "barn/barn-long-table.jpg",
+    "source": "photo/photo_18_2026-08-27_21-03-26.jpg",
+    "alt": "Довгий стіл біля панорамних вікон, накритий для компанії",
+    "uses": [
+      "barn-house"
+    ],
+    "verify": true
+  },
+  "barn/barn-table-flowers": {
+    "file": "barn/barn-table-flowers.jpg",
+    "source": "photo/photo_2_2026-08-27_21-03-26.jpg",
+    "alt": "Накритий довгий стіл із квітами біля печі",
+    "uses": [
+      "barn-house",
+      "velykyi-budynok"
+    ],
+    "verify": true
+  },
+  "spa/sauna": {
+    "file": "spa/sauna.jpg",
+    "source": "img/sauna.jpg",
+    "alt": "Парна з дерев'яними стінами та банним віником",
+    "uses": [
+      "banya"
+    ]
+  },
+  "spa/chan-citrus": {
+    "file": "spa/chan-citrus.jpg",
+    "source": "img/chan.jpg",
+    "alt": "Чан просто неба з цитрусовими та хвоєю",
+    "uses": [
+      "home",
+      "banya"
+    ],
+    "people": true
+  },
+  "spa/rest-room-stove": {
+    "file": "spa/rest-room-stove.jpg",
+    "source": "img/photo_3_2026-07-31_08-03-55.jpg",
+    "alt": "Піч на дровах і двері в кімнаті відпочинку банного комплексу",
+    "uses": [
+      "home",
+      "banya"
+    ]
+  },
+  "spa/steam-room-broom": {
+    "file": "spa/steam-room-broom.jpg",
+    "source": "img/photo_12_2026-07-29_07-37-59.jpg",
+    "alt": "Банний віник на камінні в парній",
+    "uses": [
+      "banya"
+    ]
+  },
+  "spa/wooden-tub": {
+    "file": "spa/wooden-tub.jpg",
+    "source": "img/photo_2_2026-07-31_08-03-55.jpg",
+    "alt": "Дерев'яна шайка та черпак у парильні біля вікна",
+    "uses": [
+      "banya"
+    ]
+  },
+  "spa/tea-hat": {
+    "file": "spa/tea-hat.jpg",
+    "source": "photo/photo_12_2026-08-27_21-03-26.jpg",
+    "alt": "Чай і банна шапка з написом «Не пар голову»",
+    "uses": [
+      "banya"
+    ]
+  },
+  "spa/rest-hall": {
+    "file": "spa/rest-hall.jpg",
+    "source": "photo/photo_14_2026-08-27_21-03-26.jpg",
+    "alt": "Зал відпочинку з дерев'яними столами та піччю",
+    "uses": [
+      "banya"
+    ],
+    "verify": true
+  },
+  "spa/pool-round": {
+    "file": "spa/pool-round.jpg",
+    "source": "img/photo_9_2026-07-29_07-37-59.jpg",
+    "alt": "Басейн з підігрівом на території Tur House, поруч шезлонги",
+    "uses": [
+      "home",
+      "banya"
+    ],
+    "people": true
+  },
+  "cafe/pizza": {
+    "file": "cafe/pizza.jpg",
+    "source": "photo/photo_2026-08-28_20-22-48.jpg",
+    "alt": "Піца з томатами та базиліком у кафе Tur House",
+    "uses": [
+      "home",
+      "kafe"
+    ]
+  },
+  "cafe/borsch": {
+    "file": "cafe/borsch.jpg",
+    "source": "photo/photo_2_2026-08-28_20-22-07.jpg",
+    "alt": "Борщ український із зеленню та хлібом",
+    "uses": [
+      "kafe"
+    ]
+  },
+  "cafe/burger": {
+    "file": "cafe/burger.jpg",
+    "source": "photo/photo_3_2026-08-28_20-22-07.jpg",
+    "alt": "Бургер із картоплею фрі на дерев'яній дошці",
+    "uses": [
+      "kafe"
+    ]
+  },
+  "cafe/pasta": {
+    "file": "cafe/pasta.jpg",
+    "source": "photo/photo_1_2026-08-28_20-22-07.jpg",
+    "alt": "Паста з жовтком, пармезаном і базиліком",
+    "uses": [
+      "kafe"
+    ]
+  },
+  "cafe/terrace-table": {
+    "file": "cafe/terrace-table.jpg",
+    "source": "photo/photo_4_2026-08-27_21-03-26.jpg",
+    "alt": "Накритий стіл на терасі Tur House",
+    "uses": [
+      "velykyi-budynok"
+    ]
+  },
+  "promo/promo-budni-20": {
+    "file": "promo/promo-budni-20.jpg",
+    "source": "photo/promo_budni_20_2026-09-30.jpg",
+    "alt": "Афіша «Знижка 20% на всі варіанти проживання у будні дні»: камін, крісло-мішок і плед у Tur House",
+    "uses": [
+      "home",
+      "promo"
+    ]
+  },
+  "spa/price-poster": {
+    "file": "spa/price-poster.jpg",
+    "source": "photo/ig_price_bath_2026-09-16.jpg",
+    "alt": "Прайс бані та чану Tur House: вартість відвідування, послуга банщика і чан",
+    "uses": [
+      "banya"
+    ],
+    "people": true
+  },
+  "territory/playground": {
+    "file": "territory/playground.jpg",
+    "source": "photo/ig_fun_playground_2026-06-23.jpg",
+    "alt": "Дитячий майданчик із гойдалками та гіркою на території Tur House",
+    "uses": [
+      "okolitsi"
+    ]
+  },
+  "territory/table-tennis": {
+    "file": "territory/table-tennis.jpg",
+    "source": "photo/ig_fun_tabletennis_2026-06-23.jpg",
+    "alt": "Ракетки та м'ячик для настільного тенісу на синьому столі",
+    "uses": [
+      "okolitsi"
+    ]
+  },
+  "territory/volleyball": {
+    "file": "territory/volleyball.jpg",
+    "source": "photo/ig_fun_volleyball_2026-06-23.jpg",
+    "alt": "Волейбольний м'яч над сіткою на тлі неба",
+    "uses": [
+      "okolitsi"
+    ]
+  },
+  "territory/badminton": {
+    "file": "territory/badminton.jpg",
+    "source": "photo/ig_fun_badminton_2026-06-23.jpg",
+    "alt": "Ракетка та волан для бадмінтону на траві",
+    "uses": [
+      "okolitsi"
+    ]
+  },
+  "okolitsi/horse-sunset": {
+    "file": "okolitsi/horse-sunset.jpg",
+    "source": "img/okolitsi/horse-sunset.jpg",
+    "alt": "Кінь у високій траві на заході сонця, на тлі лісу та річкової долини",
+    "uses": [
+      "okolitsi",
+      "home"
+    ],
+    "generated": true
+  },
+  "route/forest-road": {
+    "file": "route/forest-road.jpg",
+    "source": "img/route/forest-road.jpg",
+    "alt": "Дорога через сосновий ліс у ранковому світлі",
+    "uses": [
+      "yak-distatysya"
+    ],
+    "generated": true
+  },
+  "contacts/terrace-evening": {
+    "file": "contacts/terrace-evening.jpg",
+    "source": "img/contacts/terrace-evening.jpg",
+    "alt": "Вечірня дерев'яна тераса: чай, свічка в ліхтарі, плед і телефон на столі, ліс у сутінках",
+    "uses": [
+      "kontakty"
+    ],
+    "generated": true
+  }
+}

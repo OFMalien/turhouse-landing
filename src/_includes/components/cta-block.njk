@@ -1,0 +1,10 @@
+<section class="cta-band on-dark" aria-labelledby="cta-title" data-placement="final_cta_band">
+  <div class="wrap">
+    <p class="caption">{{ ctaCaption or site.cta.caption }}</p>
+    <h2 id="cta-title" class="section-heading">{{ ctaHeading or site.cta.heading }}</h2>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+      <a class="btn" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}"><span class="nowrap">{{ site.phone.display }}</span></a>
+    </div>
+  </div>
+</section>

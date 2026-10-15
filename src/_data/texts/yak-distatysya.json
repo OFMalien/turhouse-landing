@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "ogPhoto": "home/terrace-flowers",
+    "ogPhotoPosition": 0.55,
+    "title": "Як доїхати до Tur House з Києва: маршрут | Беремицьке",
+    "description": "Як доїхати з Києва в Беремицьке до Tur House: адреса, маршрут Броварським проспектом, Google Maps і Waze.",
+    "breadcrumbTitle": "Як доїхати"
+  },
+  "hero": {
+    "h1": "Як доїхати до Tur House",
+    "lede": "Чернігівщина, с. Беремицьке, поруч із парком природи «Беремицьке».",
+    "photo": "route/forest-road"
+  },
+  "route": {
+    "heading": "Як доїхати в Беремицьке з Києва",
+    "text": "Броварським проспектом, далі на Зазим'я та Літки."
+  },
+  "address": {
+    "heading": "Адреса"
+  },
+  "navigator": {
+    "heading": "Маршрут у навігаторі"
+  },
+  "map": {
+    "heading": "Карта"
+  },
+  "help": {
+    "heading": "Якщо складно знайти дорогу",
+    "text": "Зателефонуйте або пишіть нам у Direct.",
+    "links": [
+      {
+        "url": "/kontakty/",
+        "label": "Контакти"
+      }
+    ]
+  }
+}

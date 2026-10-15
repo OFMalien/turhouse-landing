@@ -1,0 +1,97 @@
+---
+permalink: "/dev/components/"
+title: "Компоненти (службова сторінка)"
+promoModal: true
+description: "Службова сторінка для перевірки компонентів дизайн-системи. Не входить у бойовий сайт."
+---
+<style>
+  .dev-block { margin-top: 48px; }
+  .dev-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin-top: 20px; }
+  .dev-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 20px; }
+  .dev-swatch { padding: 14px; border: 1px solid var(--line); font-size: var(--text-small); }
+  .dev-swatch b { display: block; margin-bottom: 2px; }
+  .dev-dark { padding: 28px; background: var(--color-midnight-roast); }
+  .dev-note { margin-top: 12px; font-size: var(--text-small); color: var(--text-muted); }
+</style>
+<div class="wrap section">
+  <p class="caption">Службова сторінка, не для гостей</p>
+  <h1>Компоненти</h1>
+  <p class="lede" style="margin-top:16px">Сторінка для перевірки дизайн-системи Amrit Palace. У бойову збірку не потрапляє.</p>
+
+  <section class="dev-block">
+    <h2>Типографіка</h2>
+    <p class="section-heading" style="margin-top:24px">Заголовок розділу</p>
+    <h3 style="margin-top:24px">Заголовок третього рівня</h3>
+    <h4 style="margin-top:16px">Заголовок четвертого рівня</h4>
+    <p class="lede" style="margin-top:16px">Вступний абзац (lede): довший текст, щоб було видно міжрядковий інтервал і ширину рядка. Заміський відпочинок без поспіху.</p>
+    <p style="margin-top:12px">Основний текст 16px. Посилання всередині тексту виглядає так: <a href="{{ '/' | url }}"><u>на головну</u></a>. Телефон: <span class="nowrap">{{ site.phone.display }}</span>.</p>
+    <p class="caption" style="margin-top:12px">Підпис (caption) 14px</p>
+  </section>
+
+  <section class="dev-block">
+    <h2>Кольори</h2>
+    <div class="dev-swatches">
+      <div class="dev-swatch" style="background:var(--color-parchment);color:var(--color-onyx-warm)"><b>parchment</b>#d8cbb8, фон</div>
+      <div class="dev-swatch" style="background:var(--color-parchment-light);color:var(--color-onyx-warm)"><b>parchment-light</b>#e4dacf, картки</div>
+      <div class="dev-swatch" style="background:var(--color-espresso);color:var(--color-parchment)"><b>espresso</b>#38342e, темні блоки</div>
+      <div class="dev-swatch" style="background:var(--color-onyx-warm);color:var(--color-parchment)"><b>onyx</b>#1f1e1c, текст</div>
+      <div class="dev-swatch" style="background:var(--color-midnight-roast);color:var(--color-linen)"><b>midnight-roast</b>#1a1816, шапка</div>
+      <div class="dev-swatch" style="background:var(--color-saffron-glow);color:var(--color-onyx-warm)"><b>saffron-glow</b>#c88742, кнопки</div>
+      <div class="dev-swatch" style="background:var(--color-saffron-bright);color:var(--color-onyx-warm)"><b>saffron-bright</b>#d49653, ховер</div>
+      <div class="dev-swatch" style="background:var(--color-parchment);color:var(--color-walnut)"><b>walnut</b>#4e483e, другорядний текст</div>
+    </div>
+    <p class="dev-note">Пари кольорів перевіряє <code>npm run check:contrast</code>. warm-stone (#b6ab9c) лише для ліній, шафран лише фон кнопок і декор.</p>
+  </section>
+
+  <section class="dev-block">
+    <h2>Кнопки</h2>
+    <div class="dev-row">
+      <a class="btn btn-primary" href="#">Головна кнопка</a>
+      <a class="btn" href="#">Контурна кнопка</a>
+      <a class="btn btn-primary btn-compact" href="#">Компактна</a>
+      <a class="icon-btn" style="color:var(--color-onyx-warm);border-color:var(--color-onyx-warm)" href="#" aria-label="Приклад іконки">{% from "components/icons.njk" import instagram %}{{ instagram() }}</a>
+    </div>
+    <div class="dev-dark on-dark" style="margin-top:20px">
+      <p class="caption">На темному фоні</p>
+      <div class="dev-row">
+        <a class="btn btn-primary" href="#">Головна кнопка</a>
+        <a class="btn" href="#">Контурна кнопка</a>
+        <a class="icon-btn" href="#" aria-label="Приклад іконки">{{ instagram() }}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="dev-block">
+    <h2>Акція</h2>
+  </section>
+</div>
+{% include "components/promo-banner.njk" %}
+<div class="wrap">
+  <div class="dev-row">
+    <button type="button" class="btn" onclick="window.thPromoOpen && window.thPromoOpen()">Показати вікно акції</button>
+  </div>
+
+  <section class="dev-block">
+    <h2>Карточки об'єктів</h2>
+    <div class="cards-grid" data-placement="formats_section">
+      {%- asyncEach item in fixtures %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+    </div>
+  </section>
+
+  <section class="dev-block" style="padding-bottom:var(--section-gap)">
+    <h2>Реальні дані</h2>
+    <p class="dev-note">Номери, котеджі й Барн-хаус із файлів rooms.json, cottages.json, barn.json.</p>
+    <div class="cards-grid" data-placement="formats_section">
+      {%- asyncEach item in rooms %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+      {%- asyncEach item in cottages %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+      {%- set item = barn %}
+      {% include "components/card-object.njk" %}
+    </div>
+  </section>
+</div>

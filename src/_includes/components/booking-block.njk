@@ -1,0 +1,15 @@
+{#- Блок «Як забронювати». Очікує змінну booking { heading, text } з texts.<сторінка>.booking. Кнопки: BookmeNow, телефон, Instagram Direct (дані з site.json).
+    bookingNoOnline (необов'язкова): без кнопки BookmeNow, коли онлайн-бронювання не підходить (баня і чан бронюються телефоном або в Direct). -#}
+<section class="section" id="booking" aria-labelledby="booking-title" data-placement="page_booking">
+  <div class="wrap">
+    <h2 id="booking-title">{{ booking.heading }}</h2>
+    <p class="lede block-note">{{ booking.text }}</p>
+    <div class="btn-row">
+      {%- if not bookingNoOnline %}
+      <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+      {%- endif %}
+      <a class="btn{% if bookingNoOnline %} btn-primary{% endif %}" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}"><span class="nowrap">{{ site.phone.display }}</span></a>
+      <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+    </div>
+  </div>
+</section>

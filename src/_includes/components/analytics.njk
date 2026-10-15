@@ -1,0 +1,14 @@
+{#- Аналітика: спочатку dataLayer і контекст сторінки, потім (тільки в бойовій збірці) GTM.
+    Meta Pixel окремо не підключаємо: його вантажить тег у своєму контейнері Макса GTM-MW9BMZ6F (перенесено з GTM-PRF3SNG 03.10),
+    окремий скрипт дав би подвійний PageView. Контекст задається у front matter сторінки: analytics: { page_type, item_category, price_range, content_ids }
+    напряму (головна) або ключем analyticsKind (значення рахуються з _data у src/_data/pageContexts.js). -#}
+<script>
+window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({{ (analytics or pageContexts[analyticsKind]) | pageContext | safe }});
+</script>
+{%- if env.analyticsEnabled %}
+{#- GTM (усі контейнери з site.analytics.gtm, зараз два; gtm.js пушиться на кожен, перевірено 02.10: кожен GA4 отримує один page_view) запускається не під час завантаження сторінки, а при першій дії відвідувача (дотик, клік, клавіша, прокрутка) або через site.analytics.gtmDelayMs мілісекунд після події load, що настане раніше.
+    Причина: теги GA4 (два потоки) і Meta Pixel додають до мобільної сторінки 1,5-2,5 с блокування основного потоку і опускають Lighthouse Performance з 100 до 45-75 (ТЗ вимагає від 90).
+    dataLayer, page_context і події кліків пишуться одразу, GTM обробляє накопичену чергу після запуску. Відвідувач, який пішов раніше ніж за кілька секунд без жодної дії, в аналітику не потрапляє. -#}
+<script>(function(w,d){var ids={{ site.analytics.gtm | dump | safe }},delay={{ site.analytics.gtmDelayMs }},done=false,evs=['pointerdown','keydown','scroll','touchstart'];function start(){if(done)return;done=true;evs.forEach(function(e){w.removeEventListener(e,start)});ids.forEach(function(i){w.dataLayer.push({'gtm.start':new Date().getTime(),event:'gtm.js'});var j=d.createElement('script');j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i;d.head.appendChild(j);});}evs.forEach(function(e){w.addEventListener(e,start,{passive:true});});w.addEventListener('load',function(){setTimeout(start,delay);});})(window,document);</script>
+{%- endif %}

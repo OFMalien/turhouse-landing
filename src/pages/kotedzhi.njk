@@ -1,0 +1,54 @@
+---
+permalink: "/kotedzhi/"
+eleventyComputed:
+  title: "{{ texts.kotedzhi.meta.title | safe }}"
+  description: "{{ texts.kotedzhi.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.kotedzhi.meta.breadcrumbTitle | safe }}"
+promoModal: true
+promoElsewhere: true
+schemaType: kotedzhi
+analyticsKind: cottages
+---
+{%- set t = texts.kotedzhi %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section section--tight" id="cottages" aria-labelledby="cottages-title">
+  <div class="wrap">
+    <h2 id="cottages-title">{{ t.types.heading }}</h2>
+    {%- if t.types.lead %}
+    <p class="lede block-note">{{ t.types.lead }}</p>
+    {%- endif %}
+    {%- set cardPlainPrice = true %}
+    <div class="cards-grid" data-placement="cottages_list">
+      {%- asyncEach item in cottages %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+    </div>
+    <p class="lede block-note">{{ t.types.note }}</p>
+  </div>
+</section>
+
+<section class="section section--alt" id="in-cottage" aria-labelledby="in-cottage-title">
+  <div class="wrap">
+    <h2 id="in-cottage-title">{{ t.inCottage.heading }}</h2>
+    <ul class="check-list">
+      {%- for item in t.inCottage.items %}
+      <li>{{ item }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
+{%- set included = t.included %}
+{% include "components/included-block.njk" %}
+
+{%- set gallery = t.gallery %}
+{%- set galleryPhotos = t.gallery.photos %}
+{% include "components/gallery-block.njk" %}
+
+{%- set booking = t.booking %}
+{% include "components/booking-block.njk" %}
+
+{%- set faqBlock = t.faq %}
+{% include "components/faq-block.njk" %}

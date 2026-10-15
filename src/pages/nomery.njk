@@ -1,0 +1,54 @@
+---
+permalink: "/nomery/"
+eleventyComputed:
+  title: "{{ texts.nomery.meta.title | safe }}"
+  description: "{{ texts.nomery.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.nomery.meta.breadcrumbTitle | safe }}"
+promoModal: true
+promoElsewhere: true
+schemaType: nomery
+analyticsKind: rooms
+---
+{%- set t = texts.nomery %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section section--tight" id="rooms" aria-labelledby="rooms-title">
+  <div class="wrap">
+    <h2 id="rooms-title">{{ t.types.heading }}</h2>
+    {%- if t.types.lead %}
+    <p class="lede block-note">{{ t.types.lead }}</p>
+    {%- endif %}
+    {%- set cardPlainPrice = true %}
+    <div class="cards-grid" data-placement="rooms_list">
+      {%- asyncEach item in rooms %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+    </div>
+    <p class="lede block-note">{{ t.types.note }}</p>
+  </div>
+</section>
+
+<section class="section section--alt" id="in-room" aria-labelledby="in-room-title">
+  <div class="wrap">
+    <h2 id="in-room-title">{{ t.inRoom.heading }}</h2>
+    <ul class="check-list">
+      {%- for item in t.inRoom.items %}
+      <li>{{ item }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
+{%- set included = t.included %}
+{% include "components/included-block.njk" %}
+
+{%- set gallery = t.gallery %}
+{%- set galleryGroups = t.gallery.groups %}
+{% include "components/gallery-block.njk" %}
+
+{%- set booking = t.booking %}
+{% include "components/booking-block.njk" %}
+
+{%- set faqBlock = t.faq %}
+{% include "components/faq-block.njk" %}

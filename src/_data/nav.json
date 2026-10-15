@@ -1,0 +1,12 @@
+[
+  { "key": "home", "title": "Головна", "url": "/" },
+  { "key": "rooms", "title": "Номери", "url": "/nomery/" },
+  { "key": "cottages", "title": "Котеджі", "url": "/kotedzhi/" },
+  { "key": "barn", "title": "Барн-хаус", "url": "/barn-house/" },
+  { "key": "bigHouse", "title": "Великий будинок", "url": "/velykyi-budynok/" },
+  { "key": "spa", "title": "Баня та спа", "url": "/banya-ta-spa/" },
+  { "key": "cafe", "title": "Кафе", "url": "/kafe/" },
+  { "key": "area", "title": "Околиці", "url": "/okolitsi/" },
+  { "key": "route", "title": "Як доїхати", "url": "/yak-distatysya/" },
+  { "key": "contacts", "title": "Контакти", "url": "/kontakty/" }
+]

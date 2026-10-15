@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "title": "Контакти Tur House: телефон, Instagram, бронювання",
+    "description": "Контакти Tur House у Беремицькому: телефон, Instagram Direct, онлайн-бронювання у BookmeNow і адреса. Допоможемо обрати дати та проживання.",
+    "breadcrumbTitle": "Контакти"
+  },
+  "hero": {
+    "h1": "Контакти Tur House",
+    "lede": "Зателефонуйте або пишіть нам у Direct: підкажемо вільні дати та допоможемо обрати проживання. А ще їх можна перевірити онлайн у BookmeNow.",
+    "photo": "contacts/terrace-evening"
+  },
+  "phone": {
+    "heading": "Телефон"
+  },
+  "instagram": {
+    "heading": "Instagram"
+  },
+  "booking": {
+    "heading": "Онлайн-бронювання",
+    "text": "Заїзд з 15:00, виїзд до 12:00."
+  },
+  "address": {
+    "heading": "Адреса",
+    "text": "Поруч із Парком природи «Беремицьке».",
+    "link": {
+      "url": "/yak-distatysya/",
+      "label": "Як доїхати"
+    }
+  }
+}

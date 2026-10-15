@@ -1,0 +1,12 @@
+{#- Портретні графіки з Instagram Tur House (варіанти розміщення). Очікує змінну variants { heading, photos[] } з texts.<сторінка>.variants.
+    Кадри 3:4 показуємо без обрізання, щоб підписи на картинках лишалися повністю видимими. -#}
+<section class="section" id="variants" aria-labelledby="variants-title">
+  <div class="wrap">
+    <h2 id="variants-title">{{ variants.heading }}</h2>
+    <ul class="variants-grid">
+      {%- asyncEach id in variants.photos %}
+      <li>{% photo id, { sizes: "(min-width: 700px) 340px, 100vw", class: "media" } %}</li>
+      {%- endeach %}
+    </ul>
+  </div>
+</section>

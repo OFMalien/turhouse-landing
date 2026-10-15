@@ -1,0 +1,38 @@
+---
+layout: layouts/base.njk
+permalink: "/404.html"
+eleventyComputed:
+  title: "{{ texts['404'].meta.title | safe }}"
+  description: "{{ texts['404'].meta.description | safe }}"
+noindex: true
+noCanonical: true
+eleventyExcludeFromCollections: true
+analyticsKind: notFound
+---
+{%- set t = texts['404'] %}
+<section class="section not-found" aria-labelledby="page-title">
+  <div class="wrap">
+    <h1 id="page-title">{{ t.hero.h1 }}</h1>
+    <p class="lede">{{ t.hero.lede }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ '/' | url }}">{{ nav[0].title }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="sections" aria-labelledby="sections-title" data-placement="not_found">
+  <div class="wrap">
+    <h2 id="sections-title">{{ t.sections.heading }}</h2>
+    <div class="btn-row">
+      {%- for item in nav %}
+      {%- if item.url != '/' %}
+      <a class="btn" href="{{ item.url | url }}">{{ item.title }}</a>
+      {%- endif %}
+      {%- endfor %}
+    </div>
+    <p class="lede block-note">{{ t.booking.text }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+    </div>
+  </div>
+</section>

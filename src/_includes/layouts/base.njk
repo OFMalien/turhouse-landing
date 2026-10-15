@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+{% include "components/head.njk" %}
+</head>
+<body{% if heroOverlay %} class="has-hero-overlay"{% endif %}>
+{% include "components/analytics-noscript.njk" %}
+<a class="skip-link" href="#main">Перейти до змісту</a>
+{% include "components/header.njk" %}
+{% include "components/drawer.njk" %}
+<main id="main" tabindex="-1">
+{{ content | safe }}
+</main>
+{% include "components/footer.njk" %}
+{% include "components/sticky-cta.njk" %}
+{% if promoModal %}{% include "components/promo-modal.njk" %}{% endif %}
+<script src="{{ '/assets/js/app.js' | url }}" defer></script>
+<script src="{{ '/assets/js/tracking.js' | url }}" defer></script>
+{%- for s in pageScripts %}
+<script src="{{ s | url }}" defer></script>
+{%- endfor %}
+</body>
+</html>

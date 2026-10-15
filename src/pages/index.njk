@@ -1,0 +1,151 @@
+---
+permalink: "/"
+eleventyComputed:
+  title: "{{ texts.home.meta.title | safe }}"
+  description: "{{ texts.home.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.home.meta.breadcrumbTitle | safe }}"
+promoModal: true
+heroOverlay: true
+schemaType: home
+analytics:
+  page_type: home
+  item_category: general
+---
+{%- set t = texts.home %}
+<section class="hero on-dark" aria-labelledby="hero-title" data-placement="hero_header">
+  <div class="hero__media">
+    {% photo t.hero.photo, { priority: true, sizes: "100vw", class: "media" } %}
+  </div>
+  <div class="wrap hero__inner">
+    <p class="caption">{{ site.address.short }}</p>
+    <p class="hero__name" aria-hidden="true">Tur House</p>
+    <h1 id="hero-title"><span class="hero__h1-main">{{ t.hero.h1Main }}</span> <span class="hero__h1-sub">{{ t.hero.h1Sub }}</span></h1>
+    <ul class="tag-list" aria-label="Коротко про комплекс">
+      {%- for tag in t.hero.tags %}
+      <li>{{ tag }}</li>
+      {%- endfor %}
+    </ul>
+    <div class="btn-row">
+      <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-band" aria-hidden="true">
+  <div class="marquee-track">
+    {%- for round in [1, 2, 3, 4] %}{% for item in t.marquee %}
+    <span>{{ item }}</span>
+    {%- endfor %}{% endfor %}
+  </div>
+</div>
+
+{% include "components/promo-banner.njk" %}
+
+<section class="section" id="formats" aria-labelledby="formats-title">
+  <div class="wrap">
+    <p class="caption">{{ t.formats.caption }}</p>
+    <h2 id="formats-title">{{ t.formats.heading }}</h2>
+    <p class="lede block-note">{{ t.formats.included }}</p>
+    <div class="cards-grid" data-placement="formats_section">
+      {%- asyncEach fmt in t.formats.items %}
+      {%- set prices = formatPrices[fmt.id] %}
+      {% include "components/format-card.njk" %}
+      {%- endeach %}
+    </div>
+  </div>
+</section>
+
+<section class="sauna-band on-dark" id="sauna" aria-labelledby="sauna-title" data-placement="spa_section">
+  <div class="wrap sauna-band__inner">
+    <div class="sauna-band__copy">
+      <p class="caption">{{ t.spa.caption }}</p>
+      <h2 id="sauna-title">{{ t.spa.heading }}</h2>
+      <p class="sauna-band__price">{{ t.spa.priceLead }} <strong>{{ spa.price.first | price }}&nbsp;грн</strong> {{ spa.price.per }} {{ spa.price.firstLabel }}, {{ spa.price.nextLabel }} - <strong>{{ spa.price.next | price }}&nbsp;грн</strong>.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="{{ t.spa.link.url | url }}">{{ t.spa.link.label }}</a>
+      </div>
+    </div>
+    <div class="sauna-band__media">
+      {% photo t.spa.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight" id="sauna-cards">
+  <div class="wrap">
+    {%- set cardInfoOnly = true %}
+    <div class="cards-grid">
+      {%- asyncEach item in spa.cards %}
+      {% include "components/card-object.njk" %}
+      {%- endeach %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="area" aria-labelledby="area-title" data-placement="area_teaser">
+  <div class="wrap split split--reverse">
+    <div class="split__media">
+      {% photo t.area.photo, { sizes: "(min-width: 960px) 520px, 100vw", class: "media" } %}
+    </div>
+    <div class="split__copy">
+      <h2 id="area-title">{{ t.area.heading }}</h2>
+      <p class="lede">{{ t.area.text }}</p>
+      <div class="btn-row">
+        <a class="btn" href="{{ t.area.link.url | url }}">{{ t.area.link.label }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="reviews" aria-labelledby="reviews-title" data-placement="reviews_section">
+  <div class="wrap">
+    <p class="caption">{{ reviews.caption }}</p>
+    <p class="caption">{{ reviews.label }}</p>
+    <h2 id="reviews-title">{{ reviews.heading }}</h2>
+    <div class="review-grid">
+      {%- for r in reviews.items %}
+      <figure class="review-card">
+        <p class="review-card__stars" role="img" aria-label="Оцінка {{ r.rating }} з 5"><span aria-hidden="true">{% for i in range(0, r.rating) %}★{% endfor %}</span></p>
+        <blockquote class="review-card__text"><p>«{{ r.text }}»</p></blockquote>
+        <figcaption class="review-card__who"><span class="review-card__name">{{ r.author }}</span> <span class="review-card__src">{{ reviews.cardLabel }}</span></figcaption>
+      </figure>
+      {%- endfor %}
+    </div>
+    <p class="reviews-more"><a class="btn" href="{{ site.links.googleMaps }}" target="_blank" rel="noopener">{{ reviews.moreLabel }}</a></p>
+  </div>
+</section>
+
+<section class="section" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <h2 id="faq-title">{{ t.faq.heading }}</h2>
+    <div class="faq-list">
+      {%- for item in faq %}
+      <details class="faq-item" id="faq-{{ item.id }}">
+        <summary>{{ item.q }}</summary>
+        <div class="faq-item__answer">
+          <p>{{ item.a }}</p>
+          {%- if item.links and item.links.length %}
+          <p class="faq-item__links">
+            {%- for l in item.links %}<a href="{{ l.url | url }}">{{ l.label }}</a>{% if not loop.last %} {% endif %}{% endfor %}
+          </p>
+          {%- endif %}
+        </div>
+      </details>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="location" aria-labelledby="location-title" data-placement="location_section">
+  <div class="wrap">
+    <p class="caption">{{ t.location.caption }}</p>
+    <h2 id="location-title">{{ t.location.heading }}</h2>
+    <address class="location-address">{{ site.address.line }}</address>
+    <p class="lede">{{ t.location.text }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.googleMapsRoute }}" target="_blank" rel="noopener">{{ site.cta.routeGoogle }}</a>
+      <a class="btn" href="{{ site.links.waze }}" target="_blank" rel="noopener">{{ site.cta.routeWaze }}</a>
+      <a class="btn" href="{{ t.location.link.url | url }}">{{ t.location.link.label }}</a>
+    </div>
+  </div>
+</section>

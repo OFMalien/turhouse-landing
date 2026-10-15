@@ -1,0 +1,41 @@
+[
+  {
+    "id": "standard",
+    "category": "rooms",
+    "title": "Стандарт",
+    "capacity": "2 гості",
+    "price": 2500,
+    "promoPrice": 2000,
+    "features": [
+      "19 м²"
+    ],
+    "photo": "rooms/standard-bedroom",
+    "area": 19
+  },
+  {
+    "id": "napivlyuks",
+    "category": "rooms",
+    "title": "Напівлюкс",
+    "capacity": "2 гості",
+    "price": 2800,
+    "promoPrice": 2240,
+    "features": [
+      "22 м²"
+    ],
+    "photo": "rooms/napivlyuks-bedroom",
+    "area": 22
+  },
+  {
+    "id": "lyuks",
+    "category": "rooms",
+    "title": "Люкс",
+    "capacity": "2 гості",
+    "price": 3000,
+    "promoPrice": 2400,
+    "features": [
+      "25 м²"
+    ],
+    "photo": "rooms/room-panorama-window",
+    "area": 25
+  }
+]

@@ -1,0 +1,60 @@
+---
+permalink: "/kafe/"
+eleventyComputed:
+  title: "{{ texts.kafe.meta.title | safe }}"
+  description: "{{ texts.kafe.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.kafe.meta.breadcrumbTitle | safe }}"
+schemaType: kafe
+analyticsKind: cafe
+---
+{%- set t = texts.kafe %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section section--alt" id="menu" aria-labelledby="menu-title">
+  <div class="wrap">
+    <h2 id="menu-title">{{ t.menu.heading }}</h2>
+    <div class="menu-columns">
+      {%- for sec in menu.sections %}
+      <div class="menu-section{% if sec.items.length > 8 %} menu-section--long{% endif %}" id="menu-{{ sec.id }}">
+        <h3 id="menu-{{ sec.id }}-title">{{ sec.title }}</h3>
+        <ul class="menu-list">
+          {%- for item in sec.items %}
+          <li class="menu-item" id="{{ item.id }}">
+            <div class="menu-item__main">
+              <p class="menu-item__name">{{ item.title }}</p>
+              {%- if item.details or item.weight %}
+              <p class="menu-item__meta">{% if item.details %}{{ item.details }}{% endif %}{% if item.details and item.weight %}, {% endif %}{% if item.weight %}{{ item.weight }}{% endif %}</p>
+              {%- endif %}
+              {%- if item.variants %}
+              <ul class="menu-item__variants">
+                {%- for v in item.variants %}
+                <li>{{ v }}</li>
+                {%- endfor %}
+              </ul>
+              {%- endif %}
+            </div>
+            <p class="menu-item__price">{{ item.price | price }}&nbsp;грн</p>
+          </li>
+          {%- endfor %}
+        </ul>
+      </div>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="hours" aria-labelledby="hours-title" data-placement="cafe_hours">
+  <div class="wrap">
+    <h2 id="hours-title">{{ t.hours.heading }}</h2>
+    <p class="lede block-note">{{ t.hours.text }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}"><span class="nowrap">{{ site.phone.display }}</span></a>
+      <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+    </div>
+  </div>
+</section>
+
+{%- set gallery = t.gallery %}
+{%- set galleryPhotos = cafe.gallery | reject("equalto", cafe.photo) %}
+{% include "components/gallery-block.njk" %}

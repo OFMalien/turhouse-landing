@@ -1,0 +1,65 @@
+---
+permalink: "/kontakty/"
+eleventyComputed:
+  title: "{{ texts.kontakty.meta.title | safe }}"
+  description: "{{ texts.kontakty.meta.description | safe }}"
+  breadcrumbTitle: "{{ texts.kontakty.meta.breadcrumbTitle | safe }}"
+schemaType: kontakty
+analyticsKind: contacts
+---
+{%- set t = texts.kontakty %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section section--tight" id="channels" aria-label="Як з нами зв'язатися" data-placement="contacts_cards">
+  <div class="wrap">
+    <div class="cards-grid">
+      <article class="card-object contact-card" id="phone">
+        <div class="card-object__body">
+          <h2 id="phone-title">{{ t.phone.heading }}</h2>
+          {%- if t.phone.text %}
+          <p class="card-object__desc">{{ t.phone.text }}</p>
+          {%- endif %}
+          <div class="card-object__actions">
+            <a class="btn btn-primary" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}"><span class="nowrap">{{ site.phone.display }}</span></a>
+          </div>
+        </div>
+      </article>
+      <article class="card-object contact-card" id="instagram">
+        <div class="card-object__body">
+          <h2 id="instagram-title">{{ t.instagram.heading }}</h2>
+          {%- if t.instagram.text %}
+          <p class="card-object__desc">{{ t.instagram.text }}</p>
+          {%- endif %}
+          <div class="card-object__actions">
+            <a class="btn btn-primary" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+          </div>
+        </div>
+      </article>
+      <article class="card-object contact-card" id="booking">
+        <div class="card-object__body">
+          <h2 id="booking-title">{{ t.booking.heading }}</h2>
+          {%- if t.booking.text %}
+          <p class="card-object__desc">{{ t.booking.text }}</p>
+          {%- endif %}
+          <div class="card-object__actions">
+            <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="where" aria-label="Адреса" data-placement="contacts_where">
+  <div class="wrap">
+    <div id="address">
+      <h2 id="address-title">{{ t.address.heading }}</h2>
+      <address class="location-address">{{ site.address.full }}</address>
+      <p class="lede">{{ t.address.text }}</p>
+      <div class="btn-row">
+        <a class="btn" href="{{ t.address.link.url | url }}">{{ t.address.link.label }}</a>
+      </div>
+    </div>
+  </div>
+</section>

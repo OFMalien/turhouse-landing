@@ -1,0 +1,60 @@
+---
+permalink: "/yak-distatysya/"
+eleventyComputed:
+  title: "{{ texts['yak-distatysya'].meta.title | safe }}"
+  description: "{{ texts['yak-distatysya'].meta.description | safe }}"
+  breadcrumbTitle: "{{ texts['yak-distatysya'].meta.breadcrumbTitle | safe }}"
+schemaType: yak-distatysya
+analyticsKind: route
+---
+{%- set t = texts['yak-distatysya'] %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section" id="route">
+  <div class="wrap split split--text">
+    <div class="split__copy">
+      <h2 id="route-title">{{ t.route.heading }}</h2>
+      <p class="lede">{{ t.route.text }}</p>
+    </div>
+    <div class="split__copy" id="address">
+      <h2 id="address-title">{{ t.address.heading }}</h2>
+      <address class="location-address">{{ site.address.full }}</address>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="navigator" aria-labelledby="navigator-title" data-placement="route_buttons">
+  <div class="wrap">
+    <h2 id="navigator-title">{{ t.navigator.heading }}</h2>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.googleMapsRoute }}" target="_blank" rel="noopener">{{ site.cta.routeGoogle }}</a>
+      <a class="btn" href="{{ site.links.waze }}" target="_blank" rel="noopener">{{ site.cta.routeWaze }}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="map" aria-labelledby="map-title">
+  <div class="wrap">
+    <h2 id="map-title">{{ t.map.heading }}</h2>
+    <div class="map-box is-loaded" id="map-box">
+      <iframe class="map-box__frame" src="{{ site.links.mapEmbed }}" title="Мапа проїзду до {{ site.name }}, {{ site.address.locality }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="help" data-placement="route_help">
+  <div class="wrap">
+    <div id="support">
+      <h2 id="support-title">{{ t.help.heading }}</h2>
+      <p class="lede">{{ t.help.text }}</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}"><span class="nowrap">{{ site.phone.display }}</span></a>
+        <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+        {%- for l in t.help.links %}
+        <a class="btn" href="{{ l.url | url }}">{{ l.label }}</a>
+        {%- endfor %}
+      </div>
+    </div>
+  </div>
+</section>

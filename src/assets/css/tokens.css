@@ -1,0 +1,67 @@
+/* Токени дизайн-системи Amrit Palace (перенесено з бойового index.html, зміни за ТЗ §5).
+   Кольори: дозволені пари за контрастом перевіряє scripts/check-contrast.mjs. */
+:root {
+  /* Палітра */
+  --color-parchment: #d8cbb8;        /* основний фон */
+  --color-parchment-light: #e4dacf;  /* фон карток і плашок */
+  --color-linen: #bfb4a3;            /* другорядний текст на темному */
+  --color-warm-stone: #b6ab9c;       /* ТІЛЬКИ бордери й лінії, не текст */
+  --color-walnut: #4e483e;           /* другорядний текст, підписи */
+  --color-espresso: #38342e;         /* темні блоки, текст другого рівня */
+  --color-onyx-warm: #1f1e1c;        /* основний текст */
+  --color-midnight-roast: #1a1816;   /* найтемніший фон (шапка, drawer) */
+  --color-saffron-glow: #c88742;     /* ТІЛЬКИ фон кнопок і декор, не текст на світлому */
+  --color-saffron-bright: #d49653;   /* ховер кнопок, акцент на темному */
+
+  /* Ролі (у компонентах використовуємо ролі, а не сирі кольори) */
+  --bg-page: var(--color-parchment);
+  --bg-card: var(--color-parchment-light);
+  --bg-dark: var(--color-espresso);
+  --bg-darkest: var(--color-midnight-roast);
+  --text: var(--color-onyx-warm);
+  --text-soft: var(--color-espresso);
+  --text-muted: var(--color-walnut);
+  --text-on-dark: var(--color-parchment);
+  --text-on-dark-muted: var(--color-linen);
+  --accent-on-dark: var(--color-saffron-bright);
+  --line: var(--color-warm-stone);
+  --line-on-dark: rgba(216, 203, 184, 0.15);
+  --line-on-dark-strong: rgba(216, 203, 184, 0.4);
+  --focus-ring: var(--color-saffron-bright);
+
+  /* Шрифти */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Кегль. Мінімум 14px для будь-якого тексту; основний 16px (менше для полів вводу - зум в iOS). */
+  --text-caption: 14px;
+  --text-small: 14px;
+  --text-body: 16px;
+  --text-lede: 17px;
+  --text-lg: 20px;
+
+  /* Форми й відступи */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --section-gap: clamp(64px, 8.5vw, 140px);
+  --card-padding: 28px;
+  --container: 1200px;
+  --gutter: 28px;
+
+  /* Шари */
+  --z-nav: 100;
+  --z-drawer: 150;
+  --z-modal: 200;
+  --z-lightbox: 250;
+
+  /* Рух */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 0.2s ease;
+  --t-base: 0.3s ease;
+
+  /* Золото (макет Gemini, Макс 05.10.2026): только заливки, рамки и крупный текст на тёмном; на светлом фоне как цвет текста не используется */
+  --gold-light: #ecd49b;
+  --gold: #c9a45c;
+  --gold-deep: #b08a45;
+  --gold-grad: linear-gradient(135deg, #ecd49b 0%, #c9a45c 55%, #b08a45 100%);
+}
