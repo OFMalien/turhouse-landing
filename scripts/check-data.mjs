@@ -507,31 +507,25 @@ else {
   if (kafePage.hero?.photo !== cafe?.photo) fail('texts/kafe.json: hero.photo має збігатися з cafe.photo');
 }
 
-// texts/okolitsi.json: околиці та парк природи «Беремицьке» (E3-T13). Факти про парк: лише підтверджені сайтом парку (beremytske.com.ua) і другим джерелом;
-// Tur House не частина парку і не використовує його брендинг (ТЗ §6); годин, цін квитків, відстаней немає.
+// texts/okolitsi.json: путівник «Беремицьке» на сторінці «Околиці» (17.10.2026).
+// Факти про парк: підтверджені beremytske.com.ua («Про парк», «Контакти»); чужих телефонів і зовнішніх посилань немає (питання 24б).
 const okolitsi = contentFiles.includes('okolitsi.json') ? readContent('okolitsi.json') : null;
 if (!okolitsi) fail('texts/okolitsi.json: немає файлу');
 else {
-  checkMeta('okolitsi.json', okolitsi.meta, { titleHas: ['парк природи «Беремицьке»', 'Tur House'], descHas: ['парк природи «Беремицьке»', 'під Києвом', 'дітьми'] });
-  if (okolitsi.hero?.h1 !== 'Околиці Tur House') fail('texts/okolitsi.json: hero.h1 «Околиці Tur House» (Макс 10.10.2026)');
+  checkMeta('okolitsi.json', okolitsi.meta, { titleHas: ['«Беремицьке»', 'Tur House'], descHas: ['«Беремицьке»', 'під Києвом', 'дітьми'] });
+  if (okolitsi.hero?.h1 !== 'Околиці Tur House і парк природи «Беремицьке»') fail('texts/okolitsi.json: hero.h1 «Околиці Tur House і парк природи «Беремицьке»» (Макс 17.10.2026)');
   if (!/Чернігівщин/.test(okolitsi.hero?.lede || '') || !/поруч із парком природи «Беремицьке»/.test(okolitsi.hero?.lede || '')) fail('texts/okolitsi.json: hero.lede про Чернігівщину та «поруч із парком природи «Беремицьке»»');
   const introO = okolitsi.intro?.text || '';
   if (!/^За кілька хвилин їзди знаходиться парк природи «Беремицьке»/.test(introO)) fail('texts/okolitsi.json: вступ як «Що навколо» на живому лендингу («За кілька хвилин їзди знаходиться парк природи «Беремицьке»…»)');
-  // заголовок блоку про парк і фразу «Парк працює окремо…» знято (Макс 10.10.2026)
-  if (okolitsi.park?.heading || /Парк працює окремо/.test(okolitsi.park?.text || '')) fail('texts/okolitsi.json: park.heading і «Парк працює окремо…» знято (Макс 10.10.2026)');
-  if (okolitsi.park?.link || /beremytske\.com\.ua|сайт[іу]? парку[^,]/i.test(JSON.stringify(okolitsi.park || {}).replace('За інформацією на сайті парку,', ''))) fail('texts/okolitsi.json: посилання на сайт парку і відсилання «дивіться на сайті парку» знято (питання 24б)');
+  if (okolitsi.park?.link || /beremytske\.com\.ua/i.test(JSON.stringify(okolitsi.park || {}))) fail('texts/okolitsi.json: посилання на сайт парку знято (питання 24б)');
   if (!/дитячий майданчик/.test(okolitsi.family?.text || '')) fail('texts/okolitsi.json: family.text про дитячий майданчик (barn.json)');
   if (okolitsi.weekend) fail('texts/okolitsi.json: блок weekend знято (Макс 05.10.2026: самодельний SEO-абзац)');
-  if (okolitsi.desna || okolitsi.stay?.text) fail('texts/okolitsi.json: блок «Десна і тиша» і текст «Де зупинитися поруч» знято (Макс 06.10.2026: скорочення тексту: повтори)');
-  // не вигадувати про парк: інші тварини (зубри, коні Пржевальського, ведмеді, вовки, тури), площа, рік відкриття, ціни, години, відстані, розваги, яких немає в джерелах Tur House
+  // не вигадувати про парк: інші тварини (зубри, бізони, ведмеді, вовки), яких немає в джерелах Tur House
   const okJson = JSON.stringify(okolitsi);
-  if (new RegExp(`(?<![${CYR_CLASS}])(зубр|бізон|пржевальськ|ведмід|ведмед|вовк|рис[іь]|тур[иіів]|тарпан|гектар|\\d+\\s*га|2017|вежа|оглядов|лучн|стрільб|велосипед|кемпінг|ресторан|квиток|вхід)`, 'i').test(okJson.replace(/вартість квитків/gi, '').replace(/квитків/gi, ''))) fail('texts/okolitsi.json: про парк є тварини, розваги чи умови, яких не підтверджено (дикі коні, тури, оглядова вежа, вхід тощо)');
-  if (/\d{1,2}[:.]\d{2}|\d+\s*(га|гектар)/i.test(okJson)) fail('texts/okolitsi.json: годин роботи, площі парку в тексті немає');
+  if (new RegExp(`(?<![${CYR_CLASS}])(зубр|бізон|пржевальськ|ведмід|ведмед|вовк|рис[іь]|велосипед|кемпінг)`, 'i').test(okJson)) fail('texts/okolitsi.json: про парк є тварини чи умови, яких не підтверджено (зубри, ведмеді тощо)');
   if (/(наш|наші|наше)\s+(парк|тварин|коні|екостежк)/i.test(okJson)) fail('texts/okolitsi.json: Tur House не називає парк і його тварин своїми (ТЗ §6)');
   checkPagePhotos('okolitsi.json', [okolitsi.hero?.photo, ...(okolitsi.gallery?.photos || [])]);
   if (!same(okolitsi.gallery?.photos, ['territory/playground', 'territory/table-tennis', 'territory/volleyball', 'territory/badminton']) || okolitsi.hero?.photo !== 'okolitsi/horse-sunset') fail('texts/okolitsi.json: шапка — згенерований кадр okolitsi/horse-sunset (Макс 05.10.2026), у галереї кадрів парку, Десни і лісу поки немає; у галереї чотири кадри розваг з Instagram Tur House (пост 23.06.2026)');
-
-  if (okolitsi.stay) fail('texts/okolitsi.json: блоки «Якщо гостей…», «Якщо вас менше», «Баня і проживання», «Де зупинитися поруч» знято (Макс 06.10.2026: «лишнее»), перелінковка через меню і картки');
 }
 
 // texts/yak-distatysya.json: як дістатися (E3-T14). Маршрут тільки з живого лендингу; C9: жодних км і часу в дорозі; транспорт, парковка, в'їзд невідомі.

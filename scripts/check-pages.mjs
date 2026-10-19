@@ -542,8 +542,8 @@ const PAGE_RULES = {
     if (doc.querySelector('[id="desna"]')) f('блока «Десна і тиша» бути не повинно (Макс 06.10.2026: скорочення тексту: повтор шапки)');
     if (!sameText(doc.querySelector('#family-title')?.text, t.family.heading) || !sameText(doc.querySelector('#family .lede')?.text, t.family.text)) f(`блок «З дітьми» не збігається з ${file}`);
     if (doc.querySelector('[id="weekend"]')) f('блока «Як провести вихідні» бути не повинно (знято, Макс 05.10.2026)');
-    // де зупинитися: шість посилань
-    if (doc.querySelector('[id="stay"]')) f('блока «Де зупинитися поруч» бути не повинно (Макс 06.10.2026)');
+    // де зупинитися: блок #stay (17.10.2026)
+    if (!doc.querySelector('[id="stay"]')) f('немає блока #stay');
 
 
     // кадри: шапка і галерея з texts, без повторів

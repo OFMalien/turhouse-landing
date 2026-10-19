@@ -1007,6 +1007,7 @@ body { background-image: var(--leaf-pattern-light); background-size: 220px 220px
 .section--tight { padding-block: clamp(40px, 5vw, 80px); }
 .text-section { padding-block: clamp(36px, 5vw, 72px) 0; }
 .text-section .lede { max-width: 70ch; }
+.okolitsi-guide h2 ~ .lede { margin-top: 14px; }
 .block-note { margin-top: 18px; }
 .section--tight .cards-grid { margin-top: 32px; }
 

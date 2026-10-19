@@ -23,6 +23,54 @@ analyticsKind: area
   </div>
 </section>
 
+<section class="section text-section okolitsi-guide" id="park-about" aria-labelledby="park-about-title">
+  <div class="wrap">
+    <h2 id="park-about-title">{{ t.about.heading }}</h2>
+    {%- for p in t.about.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+  </div>
+</section>
+
+<section class="section section--alt okolitsi-guide" id="park-animals" aria-labelledby="park-animals-title">
+  <div class="wrap">
+    <h2 id="park-animals-title">{{ t.animals.heading }}</h2>
+    {%- for p in t.animals.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+  </div>
+</section>
+
+<section class="section text-section okolitsi-guide" id="park-sights" aria-labelledby="park-sights-title">
+  <div class="wrap">
+    <h2 id="park-sights-title">{{ t.sights.heading }}</h2>
+    <p class="lede">{{ t.sights.intro }}</p>
+    <ul class="bullet-list">
+      {%- for item in t.sights.items %}
+      <li>{{ item }}</li>
+      {%- endfor %}
+    </ul>
+    <p class="lede block-note">{{ t.sights.after }}</p>
+  </div>
+</section>
+
+<section class="section text-section okolitsi-guide" id="stay" aria-labelledby="stay-title">
+  <div class="wrap">
+    <h2 id="stay-title">{{ t.stay.heading }}</h2>
+    {%- for p in t.stay.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ '/nomery/' | url }}">Номери</a>
+      <a class="btn btn-primary" href="{{ '/kotedzhi/' | url }}">Котеджі</a>
+      <a class="btn btn-primary" href="{{ '/barn-house/' | url }}">Барн-хаус</a>
+      <a class="btn btn-primary" href="{{ '/velykyi-budynok/' | url }}">Великий будинок</a>
+      <a class="btn" href="{{ '/banya-ta-spa/' | url }}">Баня та спа</a>
+      <a class="btn" href="{{ '/kafe/' | url }}">Кафе</a>
+    </div>
+  </div>
+</section>
+
 <section class="section section--alt" id="family" aria-labelledby="family-title">
   <div class="wrap">
     <h2 id="family-title">{{ t.family.heading }}</h2>
@@ -33,3 +81,6 @@ analyticsKind: area
 {%- set gallery = t.gallery %}
 {%- set galleryPhotos = t.gallery.photos %}
 {% include "components/gallery-block.njk" %}
+
+{%- set faqBlock = t.faq %}
+{% include "components/faq-block.njk" %}
