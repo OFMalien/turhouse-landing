@@ -495,6 +495,15 @@
       "promo"
     ]
   },
+  "promo/turtoberfest": {
+    "file": "promo/turtoberfest.jpg",
+    "source": "photo/turtoberfest_2026-10-19.jpg",
+    "alt": "Афіша фестивалю «Turtoberfest»: кухлі пива, ковбаски й пивна тарілка, що входить у пакет",
+    "uses": [
+      "home",
+      "promo"
+    ]
+  },
   "spa/price-poster": {
     "file": "spa/price-poster.jpg",
     "source": "photo/ig_price_bath_2026-09-16.jpg",

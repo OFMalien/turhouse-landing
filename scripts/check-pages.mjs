@@ -110,7 +110,7 @@ function pageContextOf(doc) {
 }
 // Усі суми «N грн» у тексті сторінки мають бути з даних (rooms, cottages, barn, spa, акція, 500 за тварин, меню кафе)
 const menuPrices = readJson('menu.json').sections.flatMap((s) => s.items.map((i) => i.price));
-const ALLOWED_SUMS = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next, ...(spa.extras || []).map((x) => x.amount), 500, ...menuPrices].filter(Boolean));
+const ALLOWED_SUMS = new Set([...rooms.flatMap((r) => [r.price, r.promoPrice]), ...cottages.flatMap((c) => [c.price, c.promoPrice]), ...barn.tariffs.map((x) => x.amount), spa.price.first, spa.price.next, ...(spa.extras || []).map((x) => x.amount), 500, ...menuPrices, ...readJson('festival.json').packages.map((x) => x.amount)].filter(Boolean));
 function checkSums(url, doc) {
   const text = doc.text.replace(/[  ]/g, ' ');
   for (const m of text.matchAll(/(\d[\d ]*\d|\d)\s*грн/g)) {

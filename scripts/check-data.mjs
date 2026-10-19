@@ -15,7 +15,7 @@ const readJson = (name) => {
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 // Дозволені ціни на сайті (п.6 промпта): 2500/2800/3000, 6000/7000, 11000 і 13000 (Барн-хаус), 600+200, 500, ціни акції.
-const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800]);
+const ALLOWED_PRICES = new Set([2500, 2800, 3000, 6000, 7000, 11000, 13000, 600, 200, 500, 2000, 2240, 2400, 4800, 9300, 18200, 27300]); // 9300/18200/27300 - пакети Turtoberfest (Оля, 19.10.2026)
 // суми чана і банщика беремо з spa.extras, а не зі статичного списку: «1500 грн» чи «300 грн» деінде не пройдуть без запису в даних
 for (const x of readJson('spa.json')?.extras || []) ALLOWED_PRICES.add(x.amount);
 const PRICE_KEYS = new Set(['price', 'amount', 'promoPrice', 'was', 'now', 'first', 'next', 'petFee', 'fee']);

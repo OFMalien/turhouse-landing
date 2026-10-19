@@ -1,0 +1,45 @@
+{#- Банер фестивалю (Макс 19.10.2026): стоїть над банером акції −20%, обидві акції діють разом.
+    Після festival.until банер прибирає promo.js (сайт статичний, перезбірки не чекаємо). Тексти - з повідомлення Олі 19.10.2026. -#}
+{%- if festival.enabled %}
+<section class="promo-banner" id="festival" aria-labelledby="festival-title" data-placement="festival_section" data-until="{{ festival.until }}">
+  <div class="wrap">
+    <div class="promo-banner__box">
+      <div class="promo-banner__poster">
+        {% photo festival.image, { sizes: "(min-width: 900px) 400px, 100vw", class: "media" } %}
+      </div>
+      <div class="promo-banner__content">
+        <p class="promo-badge">{{ festival.badge }}</p>
+        <h2 id="festival-title" class="promo-banner__title">{{ festival.title }}</h2>
+        <p class="lede">{{ festival.lead }}</p>
+
+        <ul class="promo-terms">
+          {%- for t in festival.includes %}
+          <li>{{ t }}</li>
+          {%- endfor %}
+        </ul>
+
+        <table class="promo-prices">
+          <caption class="visually-hidden">Вартість пакета</caption>
+          <thead>
+            <tr><th scope="col">Пакет</th><th scope="col">Вартість</th></tr>
+          </thead>
+          <tbody>
+            {%- for row in festival.packages %}
+            <tr class="promo-price">
+              <th scope="row" class="promo-price__who">{{ row.label }}</th>
+              <td class="promo-price__amounts"><strong>{{ row.amount | price }}&nbsp;грн</strong></td>
+            </tr>
+            {%- endfor %}
+          </tbody>
+        </table>
+        <p class="promo-banner__note">{{ festival.note }}</p>
+
+        <div class="btn-row">
+          <a class="btn btn-primary" href="{{ festival.cta.url }}" target="_blank" rel="noopener">{{ festival.cta.label }}</a>
+          <a class="btn" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}">Зателефонувати</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{%- endif %}

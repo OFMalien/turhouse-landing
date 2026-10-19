@@ -143,7 +143,7 @@ for (const jsFile of fs.readdirSync(path.join(siteDir, 'assets/js')).filter((x) 
 }
 
 // Усі допустимі значення data-placement (місце кліку в аналітиці): імена живого сайту збережено, нові для нових блоків. Невідоме значення це опечатка або забутий запис
-const PLACEMENTS_OK = new Set(['header_nav', 'mobile_drawer', 'footer', 'final_cta_band', 'sticky_mobile_cta', 'promo_section_weekend', 'promo_modal_weekend', 'hero_header', 'formats_section', 'spa_section', 'reviews_section', 'location_section', 'cafe_teaser', 'area_teaser',
+const PLACEMENTS_OK = new Set(['header_nav', 'mobile_drawer', 'footer', 'final_cta_band', 'sticky_mobile_cta', 'promo_section_weekend', 'promo_modal_weekend', 'festival_section', 'festival_modal', 'hero_header', 'formats_section', 'spa_section', 'reviews_section', 'location_section', 'cafe_teaser', 'area_teaser',
   'rooms_list', 'cottages_list', 'barn_tariffs', 'spa_price', 'spa_cards', 'cafe_hours', 'route_buttons', 'route_help', 'contacts_cards', 'contacts_where', 'page_booking', 'not_found']);
 
 for (const [url, { doc }] of docs) {
@@ -298,7 +298,7 @@ for (const [url, { doc }] of docs) {
 
   // ----- акція: банер і вікно рівно з promo.json -----
   const wantRows = promoItems.map((r) => ({ who: r.label, was: `${money(r.was)} грн`, now: `${money(r.now)} грн` }));
-  const rowsOf = (sel, whoSel) => doc.querySelectorAll(sel).map((li) => ({ who: norm(li.querySelector(whoSel)?.text), was: norm(li.querySelector('s')?.text), now: norm(li.querySelector('strong')?.text) }));
+  const rowsOf = (root, sel, whoSel) => root.querySelectorAll(sel).map((li) => ({ who: norm(li.querySelector(whoSel)?.text), was: norm(li.querySelector('s')?.text), now: norm(li.querySelector('strong')?.text) }));
   const banner = doc.querySelector('#promo');
   const modal = doc.querySelector('#promo-modal');
   if (promo.enabled && PROMO_BANNER.has(url) && !banner) f('має бути банер акції #promo');
@@ -309,7 +309,7 @@ for (const [url, { doc }] of docs) {
     const g = (s) => norm(banner.querySelector(s)?.text);
     if (g('.promo-badge') !== promo.badge || g('#promo-title') !== promo.title || g('.promo-banner__content > .lede') !== promo.lead || g('.promo-banner__note') !== promo.note) f('банер акції: бейдж, заголовок, текст або примітка не збігаються з promo.json (підзаголовка немає)');
     if (!same(banner.querySelectorAll('.promo-terms li').map((li) => norm(li.text)), promo.terms.map(norm))) f('банер акції: умови не збігаються з promo.json');
-    if (!same(rowsOf('.promo-prices tbody tr', '.promo-price__who'), wantRows)) f(`банер акції: ціни мають бути ${JSON.stringify(wantRows)}`);
+    if (!same(rowsOf(banner, '.promo-prices tbody tr', '.promo-price__who'), wantRows)) f(`банер акції: ціни мають бути ${JSON.stringify(wantRows)}`);
     const cb = banner.querySelector('.btn-row a.btn-primary');
     if (cb?.getAttribute('href') !== promo.cta.url || norm(cb?.text) !== promo.cta.label) f('банер акції: кнопка має вести в Instagram Direct з promo.json');
     const tb = banner.querySelector('.btn-row a:not(.btn-primary)');
@@ -320,7 +320,7 @@ for (const [url, { doc }] of docs) {
     if (modal.getAttribute('hidden') === undefined) f('вікно акції має бути прихованим за замовчуванням');
     if (modal.getAttribute('data-session-key') !== promo.sessionKey) f('вікно акції: data-session-key з promo.json');
     if (g('.promo-badge') !== promo.badge || g('#promo-modal-title') !== (promo.modalTitle || promo.title) || g('.promo-modal__text') !== promo.modalText) f('вікно акції: бейдж, заголовок або текст не збігаються з promo.json');
-    if (!same(rowsOf('.promo-rows li', 'span:first-child'), wantRows)) f(`вікно акції: ціни мають бути ${JSON.stringify(wantRows)}`);
+    if (!same(rowsOf(modal, '.promo-rows li', 'span:first-child'), wantRows)) f(`вікно акції: ціни мають бути ${JSON.stringify(wantRows)}`);
     const cb = modal.querySelector('a.btn-primary');
     if (cb?.getAttribute('href') !== promo.cta.url || norm(cb?.text) !== promo.cta.label) f('вікно акції: кнопка має вести в Instagram Direct з promo.json');
     if (modal.querySelector('a.promo-modal__more')?.getAttribute('href') !== (banner ? '#promo' : `${prefix}/#promo`)) f('вікно акції: «Деталі акції» веде на банер #promo (на цій сторінці або на головній)');

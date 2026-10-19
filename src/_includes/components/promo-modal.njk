@@ -1,4 +1,25 @@
 {%- from "components/icons.njk" import close %}
+{#- Вікно фестивалю показується замість вікна −20% до festival.until, потім знову вікно −20% (вибирає promo.js). #}
+{%- if festival.enabled %}
+<div class="promo-modal" id="festival-modal" role="dialog" aria-modal="true" aria-labelledby="festival-modal-title" data-placement="festival_modal" data-session-key="{{ festival.sessionKey }}" data-until="{{ festival.until }}" hidden>
+  <div class="promo-modal__dialog" tabindex="-1">
+    <button type="button" class="promo-modal__close" aria-label="Закрити">{{ close() }}</button>
+    <p class="promo-badge">{{ festival.badge }}</p>
+    <p class="promo-modal__title" id="festival-modal-title">{{ festival.title }}</p>
+    <p class="promo-modal__text">{{ festival.lead }}</p>
+    <ul class="promo-rows">
+      {%- for row in festival.packages %}
+      <li>
+        <span>{{ row.label }}</span>
+        <span class="promo-rows__amounts"><strong>{{ row.amount | price }}&nbsp;грн</strong></span>
+      </li>
+      {%- endfor %}
+    </ul>
+    <a class="btn btn-primary" href="{{ festival.cta.url }}" target="_blank" rel="noopener">{{ festival.cta.label }}</a>
+    <a class="promo-modal__more" href="{% if promoElsewhere %}{{ '/' | url }}{% endif %}#festival">Деталі фестивалю</a>
+  </div>
+</div>
+{%- endif %}
 {%- if promo.enabled %}
 <div class="promo-modal" id="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-modal-title" data-placement="promo_modal_weekend" data-session-key="{{ promo.sessionKey }}" hidden>
   <div class="promo-modal__dialog" tabindex="-1">
