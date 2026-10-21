@@ -119,7 +119,7 @@ const PROMO_MODAL = new Set(['/', '/nomery/', '/kotedzhi/']);
     if (dupLocs.length) fail('sitemap.xml', `повторні адреси: ${[...new Set(dupLocs)].join(', ')}`);
     const wantLocs = [...docs.keys()].filter((u) => u !== '/404.html').map((u) => `${ORIGIN}${u}`);
     if (!same([...locs].sort(), [...wantLocs].sort())) fail('sitemap.xml', `адреси мають збігатися зі зібраними сторінками без 404: зайві ${JSON.stringify(locs.filter((x) => !wantLocs.includes(x)))}, відсутні ${JSON.stringify(wantLocs.filter((x) => !locs.includes(x)))}`);
-    if (locs.length !== 11) fail('sitemap.xml', `у sitemap має бути 11 адрес (10 розділів і політика), є ${locs.length}`);
+    if (locs.length !== 12) fail('sitemap.xml', `у sitemap має бути 12 адрес (10 розділів, путівник «Рибалка і гриби» і політика), є ${locs.length}`);
     for (const loc of locs) {
       const page = [...docs.entries()].find(([u]) => `${ORIGIN}${u}` === loc);
       if (page && page[1].doc.querySelector('link[rel="canonical"]')?.getAttribute('href') !== loc) fail('sitemap.xml', `адреса ${loc} не збігається з canonical сторінки`);

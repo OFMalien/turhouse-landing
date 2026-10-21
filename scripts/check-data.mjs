@@ -627,7 +627,7 @@ else {
 }
 
 // набір текстових файлів: по одному на кожну сторінку (10 контентних + політика + 404)
-const TEXT_FILES = ['404.json', 'banya-ta-spa.json', 'barn-house.json', 'home.json', 'kafe.json', 'kontakty.json', 'kotedzhi.json', 'nomery.json', 'okolitsi.json', 'pryvatnist.json', 'velykyi-budynok.json', 'yak-distatysya.json'];
+const TEXT_FILES = ['404.json', 'banya-ta-spa.json', 'barn-house.json', 'home.json', 'kafe.json', 'kontakty.json', 'kotedzhi.json', 'nomery.json', 'okolitsi.json', 'pryvatnist.json', 'rybalka-i-hryby.json', 'velykyi-budynok.json', 'yak-distatysya.json'];
 if (!same([...contentFiles].sort(), TEXT_FILES)) fail(`texts/: має бути рівно ${TEXT_FILES.length} файлів ${TEXT_FILES.join(', ')}, є ${[...contentFiles].sort().join(', ')}`);
 
 // promoItems (похідні від rooms і cottages): рівно ціни Олі

@@ -320,6 +320,24 @@ export function okolitsiNodes(data) {
 }
 extras.okolitsi = okolitsiNodes;
 
+// Рибалка і гриби: Article-путівник без about (окремої сутності, як парк на «Околицях», тут немає); питання йдуть у FAQPage через pageFaqPage.
+export function rybalkaNodes(data) {
+  const page = data.texts['rybalka-i-hryby'];
+  return [
+    {
+      '@type': 'Article',
+      '@id': abs('/rybalka-i-hryby/#article'),
+      headline: page.hero.h1,
+      description: page.meta.description,
+      url: abs('/rybalka-i-hryby/'),
+      mainEntityOfPage: abs('/rybalka-i-hryby/'),
+      inLanguage: 'uk',
+      publisher: { '@id': abs('/#lodging') },
+    },
+  ];
+}
+extras.rybalka = rybalkaNodes;
+
 // Як дістатися: WebPage про розташування і Place з адресою і координатами з site.json (координати з публічної картки Google Карт).
 // Координати лише в розмітці, у видимому тексті їх немає. Км, час у дорозі і опис траси в розмітку не потрапляють (C9).
 export function routeNodes(data) {

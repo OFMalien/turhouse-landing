@@ -20,7 +20,7 @@ const errors = [];
 const fail = (where, m) => errors.push(`${where}: ${m}`);
 
 // адреса сторінки -> ім'я в uses паспорта
-const SLUG = { '/': 'home', '/nomery/': 'nomery', '/kotedzhi/': 'kotedzhi', '/barn-house/': 'barn-house', '/velykyi-budynok/': 'velykyi-budynok', '/banya-ta-spa/': 'banya', '/kafe/': 'kafe', '/okolitsi/': 'okolitsi', '/yak-distatysya/': 'yak-distatysya', '/kontakty/': 'kontakty' };
+const SLUG = { '/': 'home', '/nomery/': 'nomery', '/kotedzhi/': 'kotedzhi', '/barn-house/': 'barn-house', '/velykyi-budynok/': 'velykyi-budynok', '/banya-ta-spa/': 'banya', '/kafe/': 'kafe', '/okolitsi/': 'okolitsi', '/yak-distatysya/': 'yak-distatysya', '/kontakty/': 'kontakty', '/rybalka-i-hryby/': 'rybalka-i-hryby' };
 const PROMO_PAGES = new Set(['/', '/nomery/', '/kotedzhi/']); // тут стоїть банер акції, афіша акції показується на всіх трьох
 
 const pages = [];

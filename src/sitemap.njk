@@ -13,6 +13,12 @@ eleventyExcludeFromCollections: true
   </url>
 {%- endfor %}
   <url>
+    <loc>{{ '/rybalka-i-hryby/' | absoluteUrl }}</loc>
+    <lastmod>{{ env.buildDate }}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>{{ '/pryvatnist/' | absoluteUrl }}</loc>
     <lastmod>{{ env.buildDate }}</lastmod>
     <changefreq>monthly</changefreq>

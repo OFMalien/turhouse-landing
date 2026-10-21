@@ -86,7 +86,7 @@ for (const f of htmlFiles) {
     const dupIds = defined.filter((x, i) => defined.indexOf(x) !== i);
     if (dupIds.length) fail(`${name}: повторні @id: ${[...new Set(dupIds)].join(', ')}`);
     for (const r of referenced) if (!defined.includes(r)) fail(`${name}: посилання на неіснуючий вузол @id ${r}`);
-    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['House'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/yak-distatysya/': ['WebPage', 'Place'], '/kontakty/': ['ContactPage'] };
+    const EXPECT_TOP = { '/': ['FAQPage'], '/nomery/': ['ItemList'], '/kotedzhi/': ['ItemList'], '/barn-house/': ['House'], '/banya-ta-spa/': ['DaySpa', 'Service'], '/kafe/': ['CafeOrCoffeeShop'], '/okolitsi/': ['Article', 'TouristAttraction'], '/rybalka-i-hryby/': ['Article'], '/yak-distatysya/': ['WebPage', 'Place'], '/kontakty/': ['ContactPage'] };
     // Внутрішні сторінки з блоком «Питання та відповіді» (texts/<сторінка>.json -> faq.items) мають ще FAQPage з тими самими питаннями
     const pageFaqItems = slug !== 'home' && fs.existsSync(new URL(`../src/_data/texts/${slug}.json`, import.meta.url)) ? textsOf(slug).faq?.items : null;
     if (pageFaqItems?.length) {
@@ -387,7 +387,16 @@ for (const f of htmlFiles) {
         }
         if (/Tur House/.test(`${p.name} ${p.description}`)) fail(`${name}: TouristAttraction описує парк, а не Tur House (ТЗ §6: не називати себе частиною парку)`);
       }
-    } else if (articles.length || attractions.length) fail(`${name}: Article і TouristAttraction лише на /okolitsi/`);
+    } else if (name === 'rybalka-i-hryby/index.html') {
+      // Рибалка і гриби: один Article-путівник без about, TouristAttraction тут немає
+      const rh = readData('texts/rybalka-i-hryby.json');
+      const wantA = { '@type': 'Article', '@id': `${ORIGIN}/rybalka-i-hryby/#article`, headline: rh.hero.h1, description: rh.meta.description, url: `${ORIGIN}/rybalka-i-hryby/`, mainEntityOfPage: `${ORIGIN}/rybalka-i-hryby/`, inLanguage: 'uk', publisher: { '@id': `${ORIGIN}/#lodging` } };
+      if (articles.length !== 1 || attractions.length) fail(`${name}: має бути один Article і жодного TouristAttraction, є ${articles.length} і ${attractions.length}`);
+      else {
+        for (const k of Object.keys(articles[0])) if (!(k in wantA)) fail(`${name}: у Article невідоме поле «${k}»`);
+        for (const [k, v] of Object.entries(wantA)) if (!same(articles[0][k], v)) fail(`${name}: Article.${k} має бути ${JSON.stringify(v)}, є ${JSON.stringify(articles[0][k])}`);
+      }
+    } else if (articles.length || attractions.length) fail(`${name}: Article лише на /okolitsi/ і /rybalka-i-hryby/, TouristAttraction лише на /okolitsi/`);
 
     // Як дістатися: WebPage про розташування і Place з адресою і координатами з site.json; нічого про км, час і трасу
     const webpages = graph.filter((n) => n['@type'] === 'WebPage');

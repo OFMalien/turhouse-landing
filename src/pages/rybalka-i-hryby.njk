@@ -1,0 +1,163 @@
+---
+permalink: "/rybalka-i-hryby/"
+eleventyComputed:
+  title: "{{ texts['rybalka-i-hryby'].meta.title | safe }}"
+  description: "{{ texts['rybalka-i-hryby'].meta.description | safe }}"
+  breadcrumbTitle: "{{ texts['rybalka-i-hryby'].meta.breadcrumbTitle | safe }}"
+schemaType: rybalka
+analyticsKind: area
+---
+{%- set t = texts['rybalka-i-hryby'] %}
+{%- set hero = t.hero %}
+{% include "components/page-hero.njk" %}
+
+<section class="section text-section okolitsi-guide" id="fish" aria-labelledby="fish-title">
+  <div class="wrap">
+    <h2 id="fish-title">{{ t.fish.heading }}</h2>
+    {%- for p in t.fish.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+  </div>
+</section>
+
+<section class="section section--alt okolitsi-guide" id="bay" aria-labelledby="bay-title">
+  <div class="wrap">
+    <h2 id="bay-title">{{ t.bay.heading }}</h2>
+    {%- for p in t.bay.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+    <ul class="gallery-grid">
+      {%- asyncEach id in t.bay.photos %}
+      <li>{% photo id, { sizes: "(min-width: 960px) 380px, (min-width: 600px) 50vw, 100vw", class: "media" } %}</li>
+      {%- endeach %}
+    </ul>
+  </div>
+</section>
+
+<section class="section text-section okolitsi-guide" id="shore" aria-labelledby="shore-title">
+  <div class="wrap">
+    <h2 id="shore-title">{{ t.shore.heading }}</h2>
+    {%- for p in t.shore.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+  </div>
+</section>
+
+<section class="section text-section okolitsi-guide" id="rules" aria-labelledby="rules-title">
+  <div class="wrap">
+    <h2 id="rules-title">{{ t.rules.heading }}</h2>
+    <p class="lede">{{ t.rules.intro }}</p>
+    <ul class="bullet-list">
+      {%- for item in t.rules.items %}
+      <li>{{ item }}</li>
+      {%- endfor %}
+    </ul>
+    {%- for p in t.rules.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+  </div>
+</section>
+
+<section class="section section--alt okolitsi-guide" id="mushrooms" aria-labelledby="mushrooms-title">
+  <div class="wrap">
+    <h2 id="mushrooms-title">{{ t.mushrooms.heading }}</h2>
+    {%- for p in t.mushrooms.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+    <ul class="gallery-grid gallery-grid--thirds">
+      {%- asyncEach id in t.mushrooms.photos %}
+      <li>{% photo id, { sizes: "(min-width: 1260px) 376px, (min-width: 700px) 33vw, 100vw", class: "media" } %}</li>
+      {%- endeach %}
+    </ul>
+  </div>
+</section>
+
+<section class="section text-section okolitsi-guide" id="season" aria-labelledby="season-title">
+  <div class="wrap">
+    <h2 id="season-title">{{ t.season.heading }}</h2>
+    {%- for p in t.season.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+  </div>
+</section>
+
+<section class="section text-section okolitsi-guide" id="where" aria-labelledby="where-title">
+  <div class="wrap">
+    <h2 id="where-title">{{ t.where.heading }}</h2>
+    {%- for p in t.where.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+  </div>
+</section>
+
+<section class="section text-section okolitsi-guide" id="safety" aria-labelledby="safety-title">
+  <div class="wrap">
+    <h2 id="safety-title">{{ t.safety.heading }}</h2>
+    <ul class="bullet-list">
+      {%- for item in t.safety.items %}
+      <li>{{ item }}</li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="section text-section okolitsi-guide" id="twins" aria-labelledby="twins-title">
+  <div class="wrap">
+    <h2 id="twins-title">{{ t.twins.heading }}</h2>
+    <ul class="bullet-list">
+      {%- for item in t.twins.items %}
+      <li>{{ item }}</li>
+      {%- endfor %}
+    </ul>
+    <p class="lede block-note">{{ t.twins.after }}</p>
+  </div>
+</section>
+
+{#- Ціни з _data (rooms, cottages, barn, spa), як у llms.njk: у шаблоні цифр немає. -#}
+{%- set chan = spa.extras[0] %}
+<section class="section section--alt okolitsi-guide" id="stay" aria-labelledby="stay-title">
+  <div class="wrap">
+    <h2 id="stay-title">{{ t.stay.heading }}</h2>
+    <p class="lede">{{ t.stay.intro }}</p>
+    <ul class="bullet-list">
+      {%- for r in rooms %}
+      <li>Номер «{{ r.title }}», {{ r.capacity }}: {{ r.price | price }} грн</li>
+      {%- endfor %}
+      {%- for c in cottages %}
+      <li>{{ c.title }}: {{ c.price | price }} грн</li>
+      {%- endfor %}
+      {%- for tariff in barn.tariffs %}
+      <li>{{ tariff.name or barn.title }}, {{ tariff.label }}: {{ tariff.amount | price }} грн</li>
+      {%- endfor %}
+    </ul>
+    {%- for p in t.stay.paragraphs %}
+    <p class="lede">{{ p }}</p>
+    {%- endfor %}
+    <p class="lede">{{ t.stay.bathHours }} Перша година коштує {{ spa.price.first | price }} грн {{ spa.price.per }}, кожна наступна {{ spa.price.next | price }} грн. Чан обійдеться в {{ chan.amount | price }} грн {{ chan.unit }}, {{ chan.note | lower }}.</p>
+    <p class="lede">{{ t.stay.cafe }}</p>
+    <p class="lede">{{ t.stay.area }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ '/nomery/' | url }}">Номери</a>
+      <a class="btn btn-primary" href="{{ '/kotedzhi/' | url }}">Котеджі</a>
+      <a class="btn btn-primary" href="{{ '/barn-house/' | url }}">Барн-хаус</a>
+      <a class="btn btn-primary" href="{{ '/velykyi-budynok/' | url }}">Великий будинок</a>
+      <a class="btn" href="{{ '/banya-ta-spa/' | url }}">Баня та спа</a>
+      <a class="btn" href="{{ '/kafe/' | url }}">Кафе</a>
+      <a class="btn" href="{{ '/okolitsi/' | url }}">Околиці</a>
+    </div>
+  </div>
+</section>
+
+{%- set faqBlock = t.faq %}
+{% include "components/faq-block.njk" %}
+
+<section class="section text-section okolitsi-guide" id="weekend" aria-labelledby="weekend-title" data-placement="page_booking">
+  <div class="wrap">
+    <h2 id="weekend-title">{{ t.weekend.heading }}</h2>
+    <p class="lede">{{ t.weekend.text }}</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="{{ site.links.booking }}" target="_blank" rel="noopener">{{ site.cta.booking }}</a>
+      <a class="btn" href="{{ site.links.instagramDirect }}" target="_blank" rel="noopener">{{ site.cta.instagram }}</a>
+    </div>
+  </div>
+</section>

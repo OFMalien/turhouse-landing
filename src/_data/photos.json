@@ -572,5 +572,93 @@
       "kontakty"
     ],
     "generated": true
+  },
+  "rybalka/pike-house": {
+    "file": "rybalka/pike-house.jpg",
+    "source": "photo/photo_2026-10-13_07-44-07.jpg",
+    "alt": "Щука, спіймана на затоці Десни, на тлі будинку Tur House",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "rybalka/two-pikes": {
+    "file": "rybalka/two-pikes.jpg",
+    "source": "photo/photo_2026-10-13_07-52-23.jpg",
+    "alt": "Дві щуки, спіймані на затоці Десни біля Tur House",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "rybalka/perch": {
+    "file": "rybalka/perch.jpg",
+    "source": "photo/photo_2026-10-13_07-52-22.jpg",
+    "alt": "Окунь із затоки Десни біля Tur House",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "rybalka/fish-in-hand": {
+    "file": "rybalka/fish-in-hand.jpg",
+    "source": "photo/photo_2026-10-13_07-52-24.jpg",
+    "alt": "Риба в руці біля води на затоці Десни",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "rybalka/bay-sunset": {
+    "file": "rybalka/bay-sunset.jpg",
+    "source": "photo/photo_2026-10-13_07-50-16.jpg",
+    "alt": "Затока Десни біля Tur House на заході сонця",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "hryby/forest-moss": {
+    "file": "hryby/forest-moss.jpg",
+    "source": "photo/photo_7_2026-10-17_12-06-05.jpg",
+    "alt": "Гриб на моху серед опалого листя в лісі",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "hryby/moss": {
+    "file": "hryby/moss.jpg",
+    "source": "photo/photo_3_2026-10-17_12-06-05.jpg",
+    "alt": "Гриб із коричневим капелюшком на зеленому моху",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "hryby/needles": {
+    "file": "hryby/needles.jpg",
+    "source": "photo/photo_2_2026-10-17_12-06-05.jpg",
+    "alt": "Гриб серед соснової хвої в лісі",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "hryby/leaves": {
+    "file": "hryby/leaves.jpg",
+    "source": "photo/photo_6_2026-10-17_12-06-05.jpg",
+    "alt": "Молодий гриб у лісовій підстилці",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "hryby/bowl-bench": {
+    "file": "hryby/bowl-bench.jpg",
+    "source": "photo/photo_4_2026-10-17_12-06-05.jpg",
+    "alt": "Миска зібраних лісових грибів",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
+  },
+  "hryby/bowl-lawn": {
+    "file": "hryby/bowl-lawn.jpg",
+    "source": "photo/photo_5_2026-10-17_12-06-05.jpg",
+    "alt": "Зібрані гриби в мисці на газоні",
+    "uses": [
+      "rybalka-i-hryby"
+    ]
   }
 }

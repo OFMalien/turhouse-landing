@@ -40,3 +40,4 @@ eleventyExcludeFromCollections: true
 {%- set slug = 'home' if item.url == '/' else item.url | replace('/', '') %}
 - [{{ item.title | safe }}]({{ item.url | absoluteUrl }}): {{ texts[slug].meta.description | safe }}
 {%- endfor %}
+- [{{ texts['rybalka-i-hryby'].meta.breadcrumbTitle | safe }}]({{ '/rybalka-i-hryby/' | absoluteUrl }}): {{ texts['rybalka-i-hryby'].meta.description | safe }}
