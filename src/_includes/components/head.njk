@@ -3,8 +3,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {#- Захист без ризику для аналітики (vibe-audit 02.10.2026): без чужого <base>, плагінів і відправки форм на чужі адреси.
-    script-src не обмежуємо: старі контейнери GTM (чиї - невідомо) можуть вставляти теги з інших доменів, і підрахунок броні тихо зламався б. #}
-<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; form-action 'self'">
+    script-src не обмежуємо: старі контейнери GTM (чиї - невідомо) можуть вставляти теги з інших доменів, і підрахунок броні тихо зламався б.
+    form-action пропускає www.facebook.com: піксель Meta шле частину подій формою на facebook.com/tr (Макс 27.10.2026). #}
+<meta http-equiv="Content-Security-Policy" content="base-uri 'self'; object-src 'none'; form-action 'self' https://www.facebook.com">
 <title>{{ pageTitle }}</title>
 {%- if description %}
 <meta name="description" content="{{ description }}">
