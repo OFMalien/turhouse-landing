@@ -59,6 +59,30 @@ analyticsKind: spa
   </div>
 </section>
 
+<section class="section section--tight" id="themed-days" aria-labelledby="themed-days-title">
+  <div class="wrap">
+    <h2 id="themed-days-title">{{ t.themedDays.heading }}</h2>
+    <div class="cards-grid">
+      {%- for d in t.themedDays.items %}
+      {%- set p = spa.themedPrices[d.id] %}
+      <article class="card-object">
+        <div class="card-object__body">
+          <h3>{{ d.title }}</h3>
+          <p class="card-object__desc">{{ d.text }}</p>
+          {%- if d.note %}
+          <p class="card-object__note">{{ d.note }}</p>
+          {%- endif %}
+          {%- if p %}
+          <p class="price"><strong>{{ p.amount | price }}&nbsp;грн</strong> <span class="price__unit">{{ p.unit }}</span></p>
+          {%- endif %}
+        </div>
+      </article>
+      {%- endfor %}
+    </div>
+    <p class="block-note">{{ t.themedDays.note }}</p>
+  </div>
+</section>
+
 <section class="section section--tight" id="cards" aria-labelledby="cards-title">
   <div class="wrap">
     <h2 id="cards-title">{{ t.cards.heading }}</h2>

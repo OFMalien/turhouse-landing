@@ -364,7 +364,8 @@ for (const [url, { doc }] of docs) {
   for (const m of bodyText.matchAll(/\+38[\d\s()-]{8,}\d/g)) if (norm(m[0]) !== site.phone.display) f(`у тексті телефон «${norm(m[0])}», а має бути «${site.phone.display}»`);
   for (const m of bodyText.matchAll(/вул\.\s*Лугов\S*,?\s*\d+/g)) if (!site.address.full.startsWith(norm(m[0]))) f(`у тексті адреса «${norm(m[0])}» не збігається з site.json`);
   const pctOk = String(promo.title.match(/(\d+)\s*%/)?.[1] || promo.shortLabel.match(/(\d+)\s*%/)?.[1]);
-  for (const m of bodyText.matchAll(/(\d+)\s*%/g)) if (m[1] !== pctOk) f(`у тексті відсоток «${m[0]}», знижка за promo.json ${pctOk}%`);
+  // Виняток: «Баня + чан» зі знижкою 10% (тематичні банні дні, Оля, Макс 10.11.2026)
+  for (const m of bodyText.replace('пакетна ціна зі знижкою 10%', '').matchAll(/(\d+)\s*%/g)) if (m[1] !== pctOk) f(`у тексті відсоток «${m[0]}», знижка за promo.json ${pctOk}%`);
 
   // ----- картинки: файли, alt із паспорта фото, завантаження -----
   for (const img of doc.querySelectorAll('img')) {

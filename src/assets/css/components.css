@@ -1201,6 +1201,8 @@ body { background-image: var(--leaf-pattern-light); background-size: 220px 220px
 .price-poster { margin: 36px auto 0; width: min(100%, 420px); }
 /* Плитки цін бані (4 штуки) в один ряд, а не 3 + 1 */
 #price .cards-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+/* Тематичні банні дні (4 картки) теж в один ряд */
+#themed-days .cards-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
 /* Списки «Що є в номері / котеджі» у дві колонки на широких екранах */
 @media (min-width: 800px) { #in-room .check-list, #in-cottage .check-list { max-width: none; grid-template-columns: 1fr 1fr; column-gap: 56px; } }
 .price-poster img { width: 100%; aspect-ratio: 3 / 4; object-fit: contain; background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius-md); }

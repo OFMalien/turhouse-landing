@@ -31,6 +31,12 @@
       "unit": "за бажанням"
     }
   ],
+  "themedPrices": {
+    "ponedilok": {
+      "amount": 600,
+      "unit": "за 2 години з особи"
+    }
+  },
   "cards": [
     {
       "id": "banya",

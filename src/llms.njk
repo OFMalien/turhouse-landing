@@ -28,6 +28,7 @@ eleventyExcludeFromCollections: true
 - {{ (t.name or barn.title) | safe }}, {{ t.label | safe }}: {{ t.amount | price }} грн за добу
 {%- endfor %}
 - Баня: {{ spa.price.first | price }} грн {{ spa.price.per | safe }} {{ spa.price.firstLabel | safe }}, {{ spa.price.next | price }} грн {{ spa.price.nextLabel | safe }}
+- {{ texts['banya-ta-spa'].themedDays.heading | safe }}: {% for d in texts['banya-ta-spa'].themedDays.items %}{{ d.title | safe }}{{ '; ' if not loop.last }}{% endfor %}
 - {{ texts['banya-ta-spa'].booking.text | safe }}
 
 **Часті питання**
