@@ -513,6 +513,16 @@
     ],
     "people": true
   },
+  "spa/bath-scene": {
+    "file": "spa/bath-scene.jpg",
+    "source": "img/spa/bath-scene.jpg",
+    "alt": "Банщик Tur House у дерев'яній бані біля теплої неонової вивіски",
+    "uses": [
+      "banya"
+    ],
+    "people": true,
+    "generated": true
+  },
   "territory/playground": {
     "file": "territory/playground.jpg",
     "source": "photo/ig_fun_playground_2026-06-23.jpg",

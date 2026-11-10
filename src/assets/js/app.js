@@ -200,3 +200,53 @@
     }, { passive: true });
   });
 })();
+
+/* Тематичні банні дні: перемикання кнопок-табличок і показ пропозиції дня */
+(function () {
+  var container = document.querySelector('[data-bath-interactive]');
+  if (!container) return;
+
+  var tabs = Array.prototype.slice.call(container.querySelectorAll('[role="tab"]'));
+  var panels = Array.prototype.slice.call(container.querySelectorAll('[role="tabpanel"]'));
+
+  function activate(tab, setFocus) {
+    var targetId = tab.getAttribute('aria-controls');
+    tabs.forEach(function (t) {
+      var selected = t === tab;
+      t.setAttribute('aria-selected', selected ? 'true' : 'false');
+      t.classList.toggle('is-active', selected);
+    });
+    panels.forEach(function (p) {
+      var match = p.id === targetId;
+      if (match) {
+        p.removeAttribute('hidden');
+        p.classList.add('is-active');
+      } else {
+        p.setAttribute('hidden', '');
+        p.classList.remove('is-active');
+      }
+    });
+    if (setFocus) tab.focus();
+  }
+
+  container.addEventListener('click', function (e) {
+    var tab = e.target.closest ? e.target.closest('[role="tab"]') : null;
+    if (tab) activate(tab, false);
+  });
+
+  container.addEventListener('keydown', function (e) {
+    var tab = e.target.closest ? e.target.closest('[role="tab"]') : null;
+    if (!tab) return;
+    var idx = tabs.indexOf(tab);
+    if (idx === -1) return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      var next = (idx + 1) % tabs.length;
+      activate(tabs[next], true);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      var prev = (idx - 1 + tabs.length) % tabs.length;
+      activate(tabs[prev], true);
+    }
+  });
+})();

@@ -61,25 +61,57 @@ analyticsKind: spa
 
 <section class="section section--tight" id="themed-days" aria-labelledby="themed-days-title">
   <div class="wrap">
-    <h2 id="themed-days-title">{{ t.themedDays.heading }}</h2>
-    <div class="cards-grid">
-      {%- for d in t.themedDays.items %}
-      {%- set p = spa.themedPrices[d.id] %}
-      <article class="card-object">
-        <div class="card-object__body">
+    <div class="bath-interactive" data-bath-interactive>
+      <header class="bath-heading">
+        <h2 id="themed-days-title">{{ t.themedDays.heading }}</h2>
+      </header>
+      <div class="bath-scene">
+        {% photo "spa/bath-scene", { sizes: "(min-width: 900px) 900px, 100vw", class: "bath-scene__photo" } %}
+        <img class="bath-scene__logo" src="{{ env.pathPrefix }}assets/img/static/spa/turhouse-logo-wood.webp" alt="Tur House" width="266" height="266" loading="lazy" decoding="async">
+        <img class="bath-steam bath-steam--near" src="{{ env.pathPrefix }}assets/img/static/spa/steam.webp" alt="" aria-hidden="true" width="600" height="200" loading="lazy" decoding="async">
+        <img class="bath-steam bath-steam--far" src="{{ env.pathPrefix }}assets/img/static/spa/steam.webp" alt="" aria-hidden="true" width="600" height="200" loading="lazy" decoding="async">
+      </div>
+      <div class="bath-choices" role="tablist" aria-label="{{ t.themedDays.heading }}">
+        {%- set plaqueLabels = ["День банщика", "Понеділок", "Середа", "Баня + чан"] %}
+        {%- for d in t.themedDays.items %}
+        {%- set isDefault = (d.id == "ponedilok") %}
+        <button
+          type="button"
+          role="tab"
+          class="bath-choice{% if isDefault %} is-active{% endif %}"
+          id="tab-{{ d.id }}"
+          aria-selected="{% if isDefault %}true{% else %}false{% endif %}"
+          aria-controls="panel-{{ d.id }}"
+        >
+          <span>{{ plaqueLabels[loop.index0] }}</span>
+          <svg class="bath-choice__check" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M11.4669 3.72684C11.7558 3.97441 11.788 4.40706 11.5405 4.69596L6.54046 10.5293C6.41749 10.6728 6.2386 10.7549 6.05001 10.7549C5.86142 10.7549 5.68253 10.6728 5.55956 10.5293L3.45956 8.07929C3.212 7.79039 3.24422 7.35774 3.53312 7.11018C3.82201 6.86261 4.25466 6.89483 4.50223 7.18373L6.05001 8.98947L10.4978 3.80045C10.7454 3.51155 11.178 3.47933 11.4669 3.72684Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+        </button>
+        {%- endfor %}
+      </div>
+      <div class="bath-panels">
+        {%- for d in t.themedDays.items %}
+        {%- set p = spa.themedPrices[d.id] %}
+        {%- set isDefault = (d.id == "ponedilok") %}
+        <div
+          role="tabpanel"
+          id="panel-{{ d.id }}"
+          aria-labelledby="tab-{{ d.id }}"
+          class="bath-offer{% if isDefault %} is-active{% endif %}"
+          {% if not isDefault %}hidden{% endif %}
+        >
           <h3>{{ d.title }}</h3>
-          <p class="card-object__desc">{{ d.text }}</p>
+          <p>{{ d.text }}</p>
           {%- if d.note %}
-          <p class="card-object__note">{{ d.note }}</p>
+          <p class="bath-offer__note">{{ d.note }}</p>
           {%- endif %}
           {%- if p %}
-          <p class="price"><strong>{{ p.amount | price }}&nbsp;грн</strong> <span class="price__unit">{{ p.unit }}</span></p>
+          <p class="bath-price"><strong>{{ p.amount | price }}&nbsp;грн</strong> <span>{{ p.unit }}</span></p>
           {%- endif %}
         </div>
-      </article>
-      {%- endfor %}
+        {%- endfor %}
+      </div>
+      <p class="block-note">{{ t.themedDays.note }}</p>
     </div>
-    <p class="block-note">{{ t.themedDays.note }}</p>
   </div>
 </section>
 
