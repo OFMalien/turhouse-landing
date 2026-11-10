@@ -1225,7 +1225,7 @@ body { background-image: var(--leaf-pattern-light); background-size: 220px 220px
   padding: 10px 12px;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  background: url("/assets/img/static/spa/wood-plaque.webp") center / 100% 100% no-repeat;
+  background: url("../img/static/spa/wood-plaque.webp") center / 100% 100% no-repeat;
   color: #2b170e;
   font-family: var(--font-serif);
   font-size: 22px;
