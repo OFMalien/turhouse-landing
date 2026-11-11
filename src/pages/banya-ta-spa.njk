@@ -68,6 +68,9 @@ analyticsKind: spa
       <div class="bath-interactive__layout">
         <div class="bath-scene">
           {% photo "spa/bath-scene", { sizes: "(min-width: 900px) 480px, 100vw", class: "bath-scene__photo" } %}
+          <div class="bath-scene__light" aria-hidden="true">
+            {% photo "spa/bath-scene", { sizes: "(min-width: 900px) 480px, 100vw" } %}
+          </div>
           <img class="bath-scene__logo" src="{{ env.pathPrefix }}assets/img/static/spa/turhouse-logo-wood.webp" alt="Tur House" width="266" height="266" loading="lazy" decoding="async">
           <img class="bath-steam bath-steam--near" src="{{ env.pathPrefix }}assets/img/static/spa/steam.webp" alt="" aria-hidden="true" width="600" height="200" loading="lazy" decoding="async">
           <img class="bath-steam bath-steam--far" src="{{ env.pathPrefix }}assets/img/static/spa/steam.webp" alt="" aria-hidden="true" width="600" height="200" loading="lazy" decoding="async">
@@ -83,6 +86,7 @@ analyticsKind: spa
               class="bath-choice{% if isDefault %} is-active{% endif %}"
               id="tab-{{ d.id }}"
               aria-selected="{% if isDefault %}true{% else %}false{% endif %}"
+              tabindex="{% if isDefault %}0{% else %}-1{% endif %}"
               aria-controls="panel-{{ d.id }}"
             >
               <span>{{ plaqueLabels[loop.index0] }}</span>
@@ -96,6 +100,7 @@ analyticsKind: spa
             {%- set isDefault = (d.id == "ponedilok") %}
             <div
               role="tabpanel"
+              tabindex="0"
               id="panel-{{ d.id }}"
               aria-labelledby="tab-{{ d.id }}"
               class="bath-offer{% if isDefault %} is-active{% endif %}"

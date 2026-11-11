@@ -214,6 +214,7 @@
     tabs.forEach(function (t) {
       var selected = t === tab;
       t.setAttribute('aria-selected', selected ? 'true' : 'false');
+      t.tabIndex = selected ? 0 : -1;
       t.classList.toggle('is-active', selected);
     });
     panels.forEach(function (p) {

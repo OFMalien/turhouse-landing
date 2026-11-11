@@ -1210,6 +1210,9 @@ body { background-image: var(--leaf-pattern-light); background-size: 220px 220px
 .bath-scene { position: relative; aspect-ratio: 1024 / 784; overflow: hidden; border-radius: var(--radius-md); isolation: isolate; background-color: var(--color-espresso); }
 .bath-scene .bath-scene__photo picture,
 .bath-scene .bath-scene__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.bath-scene__light { position: absolute; inset: 0; clip-path: inset(0 0 58% 40%); mix-blend-mode: screen; opacity: .06; animation: bath-light 5.5s ease-in-out infinite alternate; pointer-events: none; }
+.bath-scene__light picture,
+.bath-scene__light img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .bath-scene__logo { position: absolute; width: 26%; height: auto; top: 36%; right: 12%; filter: drop-shadow(0 3px 3px rgba(40, 23, 15, 0.6)); pointer-events: none; }
 .bath-steam { position: absolute; width: 130%; height: 45%; object-fit: contain; left: -15%; bottom: -15%; opacity: 0; pointer-events: none; animation: bath-steam 12s linear infinite; }
 .bath-steam--near { animation-delay: -4s; }
@@ -1284,7 +1287,12 @@ body { background-image: var(--leaf-pattern-light); background-size: 220px 220px
   65% { opacity: .1; }
   100% { translate: 6% -85%; opacity: 0; }
 }
+@keyframes bath-light {
+  from { opacity: .025; filter: brightness(1); }
+  to { opacity: .15; filter: brightness(1.15); }
+}
 @media (prefers-reduced-motion: reduce) {
+  .bath-scene__light { animation: none; opacity: .06; }
   .bath-steam { animation: none; opacity: .06; translate: 0 -5%; }
   .bath-steam--far { display: none; }
   .bath-choice { transition: none; }
