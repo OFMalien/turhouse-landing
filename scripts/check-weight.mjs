@@ -66,7 +66,7 @@ for (const file of pages) {
     if (h.startsWith(prefix + '/assets/')) cssGz += gz(fs.readFileSync(local(h)));
   }
   for (const s of doc.querySelectorAll('script[src]')) {
-    const h = s.getAttribute('src');
+    const h = s.getAttribute('src').split('?')[0];
     if (h.startsWith(prefix + '/assets/')) jsGz += gz(fs.readFileSync(local(h)));
   }
   let eager = 0;

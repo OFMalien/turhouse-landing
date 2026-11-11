@@ -200,8 +200,8 @@ for (const [url, { doc }] of docs) {
   if (!doc.querySelectorAll('link[rel="stylesheet"]').some((l) => new RegExp(`^${prefix}/assets/css/main\\.css\\?v=[0-9a-f]{10}$`).test(l.getAttribute('href') || ''))) f('немає link на main.css з префіксом');
   const scripts = doc.querySelectorAll('script[src]').map((s) => s.getAttribute('src'));
   for (const src of scripts) { if (/^https?:\/\//.test(src)) { if (!HEAD_EXTERNAL_OK.some((h) => src.startsWith(h))) f(`script: зовнішня адреса «${src}» не з дозволеного списку`); } else localFile(url, src, 'script'); }
-  if (!scripts.includes(`${prefix}/assets/js/app.js`)) f('немає скрипта app.js');
-  if (doc.querySelectorAll('script[src$="app.js"]').length !== 1) f('app.js має бути підключений один раз');
+  if (!scripts.some((src) => new RegExp(`^${prefix}/assets/js/app\\.js\\?v=[0-9a-f]{10}$`).test(src))) f('немає скрипта app.js з версією');
+  if (scripts.filter((src) => src.split('?')[0].endsWith('/app.js')).length !== 1) f('app.js має бути підключений один раз');
   if (doc.querySelectorAll('script[src$="tracking.js"]').length !== 1 || !scripts.includes(`${prefix}/assets/js/tracking.js`)) f('tracking.js (аналітика кліків) має бути підключений один раз на кожній сторінці');
   const hasMapJs = scripts.includes(`${prefix}/assets/js/map.js`);
   if (hasMapJs) f('map.js більше не потрібен: карта вантажиться одразу (Макс 06.10.2026)');
