@@ -53,12 +53,12 @@ const NAV_URLS = ['/', '/nomery/', '/kotedzhi/', '/barn-house/', '/velykyi-budyn
 if (!nav || !same(nav.map((n) => n.url), NAV_URLS)) fail(`nav.json: адреси мають бути ${NAV_URLS.join(' ')}`);
 else for (const n of nav) if (!n.title || !n.key) fail(`nav.json: пункт ${n.url} без title або key`);
 
-// rooms: 3 види по 2, ціни і акція (R4, R9)
+// rooms: 3 види по 2, ціни (R4); акція «−50% на чан» номерів не стосується, promoPrice не використовується (Макс 13.11.2026)
 const rooms = readJson('rooms.json');
 if (!rooms || rooms.length !== 3) fail('rooms.json: має бути 3 види номерів');
 else {
   if (!same(rooms.map((r) => r.price), [2500, 2800, 3000])) fail('rooms.json: ціни мають бути 2500, 2800, 3000');
-  if (!same(rooms.map((r) => r.promoPrice), [2000, 2240, 2400])) fail('rooms.json: ціни акції мають бути 2000, 2240, 2400');
+  if (rooms.some((r) => r.promoPrice !== undefined)) fail('rooms.json: promoPrice не використовується, акція номерів не стосується');
   if (!same(rooms.map((r) => r.title), ['Стандарт', 'Напівлюкс', 'Люкс'])) fail('rooms.json: назви Стандарт, Напівлюкс, Люкс');
   for (const r of rooms) {
     if (r.count !== undefined) fail(`rooms.json ${r.id}: кількість номерів на сайті не вказуємо (Макс 06.10.2026), поле count не потрібне`);
@@ -68,12 +68,12 @@ else {
   if (new Set(rooms.map((r) => r.id)).size !== 3) fail('rooms.json: id не унікальні');
 }
 
-// cottages: 2 види по 2, 6000 і 7000, акція тільки у котеджа на 4 (R5, R9), без "будинку на 12"
+// cottages: 2 види по 2, 6000 і 7000 (R5), без "будинку на 12"; акція «−50% на чан» ціни котеджів не чіпає (Макс 13.11.2026)
 const cottages = readJson('cottages.json');
 if (!cottages || cottages.length !== 2) fail('cottages.json: має бути 2 види котеджів');
 else {
   if (!same(cottages.map((c) => c.price), [6000, 7000])) fail('cottages.json: ціни мають бути 6000 і 7000');
-  if (cottages[0].promoPrice !== 4800 || cottages[1].promoPrice !== undefined) fail('cottages.json: ціна акції 4800 тільки у котеджа на 4 гостя (R9; Макс 05.10.2026: інші ціни не рахуємо)');
+  if (cottages.some((c) => c.promoPrice !== undefined)) fail('cottages.json: promoPrice не використовується, акція ціни котеджів не чіпає');
   for (const c of cottages) {
     if (c.count !== undefined) fail(`cottages.json ${c.id}: кількість котеджів на сайті не вказуємо (Макс 06.10.2026: скорочення тексту), поле count не потрібне`);
     if (/12/.test(`${c.title} ${c.capacity}`)) fail(`cottages.json ${c.id}: "на 12" не має бути на сторінці котеджів (R5)`);
@@ -631,13 +631,12 @@ else {
 const TEXT_FILES = ['404.json', 'banya-ta-spa.json', 'barn-house.json', 'home.json', 'kafe.json', 'kontakty.json', 'kotedzhi.json', 'nomery.json', 'okolitsi.json', 'pryvatnist.json', 'rybalka-i-hryby.json', 'velykyi-budynok.json', 'yak-distatysya.json'];
 if (!same([...contentFiles].sort(), TEXT_FILES)) fail(`texts/: має бути рівно ${TEXT_FILES.length} файлів ${TEXT_FILES.join(', ')}, є ${[...contentFiles].sort().join(', ')}`);
 
-// promoItems (похідні від rooms і cottages): рівно ціни Олі
+// promoItems (похідні від rooms і cottages): акція «−50% на чан» не чіпає ціни проживання, rooms/cottages без promoPrice (Макс 13.11.2026)
 const promoItemsModule = await import(new URL('../src/_data/promoItems.js', import.meta.url));
 const promoItems = promoItemsModule.default.map((p) => [p.label, p.was, p.now]);
-const expectedPromo = [['Стандарт', 2500, 2000], ['Напівлюкс', 2800, 2240], ['Люкс', 3000, 2400], ['Котедж', 6000, 4800]];
-if (!same(promoItems, expectedPromo)) fail(`promoItems: очікується ${JSON.stringify(expectedPromo)}, є ${JSON.stringify(promoItems)}`);
+if (promoItems.length !== 0) fail(`promoItems: акція більше не чіпає ціни проживання, має бути [], є ${JSON.stringify(promoItems)}`);
 
-// promo.json: Direct, без дат і днів тижня (R9)
+// promo.json: акція «−50% на чан при бронюванні двокімнатного котеджу» (пост Instagram 12.11.2026, підтверджено Максом 13.11.2026), Direct, без дат і днів тижня (R9)
 const promo = readJson('promo.json');
 if (!promo) fail('promo.json: немає файлу');
 else {
@@ -648,9 +647,9 @@ else {
   const CYR = 'А-Яа-яІіЇїЄєҐґ';
   const dayAbbr = new RegExp(`(^|[^${CYR}])(пн|вт|ср|чт|пт|сб|нд)([^${CYR}]|$)`, 'i');
   if (/\d{1,2}\.\d{1,2}\.\d{2,4}|до\s+\d{1,2}\s+(жовтня|листопада|грудня|січня)|понеділ|вівтор|середа|четвер|п'ятниц/i.test(all) || dayAbbr.test(all)) fail('promo.json: у тексті акції є дата або дні тижня (R9: не писати)');
-  if (!/Це не про втечу від життя\. Це про кілька днів, щоб відновити сили й повернутися до нього трохи спокійнішими/.test(promo.lead)) fail('promo.json: lead без дослівного тексту Олі (R9)');
-  if (promo.subtitle !== undefined) fail('promo.json: subtitle знято (Макс 05.10.2026: умова «проживання від 2000 грн на двох» лишається в terms, як на лендингу)');
-  if (promo.shortLabel !== '−20% у будні' || !promo.terms.includes('Проживання від 2000 грн на двох') || promo.terms[3] !== 'Щоб відновитись, виспатись і просто відпочити') fail('promo.json: shortLabel і умови дослівно з лендингу');
+  if (!/При бронюванні двокімнатного котеджу ви отримуєте знижку 50% на відпочинок у чані/.test(promo.lead)) fail('promo.json: lead без дослівного тексту з Instagram-поста 12.11.2026');
+  if (promo.subtitle !== undefined) fail('promo.json: subtitle не використовується');
+  if (promo.shortLabel !== '−50% на чан') fail('promo.json: shortLabel має бути «−50% на чан»');
 }
 
 
@@ -704,11 +703,11 @@ else {
 
     for (const str of collectStrings(spaP)) for (const m of str.matchAll(/(\d{1,2}:\d{2})\s*до\s*(\d{1,2}:\d{2})/g)) if (m[1] !== '11:00' || m[2] !== '22:00') fail(`banya-ta-spa.json: інші години бані: «${m[0]}» (підтверджено 11:00-22:00)`);
   }
-  // умова акції: будні дні, а не вихідні (Макс 02.10.2026)
+  // умова акції: знижка на чан при бронюванні двокімнатного котеджу, без будніх/вихідних днів (Макс 13.11.2026)
   const promoD = readJson('promo.json');
   if (promoD) {
     const ps = JSON.stringify(promoD);
-    if (!/будн/.test(promoD.shortLabel || '') || !/будн/.test(promoD.title || '') || !(promoD.terms || []).some((t) => /у будні дні/.test(t)) || /вихідн/i.test(ps)) fail('promo.json: акція діє у будні, слова «вихідні» в акції бути не має');
+    if (!/двокімнатного котеджу/.test(ps) || !/чан/i.test(ps) || /будн|вихідн/i.test(ps)) fail('promo.json: акція про знижку на чан при бронюванні двокімнатного котеджу, без «будні»/«вихідні»');
   }
   // адреса, карта, координати, затримка аналітики: закріплено точно
   const siteD = readJson('site.json');

@@ -251,11 +251,10 @@ const PAGE_RULES = {
       if (!l2 || !btn || !sameText(btn.text, l2.label)) f('у картці Барн-хауса на головній має бути друга кнопка на /velykyi-budynok/ з підписом з texts/home.json');
     }
     if (!text('sauna').includes(`${money(spa.price.first)} грн`) || !text('sauna').includes(`${money(spa.price.next)} грн`)) f('у банному блоці немає цін 600 і 200 з spa.json');
-    // у картках звичайні ціни, ціни акції тільки в банері #promo
+    // акція «−50% на чан» не чіпає ціни проживання (Макс 13.11.2026): у картках і банері лише звичайні ціни
     if (promo.enabled) {
       for (const r of rooms) if (r.promoPrice && text('formats').includes(`${money(r.promoPrice)} грн`)) f(`ціна акції ${money(r.promoPrice)} грн не має стояти в картках форматів (тільки в #promo, R9)`);
       if (!doc.querySelector('#promo a[href^="https://ig.me/m/tur_house_"]')) f('кнопка акції має вести на Instagram Direct (R9)');
-      for (const row of [['Стандарт', 2000], ['Напівлюкс', 2240], ['Люкс', 2400], ['Котедж', 4800]]) if (!text('promo').includes(`${money(row[1])} грн`)) f(`у банері акції немає ціни ${row[0]} ${money(row[1])} грн`);
     }
     // контекст аналітики головної: page_type home (ТЗ §9.3), не категорія
     const ctxHome = pageContextOf(doc);

@@ -4,6 +4,9 @@
     <div class="promo-banner__box">
       <div class="promo-banner__poster">
         {% photo promo.image, { sizes: "(min-width: 900px) 400px, 100vw", class: "media" } %}
+        {%- if promo.sticker %}
+        <p class="promo-sticker" aria-hidden="true"><span class="promo-sticker__big">{{ promo.sticker.big }}</span><span class="promo-sticker__small">{{ promo.sticker.small }}</span></p>
+        {%- endif %}
       </div>
       <div class="promo-banner__content">
         <p class="promo-badge">{{ promo.badge }}</p>
@@ -16,6 +19,7 @@
           {%- endfor %}
         </ul>
 
+        {%- if promoItems.length %}
         <table class="promo-prices">
           <caption class="visually-hidden">Ціни за добу зі знижкою</caption>
           <thead>
@@ -33,6 +37,7 @@
             {%- endfor %}
           </tbody>
         </table>
+        {%- endif %}
         <p class="promo-banner__note">{{ promo.note }}</p>
 
         <div class="btn-row">
