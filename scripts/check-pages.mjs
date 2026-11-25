@@ -90,6 +90,7 @@ for (const [url, doc] of docs) {
 
 // Правила окремих сторінок (додаються разом із вёрсткою)
 const promo = readJson('promo.json');
+const winterPromo = readJson('winterPromo.json');
 const rooms = readJson('rooms.json');
 const cottages = readJson('cottages.json');
 const barn = readJson('barn.json');
@@ -132,7 +133,7 @@ function listPage(cfg) {
     if (crumbs.length !== 2 || !sameText(crumbs[0].text, 'Головна') || !sameText(crumbs[1].text, t.meta.breadcrumbTitle) || crumbs[1].getAttribute('aria-current') !== 'page') f(`хлібні крихти мають бути «Головна / ${cfg.crumb}» з aria-current на останньому`);
     if (!sameText(doc.querySelector('.page-hero .lede')?.text, t.hero.lede)) f(`лид шапки не збігається з ${file}`);
     if (doc.querySelector('.text-section')) f('вступного абзацу під шапкою бути не повинно (Макс 06.10.2026: скорочення тексту)');
-    if (doc.querySelector('[id="promo"]')) f('великий банер акції лише на головній (Макс 06.10.2026: скорочення тексту), тут картки ведуть на нього');
+    if (doc.querySelector('#promo, #promo-winter')) f('великий банер акції лише на головній (Макс 06.10.2026: скорочення тексту), тут картки ведуть на нього');
     if (doc.querySelector('[id="group"]')) f('блока #group бути не повинно (Макс 06.10.2026: «Якщо вас менше» лишнее)');
     if (!sameText(doc.querySelector(`[id="${cfg.cardsId}-title"]`)?.text, t.types.heading)) f(`H2 списку не збігається з ${file}`);
     for (const id of ['where', 'kitchen']) if (doc.querySelector(`[id="${id}"]`)) f(`блока #${id} бути не повинно (знято, Макс 05.10.2026)`);
@@ -225,7 +226,8 @@ const PAGE_RULES = {
   '/'(doc, f) {
     const t = texts('home');
     if (doc.querySelector('h1')?.text.trim() !== t.hero.h1) f('H1 має збігатися з texts/home.json');
-    for (const id of ['hero-title', 'promo', 'formats', 'rooms', 'cottages', 'barn', 'sauna']) {
+    for (const id of ['hero-title', 'promo-winter', 'promo', 'formats', 'rooms', 'cottages', 'barn', 'sauna']) {
+      if (id === 'promo-winter' && !winterPromo.enabled) continue;
       if (id === 'promo' && !promo.enabled) continue;
       if (!doc.querySelector(`[id="${id}"]`)) f(`немає блока/якоря #${id} (зовнішні посилання ТЗ §6)`);
     }
@@ -251,6 +253,9 @@ const PAGE_RULES = {
       if (!l2 || !btn || !sameText(btn.text, l2.label)) f('у картці Барн-хауса на головній має бути друга кнопка на /velykyi-budynok/ з підписом з texts/home.json');
     }
     if (!text('sauna').includes(`${money(spa.price.first)} грн`) || !text('sauna').includes(`${money(spa.price.next)} грн`)) f('у банному блоці немає цін 600 і 200 з spa.json');
+    if (winterPromo.enabled) {
+      if (!doc.querySelector('#promo-winter a[href^="https://ig.me/m/tur_house_"]')) f('кнопка зимової акції має вести на Instagram Direct');
+    }
     // акція «−50% на чан» не чіпає ціни проживання (Макс 13.11.2026): у картках і банері лише звичайні ціни
     if (promo.enabled) {
       for (const r of rooms) if (r.promoPrice && text('formats').includes(`${money(r.promoPrice)} грн`)) f(`ціна акції ${money(r.promoPrice)} грн не має стояти в картках форматів (тільки в #promo, R9)`);
@@ -311,7 +316,7 @@ const PAGE_RULES = {
     // розділи сайту, на які веде головна
     for (const u of ['/kafe/', '/okolitsi/', '/yak-distatysya/']) if (!hrefs.includes(u)) f(`немає посилання на ${u}`);
     // кожен блок головної має свій H2 (акція, формати, баня, околиці, відгуки, FAQ, локація, фінальний CTA)
-    for (const id of [...(promo.enabled ? ['promo-title'] : []), 'formats-title', 'sauna-title', 'area-title', 'reviews-title', 'faq-title', 'location-title', 'cta-title']) {
+    for (const id of [...(winterPromo.enabled ? ['promo-winter-title'] : []), ...(promo.enabled ? ['promo-title'] : []), 'formats-title', 'sauna-title', 'area-title', 'reviews-title', 'faq-title', 'location-title', 'cta-title']) {
       const h = doc.querySelector(`h2[id="${id}"]`);
       if (!h || !h.text.trim()) f(`немає H2 #${id}`);
     }
@@ -460,7 +465,7 @@ const PAGE_RULES = {
     if (!same(doc.querySelectorAll('#cards .card-object img').map((i) => photoIdOf(i.getAttribute('src'))), spa.cards.map((c) => c.photo))) f('кадри карточок бані мають бути з spa.json cards[].photo');
     for (const img of gal) if (!(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
     // акції на сторінці бані немає: вона на проживання (R9)
-    if (doc.querySelector('[id="promo"], .promo-modal')) f('акція −20% на проживання, на сторінці бані її немає (R9)');
+    if (doc.querySelector('#promo, #promo-winter, .promo-modal')) f('акція −20% на проживання, на сторінці бані її немає (R9)');
     // контекст аналітики
     const ctx = pageContextOf(doc);
     const exp = { event: 'page_context', page_type: 'category', item_category: 'banya', price_range: `${spa.price.first}-${spa.price.first + spa.price.next}`, content_ids: ['banya-1h'] };
@@ -515,7 +520,7 @@ const PAGE_RULES = {
     if (photoIdOf(doc.querySelector('.page-hero img')?.getAttribute('src')) !== cafe.photo) f(`картинка шапки кафе має бути ${cafe.photo}`);
     for (const img of gal) if (photoIdOfEl(img) !== 'placeholder' && !(img.getAttribute('alt') || '').trim()) f('у кадру галереї порожній alt');
     // акції на сторінці кафе немає, вона на проживання (R9)
-    if (doc.querySelector('[id="promo"], .promo-modal')) f('акція −20% на проживання, на сторінці кафе її немає (R9)');
+    if (doc.querySelector('#promo, #promo-winter, .promo-modal')) f('акція −20% на проживання, на сторінці кафе її немає (R9)');
     // контекст аналітики
     const ctx = pageContextOf(doc);
     const prices = menu.sections.flatMap((sec) => sec.items.map((i) => i.price));
@@ -553,7 +558,7 @@ const PAGE_RULES = {
     if (t.hero.photo !== 'placeholder' && gal.includes(t.hero.photo)) f('кадр шапки повторюється в галереї');
     // на сторінці околиць немає ціни, акції і кнопки броні BookmeNow в межах main
     if (doc.querySelectorAll('main a[href^="https://go.bookmenow.pro"]').length !== doc.querySelectorAll('.cta-band a[href^="https://go.bookmenow.pro"]').length) f('на сторінці околиць немає кнопки броні BookmeNow (крім фінального блока CTA)');
-    if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці околиць немає (R9)');
+    if (doc.querySelector('#promo, #promo-winter, .promo-modal')) f('акції на сторінці околиць немає (R9)');
     const ctx = pageContextOf(doc);
     if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'info', item_category: 'area' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"info","item_category":"area"}, є ${JSON.stringify(ctx)}`);
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
@@ -591,7 +596,7 @@ const PAGE_RULES = {
     if (!sameText(doc.querySelector('#support-title')?.text, t.help.heading) || !sameText(doc.querySelector('#support .lede')?.text, t.help.text)) f(`блок допомоги не збігається з ${file}`);
     if (!doc.querySelector(`#support a[href="tel:${site.phone.tel}"]`) || !doc.querySelector(`#support a[href="${site.links.instagramDirect}"]`)) f('блок допомоги: телефон і Instagram Direct');
     if (photoIdOfEl(doc.querySelector(IMG_OR_PH('.page-hero'))) !== t.hero.photo) f(`кадр шапки має бути ${t.hero.photo}`);
-    if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці маршруту немає (R9)');
+    if (doc.querySelector('#promo, #promo-winter, .promo-modal')) f('акції на сторінці маршруту немає (R9)');
     const ctx = pageContextOf(doc);
     if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'info', item_category: 'route' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"info","item_category":"route"}, є ${JSON.stringify(ctx)}`);
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
@@ -626,7 +631,7 @@ const PAGE_RULES = {
     // графіка роботи і e-mail у джерелах немає
     const mainText = norm(doc.querySelector('main')?.text);
     if (/\d{1,2}[:.]\d{2}\s*[-–]\s*\d{1,2}[:.]\d{2}|графік|щодня|цілодобов|@[a-z0-9.-]+\.[a-z]{2,}|e-?mail|ФОП|ТОВ/i.test(mainText)) f('години роботи, e-mail і реквізити в джерелах невідомі, на сторінці їх немає');
-    if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці контактів немає (R9)');
+    if (doc.querySelector('#promo, #promo-winter, .promo-modal')) f('акції на сторінці контактів немає (R9)');
     const ctx = pageContextOf(doc);
     if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'contact', item_category: 'contacts' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"contact","item_category":"contacts"}, є ${JSON.stringify(ctx)}`);
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
@@ -663,7 +668,7 @@ const PAGE_RULES = {
     if (!doc.querySelector(`#owner a[href$="${t.owner.link.url}"]`)) f(`у блоці власника немає посилання на ${t.owner.link.url}`);
     if (!same(doc.querySelectorAll('#contact a').map((a) => ({ t: norm(a.text), h: stripPrefix(a.getAttribute('href')) })), t.contact.links.map((l) => ({ t: l.label, h: l.url })))) f('посилання в блоці «Питання про дані» не збігаються з texts (підпис і адреса)');
     // політика не розходиться з тим, що сайт робить: без форм (check-site), без акції, без цін
-    if (doc.querySelector('[id="promo"], .promo-modal')) f('акції на сторінці політики немає (R9)');
+    if (doc.querySelector('#promo, #promo-winter, .promo-modal')) f('акції на сторінці політики немає (R9)');
     const ctx = pageContextOf(doc);
     if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'info', item_category: 'general' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"info","item_category":"general"}, є ${JSON.stringify(ctx)}`);
     const hrefs = doc.querySelectorAll('a[href]').map((a) => stripPrefix(a.getAttribute('href').split('#')[0]));
@@ -687,7 +692,7 @@ const PAGE_RULES = {
     if (!sameText(doc.querySelector('#sections .lede')?.text, t.booking.text)) f(`текст про бронювання не збігається з ${file}`);
     const bk = doc.querySelectorAll('#sections .btn-row:last-of-type a');
     if (bk.length !== 1 || bk[0].getAttribute('href') !== site.links.booking || !sameText(bk[0].text, site.cta.booking) || !/\bnoopener\b/.test(bk[0].getAttribute('rel') || '')) f('кнопка броні на 404: BookmeNow з site.json, rel=noopener');
-    if (doc.querySelector('section.cta-band, [id="promo"], .promo-modal')) f('на 404 немає фінального CTA і акції');
+    if (doc.querySelector('section.cta-band, #promo, #promo-winter, .promo-modal')) f('на 404 немає фінального CTA і акції');
     const ctx = pageContextOf(doc);
     if (!ctx || JSON.stringify(ctx) !== JSON.stringify({ event: 'page_context', page_type: 'error', item_category: 'general' })) f(`dataLayer page_context: очікується {"event":"page_context","page_type":"error","item_category":"general"}, є ${JSON.stringify(ctx)}`);
   },

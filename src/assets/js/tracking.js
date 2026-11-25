@@ -9,7 +9,7 @@
   'use strict';
 
   var dataLayer = (window.dataLayer = window.dataLayer || []);
-  var PROMO_PLACEMENTS = { promo_modal_weekend: true, promo_section_weekend: true };
+  var PROMO_PLACEMENTS = { promo_modal_weekend: true, promo_section_weekend: true, promo_modal_winter: true, promo_section_winter: true };
   var OBJECT_CATEGORIES = ['rooms', 'cottages', 'barn', 'banya'];
 
   // Піксель вантажить тег GTM, а GTM стартує при першій дії або через кілька секунд після load: подія кліку може випередити fbq.

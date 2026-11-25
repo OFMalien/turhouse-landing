@@ -652,6 +652,25 @@ else {
   if (promo.shortLabel !== '−50% на чан') fail('promo.json: shortLabel має бути «−50% на чан»');
 }
 
+// winterPromo.json: зимова акція «−20% на котеджі та великі будинки» (Оля, 25.11.2026)
+const winterPromo = readJson('winterPromo.json');
+if (!winterPromo) fail('winterPromo.json: немає файлу');
+else {
+  if (typeof winterPromo.enabled !== 'boolean') fail('winterPromo.json: enabled має бути true/false');
+  if (winterPromo.id !== 'promo-winter') fail('winterPromo.json: id має бути "promo-winter"');
+  if (winterPromo.cta?.url !== 'https://ig.me/m/tur_house_') fail('winterPromo.json: кнопка акції має вести на https://ig.me/m/tur_house_');
+  if (winterPromo.cta?.label !== 'Забронювати зі знижкою') fail('winterPromo.json: текст кнопки "Забронювати зі знижкою"');
+  if (!winterPromo.image || !photos[winterPromo.image]) fail(`winterPromo.json: фото "${winterPromo.image}" немає в photos.json`);
+  else if (photos[winterPromo.image].verify) fail(`winterPromo.json: фото "${winterPromo.image}" позначене verify`);
+  const allWinter = JSON.stringify(winterPromo);
+  if (/[–—]/.test(allWinter)) fail('winterPromo.json: у тексті довге або середнє тире');
+  if (/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(allWinter)) fail('winterPromo.json: у тексті є емодзи (C7)');
+  if (!/01\.12\.2026 - 30\.12\.2026/.test(allWinter) || !/08\.01\.2027 - 28\.02\.2027/.test(allWinter)) fail('winterPromo.json: мають бути періоди проживання 01.12.2026 - 30.12.2026 та 08.01.2027 - 28.02.2027');
+  if (!/вихідні:\s*2 ночі/.test(allWinter)) fail('winterPromo.json: має бути умова про мінімальне проживання у вихідні: 2 ночі');
+  if (!/не сумуються з іншими акційними пропозиціями/.test(allWinter)) fail('winterPromo.json: має бути умова про непідсумовування знижок');
+  if (winterPromo.sticker !== undefined) fail('winterPromo.json: кругла наклейка sticker не використовується');
+}
+
 
 // ---------- красная команда 05.10.2026: выдуманные факты не должны проходить мимо точечных проверок ----------
 {

@@ -489,6 +489,7 @@ html.nav-open { overflow: hidden; }
 }
 
 .promo-banner { padding-block: clamp(48px, 6vw, 96px); }
+.promo-banner + .promo-banner { padding-top: 0; }
 .promo-banner__box {
   display: grid;
   grid-template-columns: minmax(0, 400px) 1fr;
@@ -620,6 +621,9 @@ html.nav-open { overflow: hidden; }
   color: var(--text);
 }
 .promo-modal__text { margin-top: 12px; line-height: 1.5; color: var(--text-soft); }
+.promo-modal .promo-badge { padding-right: 28px; }
+.promo-modal .promo-terms { margin-top: 16px; font-size: var(--text-small); }
+.promo-modal .promo-terms li::before { top: 18px; }
 .promo-rows { margin-top: 20px; border-top: 1px solid var(--line); }
 .promo-rows li {
   display: flex;
@@ -661,6 +665,13 @@ html.nav-open { overflow: hidden; }
 }
 .promo-modal__close:hover { color: var(--text); }
 html.modal-open { overflow: hidden; }
+@media (max-width: 479.98px) {
+  .promo-modal { padding: 16px; }
+  .promo-modal__dialog { padding: 28px 20px 24px; }
+  .promo-modal__title { font-size: 28px; }
+  .promo-modal .promo-terms li { padding: 7px 0 7px 20px; }
+  .promo-modal .promo-terms li::before { top: 16px; }
+}
 
 /* ---------- Головна: hero, теги, вступ, формати, банний блок (E4-T1) ---------- */
 /* Перший екран як на боєвому лендингу (рішення Макса 05.10.2026): фото на весь екран, затемнення знизу, текст по центру внизу.

@@ -16,12 +16,13 @@ const report = args.includes('--report');
 const readJson = (n) => JSON.parse(fs.readFileSync(path.join(root, 'src/_data', n), 'utf8'));
 const photos = readJson('photos.json');
 const promo = readJson('promo.json');
+const winterPromo = readJson('winterPromo.json');
 const errors = [];
 const fail = (where, m) => errors.push(`${where}: ${m}`);
 
 // адреса сторінки -> ім'я в uses паспорта
 const SLUG = { '/': 'home', '/nomery/': 'nomery', '/kotedzhi/': 'kotedzhi', '/barn-house/': 'barn-house', '/velykyi-budynok/': 'velykyi-budynok', '/banya-ta-spa/': 'banya', '/kafe/': 'kafe', '/okolitsi/': 'okolitsi', '/yak-distatysya/': 'yak-distatysya', '/kontakty/': 'kontakty', '/rybalka-i-hryby/': 'rybalka-i-hryby' };
-const PROMO_PAGES = new Set(['/', '/nomery/', '/kotedzhi/']); // тут стоїть банер акції, афіша акції показується на всіх трьох
+const PROMO_PAGES = new Set(['/']); // банери акцій стоять лише на головній
 
 const pages = [];
 (function walk(dir) {
@@ -71,7 +72,7 @@ for (const [id, urls] of usage) {
   for (const url of urls) {
     const slug = SLUG[url];
     const allowed = new Set(p.uses || []);
-    const okPromo = id === promo.image && PROMO_PAGES.has(url);
+    const okPromo = (id === promo.image || id === winterPromo?.image) && PROMO_PAGES.has(url);
     if (!okPromo && !(slug && allowed.has(slug))) fail(`${url}`, `кадр ${id} стоїть на цій сторінці, а в паспорті uses ${JSON.stringify(p.uses)}`);
   }
   if (p.verify) {

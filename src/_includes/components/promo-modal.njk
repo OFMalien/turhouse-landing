@@ -20,6 +20,25 @@
   </div>
 </div>
 {%- endif %}
+{%- if winterPromo.enabled %}
+<div class="promo-modal" id="promo-winter-modal" role="dialog" aria-modal="true" aria-labelledby="promo-winter-modal-title" data-placement="promo_modal_winter" data-session-key="{{ winterPromo.sessionKey }}" hidden>
+  <div class="promo-modal__dialog" tabindex="-1">
+    <button type="button" class="promo-modal__close" aria-label="Закрити">{{ close() }}</button>
+    <p class="promo-badge">{{ winterPromo.badge }}</p>
+    <p class="promo-modal__title" id="promo-winter-modal-title">{{ winterPromo.modalTitle or winterPromo.title }}</p>
+    <p class="promo-modal__text">{{ winterPromo.modalText }}</p>
+    {%- if winterPromo.terms and winterPromo.terms.length %}
+    <ul class="promo-terms">
+      {%- for t in winterPromo.terms %}
+      <li>{{ t }}</li>
+      {%- endfor %}
+    </ul>
+    {%- endif %}
+    <a class="btn btn-primary" href="{{ winterPromo.cta.url }}" target="_blank" rel="noopener">{{ winterPromo.cta.label }}</a>
+    <a class="promo-modal__more" href="{% if promoElsewhere %}{{ '/' | url }}{% endif %}#promo-winter">Деталі акції</a>
+  </div>
+</div>
+{%- endif %}
 {%- if promo.enabled %}
 <div class="promo-modal" id="promo-modal" role="dialog" aria-modal="true" aria-labelledby="promo-modal-title" data-placement="promo_modal_weekend" data-session-key="{{ promo.sessionKey }}" hidden>
   <div class="promo-modal__dialog" tabindex="-1">
@@ -42,5 +61,7 @@
     <a class="promo-modal__more" href="{% if promoElsewhere %}{{ '/' | url }}{% endif %}#promo">Деталі акції</a>
   </div>
 </div>
+{%- endif %}
+{%- if festival.enabled or winterPromo.enabled or promo.enabled %}
 <script src="{{ '/assets/js/promo.js' | url }}" defer></script>
 {%- endif %}

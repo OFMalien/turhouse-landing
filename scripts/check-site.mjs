@@ -22,6 +22,7 @@ const readJson = (n) => JSON.parse(fs.readFileSync(path.join(root, 'src/_data', 
 const site = readJson('site.json');
 const nav = readJson('nav.json');
 const promo = readJson('promo.json');
+const winterPromo = readJson('winterPromo.json');
 const photos = readJson('photos.json');
 const money = (n) => new Intl.NumberFormat('uk-UA').format(n).replace(/[  ]/g, ' ');
 const norm = (s) => (s || '').replace(/[\s  ]+/g, ' ').trim();
@@ -49,7 +50,7 @@ const slugOf = (url) => (url === '/' ? 'home' : url === '/404.html' ? '404' : ur
 // ---------- допустимі адреси ----------
 const EXTERNAL_OK = new Set([
   site.links.booking, site.links.instagram, site.links.instagramDirect, site.links.googleMaps, site.links.googleMapsRoute, site.links.waze,
-  promo.cta.url,
+  promo.cta.url, winterPromo.cta.url,
 ]);
 const HEAD_EXTERNAL_OK = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://www.googletagmanager.com', 'https://connect.facebook.net', 'https://www.facebook.com'];
 const TEL = `tel:${site.phone.tel}`;
@@ -103,7 +104,7 @@ const photoIdOfEl = (el) => (/(^|\s)photo-placeholder(\s|$)/.test(el.getAttribut
 
 // ---------- сторінки з акцією: банер і вікно ----------
 const PROMO_BANNER = new Set(['/']); // великий банер лише на головній (Макс 06.10.2026: скорочення тексту); номери й котеджі ведуть на нього
-const PROMO_MODAL = new Set(['/', '/nomery/', '/kotedzhi/']);
+const PROMO_MODAL = new Set(['/', '/kotedzhi/', '/barn-house/', '/velykyi-budynok/']);
 
 // sitemap.xml і robots.txt: у sitemap рівно адреси всіх зібраних сторінок крім 404 (10 розділів + політика = 11), кожна збігається з canonical сторінки
 {
@@ -143,7 +144,7 @@ for (const jsFile of fs.readdirSync(path.join(siteDir, 'assets/js')).filter((x) 
 }
 
 // Усі допустимі значення data-placement (місце кліку в аналітиці): імена живого сайту збережено, нові для нових блоків. Невідоме значення це опечатка або забутий запис
-const PLACEMENTS_OK = new Set(['header_nav', 'mobile_drawer', 'footer', 'final_cta_band', 'sticky_mobile_cta', 'promo_section_weekend', 'promo_modal_weekend', 'festival_section', 'festival_modal', 'hero_header', 'formats_section', 'spa_section', 'reviews_section', 'location_section', 'cafe_teaser', 'area_teaser',
+const PLACEMENTS_OK = new Set(['header_nav', 'mobile_drawer', 'footer', 'final_cta_band', 'sticky_mobile_cta', 'promo_section_weekend', 'promo_modal_weekend', 'promo_section_winter', 'promo_modal_winter', 'festival_section', 'festival_modal', 'hero_header', 'formats_section', 'spa_section', 'reviews_section', 'location_section', 'cafe_teaser', 'area_teaser',
   'rooms_list', 'cottages_list', 'barn_tariffs', 'spa_price', 'spa_cards', 'cafe_hours', 'route_buttons', 'route_help', 'contacts_cards', 'contacts_where', 'page_booking', 'not_found']);
 
 for (const [url, { doc }] of docs) {
@@ -208,7 +209,7 @@ for (const [url, { doc }] of docs) {
   if (url !== '/yak-distatysya/' && (hasMapJs || doc.querySelector('#map-box'))) f('карта лише на сторінці «Як дістатися»');
   const frames = doc.querySelectorAll('iframe');
   if (frames.length && (url !== '/yak-distatysya/' || frames.length !== 1 || frames[0].getAttribute('class') !== 'map-box__frame')) f('iframe дозволено лише один: карта на сторінці «Як дістатися» (Макс 06.10.2026)');
-  if (doc.querySelector('script[src$="promo.js"]') && !doc.querySelector('#promo-modal')) f('promo.js без вікна акції');
+  if (doc.querySelector('script[src$="promo.js"]') && !doc.querySelector('#promo-modal, #promo-winter-modal, #festival-modal')) f('promo.js без вікна акції');
 
   if (doc.querySelectorAll('form, input, textarea, select').length) f('на сайті немає форм і полів вводу (політика конфіденційності це обіцяє)');
   // ----- каркас: header, main, footer -----
@@ -296,37 +297,50 @@ for (const [url, { doc }] of docs) {
     if (!same(sl, wantS)) f(byContact ? 'липкі кнопки: «Подзвонити» і «Написати в Direct»' : 'липка кнопка «Забронювати зараз» має вести на BookmeNow');
   }
 
-  // ----- акція: банер і вікно рівно з promo.json -----
+  // ----- акції: банер і вікно рівно з winterPromo.json та promo.json -----
   const wantRows = promoItems.map((r) => ({ who: r.label, was: `${money(r.was)} грн`, now: `${money(r.now)} грн` }));
-  const rowsOf = (root, sel, whoSel) => root.querySelectorAll(sel).map((li) => ({ who: norm(li.querySelector(whoSel)?.text), was: norm(li.querySelector('s')?.text), now: norm(li.querySelector('strong')?.text) }));
-  const banner = doc.querySelector('#promo');
-  const modal = doc.querySelector('#promo-modal');
-  if (promo.enabled && PROMO_BANNER.has(url) && !banner) f('має бути банер акції #promo');
-  if (promo.enabled && PROMO_MODAL.has(url) && !modal) f('має бути вікно акції #promo-modal');
-  if ((!promo.enabled || !PROMO_BANNER.has(url)) && banner) f('банера акції на цій сторінці бути не повинно');
-  if ((!promo.enabled || !PROMO_MODAL.has(url)) && modal) f('вікна акції на цій сторінці бути не повинно');
-  if (banner) {
-    const g = (s) => norm(banner.querySelector(s)?.text);
-    if (g('.promo-badge') !== promo.badge || g('#promo-title') !== promo.title || g('.promo-banner__content > .lede') !== promo.lead || g('.promo-banner__note') !== promo.note) f('банер акції: бейдж, заголовок, текст або примітка не збігаються з promo.json (підзаголовка немає)');
-    if (!same(banner.querySelectorAll('.promo-terms li').map((li) => norm(li.text)), promo.terms.map(norm))) f('банер акції: умови не збігаються з promo.json');
-    if (!same(rowsOf(banner, '.promo-prices tbody tr', '.promo-price__who'), wantRows)) f(`банер акції: ціни мають бути ${JSON.stringify(wantRows)}`);
-    const cb = banner.querySelector('.btn-row a.btn-primary');
-    if (cb?.getAttribute('href') !== promo.cta.url || norm(cb?.text) !== promo.cta.label) f('банер акції: кнопка має вести в Instagram Direct з promo.json');
-    const tb = banner.querySelector('.btn-row a:not(.btn-primary)');
-    if (tb?.getAttribute('href') !== TEL || tb?.getAttribute('aria-label') !== TEL_ARIA) f('банер акції: кнопка «Зателефонувати» має вести на телефон із site.json');
-  }
-  if (modal) {
-    const g = (s) => norm(modal.querySelector(s)?.text);
-    if (modal.getAttribute('hidden') === undefined) f('вікно акції має бути прихованим за замовчуванням');
-    if (modal.getAttribute('data-session-key') !== promo.sessionKey) f('вікно акції: data-session-key з promo.json');
-    if (g('.promo-badge') !== promo.badge || g('#promo-modal-title') !== (promo.modalTitle || promo.title) || g('.promo-modal__text') !== promo.modalText) f('вікно акції: бейдж, заголовок або текст не збігаються з promo.json');
-    if (!same(rowsOf(modal, '.promo-rows li', 'span:first-child'), wantRows)) f(`вікно акції: ціни мають бути ${JSON.stringify(wantRows)}`);
-    const cb = modal.querySelector('a.btn-primary');
-    if (cb?.getAttribute('href') !== promo.cta.url || norm(cb?.text) !== promo.cta.label) f('вікно акції: кнопка має вести в Instagram Direct з promo.json');
-    if (modal.querySelector('a.promo-modal__more')?.getAttribute('href') !== (banner ? '#promo' : `${prefix}/#promo`)) f('вікно акції: «Деталі акції» веде на банер #promo (на цій сторінці або на головній)');
-    if (!modal.querySelector('button.promo-modal__close[aria-label]')) f('вікно акції: немає кнопки закриття з aria-label');
-    if (!doc.querySelector(`script[src="${prefix}/assets/js/promo.js"]`)) f('вікно акції без promo.js');
-  }
+  const rowsOf = (rootEl, sel, whoSel) => rootEl.querySelectorAll(sel).map((li) => ({ who: norm(li.querySelector(whoSel)?.text), was: norm(li.querySelector('s')?.text), now: norm(li.querySelector('strong')?.text) }));
+  const checkPromoEntry = ({ data, bannerSel, titleSel, modalSel, modalTitleSel, hash, hasPrices, modalList, label }) => {
+    const banner = doc.querySelector(bannerSel);
+    const modal = doc.querySelector(modalSel);
+    if (data?.enabled && PROMO_BANNER.has(url) && !banner) f(`має бути банер ${label} ${bannerSel}`);
+    if (data?.enabled && PROMO_MODAL.has(url) && !modal) f(`має бути вікно ${label} ${modalSel}`);
+    if ((!data?.enabled || !PROMO_BANNER.has(url)) && banner) f(`банера ${label} ${bannerSel} на цій сторінці бути не повинно`);
+    if ((!data?.enabled || !PROMO_MODAL.has(url)) && modal) f(`вікна ${label} ${modalSel} на цій сторінці бути не повинно`);
+    if (banner) {
+      const g = (s) => norm(banner.querySelector(s)?.text);
+      if (g('.promo-badge') !== data.badge || g(titleSel) !== data.title || g('.promo-banner__content > .lede') !== data.lead || g('.promo-banner__note') !== (data.note || '')) f(`банер ${label}: бейдж, заголовок, текст або примітка не збігаються з даними (підзаголовка немає)`);
+      if (!same(banner.querySelectorAll('.promo-terms li').map((li) => norm(li.text)), (data.terms || []).map(norm))) f(`банер ${label}: умови не збігаються з даними`);
+      if (hasPrices) {
+        if (!same(rowsOf(banner, '.promo-prices tbody tr', '.promo-price__who'), wantRows)) f(`банер ${label}: ціни мають бути ${JSON.stringify(wantRows)}`);
+      } else if (banner.querySelector('.promo-prices')) {
+        f(`банер ${label}: таблиці цін бути не повинно`);
+      }
+      const cb = banner.querySelector('.btn-row a.btn-primary');
+      if (cb?.getAttribute('href') !== data.cta.url || norm(cb?.text) !== data.cta.label) f(`банер ${label}: кнопка має вести в Instagram Direct з даних`);
+      const tb = banner.querySelector('.btn-row a:not(.btn-primary)');
+      if (tb?.getAttribute('href') !== TEL || tb?.getAttribute('aria-label') !== TEL_ARIA) f(`банер ${label}: кнопка «Зателефонувати» має вести на телефон із site.json`);
+    }
+    if (modal) {
+      const g = (s) => norm(modal.querySelector(s)?.text);
+      if (modal.getAttribute('hidden') === undefined) f(`вікно ${label} має бути прихованим за замовчуванням`);
+      if (modal.getAttribute('data-session-key') !== data.sessionKey) f(`вікно ${label}: data-session-key з даних`);
+      if (g('.promo-badge') !== data.badge || g(modalTitleSel) !== (data.modalTitle || data.title) || g('.promo-modal__text') !== data.modalText) f(`вікно ${label}: бейдж, заголовок або текст не збігаються з даними`);
+      if (modalList === 'rows') {
+        if (!same(rowsOf(modal, '.promo-rows li', 'span:first-child'), wantRows)) f(`вікно ${label}: ціни мають бути ${JSON.stringify(wantRows)}`);
+      } else if (modalList === 'terms') {
+        if (modal.querySelector('.promo-rows')) f(`вікно ${label}: списку цін .promo-rows бути не повинно`);
+        if (!same(modal.querySelectorAll('.promo-terms li').map((li) => norm(li.text)), (data.terms || []).map(norm))) f(`вікно ${label}: умови .promo-terms не збігаються з даними`);
+      }
+      const cb = modal.querySelector('a.btn-primary');
+      if (cb?.getAttribute('href') !== data.cta.url || norm(cb?.text) !== data.cta.label) f(`вікно ${label}: кнопка має вести в Instagram Direct з даних`);
+      if (modal.querySelector('a.promo-modal__more')?.getAttribute('href') !== (banner ? hash : `${prefix}/${hash}`)) f(`вікно ${label}: «Деталі акції» веде на банер ${hash} (на цій сторінці або на головній)`);
+      if (!modal.querySelector('button.promo-modal__close[aria-label]')) f(`вікно ${label}: немає кнопки закриття з aria-label`);
+      if (!doc.querySelector(`script[src="${prefix}/assets/js/promo.js"]`)) f(`вікно ${label} без promo.js`);
+    }
+  };
+  checkPromoEntry({ data: winterPromo, bannerSel: '#promo-winter', titleSel: '#promo-winter-title', modalSel: '#promo-winter-modal', modalTitleSel: '#promo-winter-modal-title', hash: '#promo-winter', hasPrices: false, modalList: 'terms', label: 'зимової акції' });
+  checkPromoEntry({ data: promo, bannerSel: '#promo', titleSel: '#promo-title', modalSel: '#promo-modal', modalTitleSel: '#promo-modal-title', hash: '#promo', hasPrices: true, modalList: 'rows', label: 'акції' });
 
   // ----- усі посилання -----
   for (const a of doc.querySelectorAll('a')) {
@@ -363,9 +377,15 @@ for (const [url, { doc }] of docs) {
   const bodyText = norm(doc.querySelector('body')?.text);
   for (const m of bodyText.matchAll(/\+38[\d\s()-]{8,}\d/g)) if (norm(m[0]) !== site.phone.display) f(`у тексті телефон «${norm(m[0])}», а має бути «${site.phone.display}»`);
   for (const m of bodyText.matchAll(/вул\.\s*Лугов\S*,?\s*\d+/g)) if (!site.address.full.startsWith(norm(m[0]))) f(`у тексті адреса «${norm(m[0])}» не збігається з site.json`);
-  const pctOk = String(promo.title.match(/(\d+)\s*%/)?.[1] || promo.shortLabel.match(/(\d+)\s*%/)?.[1]);
+  const allowedPcts = new Set(
+    [promo, winterPromo]
+      .filter((p) => p?.enabled)
+      .flatMap((p) => [p.title, p.shortLabel, p.lead, p.modalText].filter(Boolean))
+      .map((s) => s.match(/(\d+)\s*%/)?.[1])
+      .filter(Boolean),
+  );
   // Виняток: «Баня + чан» зі знижкою 10% (тематичні банні дні, Оля, Макс 10.11.2026)
-  for (const m of bodyText.replace('пакетна ціна зі знижкою 10%', '').matchAll(/(\d+)\s*%/g)) if (m[1] !== pctOk) f(`у тексті відсоток «${m[0]}», знижка за promo.json ${pctOk}%`);
+  for (const m of bodyText.replace('пакетна ціна зі знижкою 10%', '').matchAll(/(\d+)\s*%/g)) if (!allowedPcts.has(m[1])) f(`у тексті відсоток «${m[0]}», дозволені відсотки з даних акцій: ${[...allowedPcts].join(', ') || 'немає'}`);
 
   // ----- картинки: файли, alt із паспорта фото, завантаження -----
   for (const img of doc.querySelectorAll('img')) {

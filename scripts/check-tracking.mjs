@@ -24,7 +24,7 @@ const fail = (page, m) => errors.push(`${page}: ${m}`);
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
 
-const PROMO = new Set(['promo_modal_weekend', 'promo_section_weekend']);
+const PROMO = new Set(['promo_modal_weekend', 'promo_section_weekend', 'promo_modal_winter', 'promo_section_winter']);
 const OBJECT_CATEGORIES = new Set(['rooms', 'cottages', 'barn', 'banya']);
 
 const pages = [];

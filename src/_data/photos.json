@@ -504,6 +504,15 @@
       "promo"
     ]
   },
+  "promo/black-friday-20": {
+    "file": "promo/black-friday-20.jpg",
+    "source": "photo/promo_black_friday_20_2026-11-25.jpg",
+    "alt": "Афіша Black Friday «−20% на всі бронювання котеджів та великих будинків» у зимовому Tur House",
+    "uses": [
+      "home",
+      "promo"
+    ]
+  },
   "spa/price-poster": {
     "file": "spa/price-poster.jpg",
     "source": "photo/ig_price_bath_2026-09-16.jpg",

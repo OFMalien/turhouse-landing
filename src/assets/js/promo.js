@@ -1,7 +1,7 @@
 /* Вікно акції (правило N6): один раз за сесію (sessionStorage), закриття хрестиком, Esc і кліком по підкладці,
    пастка фокуса, повернення фокуса. Показ через 6 секунд або коли прокручено 40% сторінки. */
 (function () {
-  // Фестиваль (банер #festival і його вікно) діє до data-until; після цієї дати прибираємо його й показуємо вікно −20%.
+  // Фестиваль (банер #festival і його вікно) діє до data-until; після цієї дати прибираємо його й показуємо актуальне вікно акції.
   var festival = document.getElementById('festival-modal');
   var festivalOn = !!festival && Date.now() < Date.parse(festival.getAttribute('data-until'));
   if (festival && !festivalOn) {
@@ -10,7 +10,7 @@
     festival.remove();
   }
 
-  var modal = festivalOn ? festival : document.getElementById('promo-modal');
+  var modal = festivalOn ? festival : (document.getElementById('promo-winter-modal') || document.getElementById('promo-modal'));
   if (!modal) return;
 
   var dialog = modal.querySelector('.promo-modal__dialog');
@@ -100,7 +100,7 @@
   window.thPromoOpen = function () { done = false; open(); };
 
   // Уже бачили в цій сесії або прийшли на якір акції: не показуємо.
-  if (seen() || window.location.hash === '#promo' || window.location.hash === '#festival') { done = true; return; }
+  if (seen() || window.location.hash === '#promo-winter' || window.location.hash === '#promo' || window.location.hash === '#festival') { done = true; return; }
 
   timer = setTimeout(open, 6000);
   window.addEventListener('scroll', onScroll, { passive: true });

@@ -1,25 +1,33 @@
-{%- if promo.enabled %}
-<section class="promo-banner" id="promo" aria-labelledby="promo-title" data-placement="promo_section_weekend">
+{%- set promoBanners = [
+  { data: winterPromo, id: winterPromo.id or 'promo-winter', placement: 'promo_section_winter', hasPrices: false },
+  { data: promo, id: 'promo', placement: 'promo_section_weekend', hasPrices: true }
+] -%}
+{%- asyncEach entry in promoBanners %}
+{%- set banner = entry.data %}
+{%- if banner and banner.enabled %}
+<section class="promo-banner" id="{{ entry.id }}" aria-labelledby="{{ entry.id }}-title" data-placement="{{ entry.placement }}">
   <div class="wrap">
     <div class="promo-banner__box">
       <div class="promo-banner__poster">
-        {% photo promo.image, { sizes: "(min-width: 900px) 400px, 100vw", class: "media" } %}
-        {%- if promo.sticker %}
-        <p class="promo-sticker" aria-hidden="true"><span class="promo-sticker__big">{{ promo.sticker.big }}</span><span class="promo-sticker__small">{{ promo.sticker.small }}</span></p>
+        {% photo banner.image, { sizes: "(min-width: 900px) 400px, 100vw", class: "media" } %}
+        {%- if banner.sticker %}
+        <p class="promo-sticker" aria-hidden="true"><span class="promo-sticker__big">{{ banner.sticker.big }}</span><span class="promo-sticker__small">{{ banner.sticker.small }}</span></p>
         {%- endif %}
       </div>
       <div class="promo-banner__content">
-        <p class="promo-badge">{{ promo.badge }}</p>
-        <h2 id="promo-title" class="promo-banner__title">{{ promo.title }}</h2>
-        <p class="lede">{{ promo.lead }}</p>
+        <p class="promo-badge">{{ banner.badge }}</p>
+        <h2 id="{{ entry.id }}-title" class="promo-banner__title">{{ banner.title }}</h2>
+        <p class="lede">{{ banner.lead }}</p>
 
+        {%- if banner.terms and banner.terms.length %}
         <ul class="promo-terms">
-          {%- for t in promo.terms %}
+          {%- for t in banner.terms %}
           <li>{{ t }}</li>
           {%- endfor %}
         </ul>
+        {%- endif %}
 
-        {%- if promoItems.length %}
+        {%- if entry.hasPrices and promoItems.length %}
         <table class="promo-prices">
           <caption class="visually-hidden">Ціни за добу зі знижкою</caption>
           <thead>
@@ -38,10 +46,12 @@
           </tbody>
         </table>
         {%- endif %}
-        <p class="promo-banner__note">{{ promo.note }}</p>
+        {%- if banner.note %}
+        <p class="promo-banner__note">{{ banner.note }}</p>
+        {%- endif %}
 
         <div class="btn-row">
-          <a class="btn btn-primary" href="{{ promo.cta.url }}" target="_blank" rel="noopener">{{ promo.cta.label }}</a>
+          <a class="btn btn-primary" href="{{ banner.cta.url }}" target="_blank" rel="noopener">{{ banner.cta.label }}</a>
           <a class="btn" href="tel:{{ site.phone.tel }}" aria-label="Зателефонувати: {{ site.phone.display }}">Зателефонувати</a>
         </div>
       </div>
@@ -49,3 +59,4 @@
   </div>
 </section>
 {%- endif %}
+{%- endeach %}
